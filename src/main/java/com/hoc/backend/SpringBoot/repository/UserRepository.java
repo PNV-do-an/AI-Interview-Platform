@@ -1,0 +1,7 @@
+package com.hoc.backend.SpringBoot.repository;
+
+import com.hoc.backend.SpringBoot.model.User;
+
+public interface UserRepository {
+    public User findUser(String account);
+}

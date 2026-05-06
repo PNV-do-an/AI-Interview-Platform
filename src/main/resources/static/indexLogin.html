@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login JWT</title>
+</head>
+<body>
+
+<h2>Login</h2>
+
+<input id="account" placeholder="Account"><br><br>
+<input id="password" placeholder="Password"><br><br>
+
+<button onclick="login()">Login</button>
+
+<h3>Token:</h3>
+<p id="token"></p>
+
+<h3>Call API:</h3>
+<button onclick="callApi()">Call API</button>
+<p id="result"></p>
+
+<script>
+    function login() {
+        const account = document.getElementById("account").value;
+        const password = document.getElementById("password").value;
+
+        fetch(`/service/login?account=${account}&passWord=${password}`)
+            .then(res => res.text())
+            .then(token => {
+                localStorage.setItem("token", token);
+                document.getElementById("token").innerText = token;
+            });
+    }
+
+    function callApi() {
+        fetch("/api/test", {
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("result").innerText = data;
+            });
+    }
+</script>
+
+</body>
+</html>
