@@ -24,8 +24,18 @@
         const account = document.getElementById("account").value;
         const password = document.getElementById("password").value;
 
-        fetch(`/service/login?account=${account}&passWord=${password}`)
-            .then(res => res.text())
+        fetch(`/api/auth/login`, {
+            method:"POST",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({
+                    account: "account",
+                    password: "password"
+            })
+        })
+
+            .then(res => res.json())
             .then(token => {
                 localStorage.setItem("token", token);
                 document.getElementById("token").innerText = token;

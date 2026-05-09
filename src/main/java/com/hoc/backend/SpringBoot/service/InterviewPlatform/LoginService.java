@@ -4,7 +4,6 @@ import com.hoc.backend.SpringBoot.exception.InvalidPassWordException;
 import com.hoc.backend.SpringBoot.model.User;
 import com.hoc.backend.SpringBoot.repository.UserRepository;
 import com.hoc.backend.SpringBoot.security.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
 public class LoginService  {

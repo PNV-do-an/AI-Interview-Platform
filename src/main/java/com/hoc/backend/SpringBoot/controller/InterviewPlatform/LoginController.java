@@ -1,21 +1,34 @@
 package com.hoc.backend.SpringBoot.controller.InterviewPlatform;
 
+import com.hoc.backend.SpringBoot.dto.LoginRequest;
+import com.hoc.backend.SpringBoot.dto.LoginResponse;
 import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 public class LoginController {
 
+    private final LoginService loginService;
 
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
+    }
 
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) { // create object of Login Request (Jackson) (
+        String token = loginService.verify(
+                request.getAccount(),
+                request.getPassword()
+        );
+        return new LoginResponse(token,request.getAccount()); // just return token, account is example
+    }
 }
+
+
+
+
+
 
 //    -- demo
 //    private LoginService loginService;
