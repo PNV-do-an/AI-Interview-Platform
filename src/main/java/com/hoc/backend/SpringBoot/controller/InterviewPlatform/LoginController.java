@@ -21,7 +21,7 @@
                     request.getAccount(),
                     request.getPassword()
             );
-            return new LoginResponse(token,request.getAccount()); // just return token, account is example
+            return new LoginResponse(token); // just return token, account is example
         }
 
 

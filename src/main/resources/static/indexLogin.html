@@ -8,7 +8,7 @@
 <h2>Login</h2>
 
 <input id="account" placeholder="Account"><br><br>
-<input id="password" placeholder="Password"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
 
 <button onclick="login()">Login</button>
 
@@ -20,42 +20,60 @@
 <p id="result"></p>
 
 <script>
+
     function login() {
+
         const account = document.getElementById("account").value;
         const password = document.getElementById("password").value;
 
-        fetch(`/api/auth/login`, {
-            method:"POST",
+        fetch("/api/auth/login", {
+
+            method: "POST",
+
             headers: {
-                "Content-Type" : "application/json"
+                "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
-                    account: "account",
-                    password: "password"
+                account: account,
+                password: password
             })
+
         })
 
-            .then(res => res.json())
+            .then(res => res.text())
             .then(token => {
+
                 localStorage.setItem("token", token);
+
                 document.getElementById("token").innerText = token;
+
             });
+
     }
 
     function callApi() {
+
         fetch("/api/test", {
 
-            method : "GET",
+            method: "GET",
 
             headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token")
+                "Authorization":
+                    "Bearer " + localStorage.getItem("token")
             }
+
         })
+
             .then(res => res.text())
             .then(data => {
+
                 document.getElementById("result").innerText = data;
+
             });
+
     }
+
 </script>
 
 </body>
