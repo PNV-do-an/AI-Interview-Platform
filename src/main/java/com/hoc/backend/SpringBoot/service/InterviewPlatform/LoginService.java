@@ -4,7 +4,11 @@ import com.hoc.backend.SpringBoot.exception.InvalidPassWordException;
 import com.hoc.backend.SpringBoot.model.User;
 import com.hoc.backend.SpringBoot.repository.UserRepository;
 import com.hoc.backend.SpringBoot.security.JwtUtil;
+
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
 @Service
 public class LoginService  {
 
@@ -14,28 +18,76 @@ public class LoginService  {
         this.userRepository = userRepository;
     }
 
-//    private int counterFail = 0; // counter how many times password is incorect <- but now it's a gobal variable, every user when enter
-                                    // incorrect password always counterFail plus 1 -> often lock login function. -> so assign a new attribute at object user
+    //    private int counterFail = 0; // counter how many times password is incorect <- but now it's a gobal variable, every user when enter
+    // incorrect password always counterFail plus 1 -> often lock login function. -> so assign a new attribute at object user
     public final String verify(String account, String passWorld) {
+
         User user = userRepository.findUser(account); // verify exist account
-        //
-        if (!user.getPassWord().equals(passWorld) && !user.getLocked()) { // verify password
-            user.setCounterFail(user.getCounterFail() +1);
-            if (user.getCounterFail() >= 5) {
-                user.setLocked(true);
-                // this is the time lock sign up  will unlock (how to do it)
 
+        // verify account locked or unlocked
+        if (user.getLocked()) {
+
+            // verify time unlock
+            if (LocalDateTime.now().isBefore(user.getLockedUntil())) {
+
+                throw new RuntimeException(
+                        "Account locked until : " + user.getLockedUntil()
+                );
             }
-            throw new InvalidPassWordException("Wrong password");
-        }
-        else if (user.getLocked() &&  // điều kiện thời gian ) {
 
-        }
-        else {
+            // unlock account when time expired
+            user.setLocked(false);
             user.setCounterFail(0);
+            user.setLockedUntil(null);
         }
 
-        return JwtUtil.generateToken (user.getAccount(),user.getRole());
+        // verify password
+        if (!user.getPassWord().equals(passWorld)) {
+
+            user.setCounterFail(user.getCounterFail() +1);
+
+            // verify how many times incorrect password
+            if (user.getCounterFail() >= 5) {
+
+                user.setLocked(true);
+
+                // lock account in 5 minutes
+                user.setLockedUntil(
+                        LocalDateTime.now().plusMinutes(5)
+                );
+
+                // save change status user
+                // userRepository.save(user);
+
+                throw new RuntimeException(
+                        "Account locked in 5 minutes"
+                );
+            }
+
+            // save fail counter
+            // userRepository.save(user);
+
+            throw new InvalidPassWordException(
+                    "Wrong password"
+            );
+        }
+
+        // reset counter fail when login success
+        user.setCounterFail(0);
+
+        // unlock if login success
+        user.setLocked(false);
+
+        // clear time lock
+        user.setLockedUntil(null);
+
+        // save login success
+        // userRepository.save(user);
+
+        return JwtUtil.generateToken(
+                user.getAccount(),
+                user.getRole()
+        );
 
     }
 }
