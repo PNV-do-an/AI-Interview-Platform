@@ -4,12 +4,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import lombok.NonNull;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,45 +15,39 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-
-            String token = authHeader.substring(7);
+        // Chỉ xử lý và log khi thấy có Header Authorization đúng định dạng Bearer
+        if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
+            String token = authHeader.substring(7).trim();
+            String path = request.getRequestURI();
+            
+            System.out.println(">>> JWT Filter detected token for path: " + path);
 
             try {
                 var claims = JwtUtil.validateToken(token);
-
                 String account = claims.getSubject();
                 String role = (String) claims.get("role");
 
-                // ✅ FIX ở đây
-                var authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + role)
-                );
+                var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                var auth = new UsernamePasswordAuthenticationToken(account, null, authorities);
 
-                // ✅ tránh set lại nhiều lần
-                if (SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                    var auth = new UsernamePasswordAuthenticationToken(
-                            account,
-                            null,
-                            authorities
-                    );
-
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                System.out.println(">>> Success: Authenticated user [" + account + "] for path [" + path + "]");
 
             } catch (Exception e) {
-                // token invalid → bỏ qua
+                System.err.println(">>> Error: JWT Validation Failed - " + e.getMessage());
+                // Không set Authentication, Spring Security sẽ tự chặn ở các bước sau nếu cần
             }
         }
 
+        // Cho phép request đi tiếp trong Filter Chain
         filterChain.doFilter(request, response);
     }
 }

@@ -16,8 +16,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(403).body(ex.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleOther(RuntimeException ex) {
-        return ResponseEntity.status(500).body("Can't connect to serve, contact to admin please :) ");
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<?> handleOther(RuntimeException ex) {
+//        return ResponseEntity.status(500).body("Can't connect to serve, contact to admin please :) ");
+//    }
 }

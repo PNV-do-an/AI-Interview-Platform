@@ -14,11 +14,12 @@ public class JwtUtil {
 
     public static String generateToken(String account, String role) {
 
-//        System.out.println(">>> GENERATE TOKEN WITH: " + account);
+        System.out.println(">>> GENERATE TOKEN WITH: " + account);
 
         String token = Jwts.builder()
                 .setSubject(account)
                 .claim("role", role)
+//                .claim("age",age)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key)
