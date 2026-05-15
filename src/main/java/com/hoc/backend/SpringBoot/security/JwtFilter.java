@@ -26,12 +26,18 @@ public class JwtFilter extends OncePerRequestFilter {
         // Chỉ xử lý và log khi thấy có Header Authorization đúng định dạng Bearer
         if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
             String token = authHeader.substring(7).trim();
+            
+            // Loại bỏ dấu ngoặc kép nếu có (format lúc gửi từ client có "")
+            if (token.startsWith("\"") && token.endsWith("\"")) {
+                token = token.substring(1, token.length() - 1);
+            }
+            
             String path = request.getRequestURI();
             
-            System.out.println(">>> JWT Filter detected token for path: " + path);
+            System.out.println(">>> DEBUG: Final Token before validate: [" + token + "]");
 
             try {
-                var claims = JwtUtil.validateToken(token);
+                var claims = JwtUtil.validateAccessToken(token);
                 String account = claims.getSubject();
                 String role = (String) claims.get("role");
 

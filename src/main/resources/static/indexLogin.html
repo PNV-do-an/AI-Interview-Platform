@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+    <html>
 <head>
     <title>Login JWT</title>
 </head>
@@ -13,7 +13,8 @@
 <button onclick="login()">Login</button>
 
 <h3>Token:</h3>
-<p id="token"></p>
+<p id="accessToken"></p>
+<p id="refreshToken"></p>
 
 <h3>Call API:</h3>
 <button onclick="callApi()">Call API</button>
@@ -41,12 +42,17 @@
 
         })
 
-            .then(res => res.text())
-            .then(token => {
+            .then(res => res.json())
+            .then(data => {
 
-                localStorage.setItem("token", token);
+                const accessToken = data.accessToken;
+                const refreshToken = data.refreshToken;
 
-                document.getElementById("token").innerText = token;
+                localStorage.setItem("accessToken", accessToken);
+                localStorage.setItem("refreshToken", refreshToken);
+
+                document.getElementById("accessToken").innerText = accessToken;
+                document.getElementById("refreshToken").innerText = refreshToken;
 
             });
 
@@ -54,7 +60,6 @@
 
     function callApi() {
     // gửi để token mỗi lần để có thể xác minh ( mỗi requset với mỗi chức năng )
-
         fetch("/api/test", {
 
             method: "GET",

@@ -1,45 +1,46 @@
-    package com.hoc.backend.SpringBoot.controller.InterviewPlatform;
+package com.hoc.backend.SpringBoot.controller.InterviewPlatform;
 
-    import com.hoc.backend.SpringBoot.dto.LoginRequest;
-    import com.hoc.backend.SpringBoot.dto.LoginResponse;
-    import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
-    import org.springframework.web.bind.annotation.*;
+import com.hoc.backend.SpringBoot.dto.LoginRequest;
+import com.hoc.backend.SpringBoot.dto.LoginResponse;
+import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
+import org.springframework.web.bind.annotation.*;
 
-    @RestController
-    @RequestMapping("/api/auth")
-    public class LoginController {
+import java.util.ArrayList;
 
-        private final LoginService loginService;
+@RestController
+@RequestMapping("/api/auth")
+public class LoginController {
 
-        public LoginController(LoginService loginService) {
-            this.loginService = loginService;
-        }
+    private final LoginService loginService;
 
-        @PostMapping("/login")
-        public LoginResponse login(@RequestBody LoginRequest request) { // create object of Login Request (Jackson) (
-            String token = loginService.verify(
-                    request.getAccount(),
-                    request.getPassword()
-            );
-            return new LoginResponse(token); // just return token, account is example
-        }
-    
-
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) { // create object of Login Request (Jackson) (
+        LoginResponse token = loginService.verify(
+                request.getAccount(),
+                request.getPassword()
+        );
+        return token; // just return token, account is example
+    }
+
+}
 
 
 
 
 
-    //    -- demo
-    //    private LoginService loginService;
-    //
-    //    public Lo ginController(LoginService loginService) {
-    //        this.loginService = loginService;
-    //    };
-    //
-    //    @GetMapping("service/login")
-    //    public String login(@RequestParam String account, @RequestParam String passWord) {
-    //        return loginService.verify(account,passWord);
-    //    }
+
+//    -- demo
+//    private LoginService loginService;
+//
+//    public Lo ginController(LoginService loginService) {
+//        this.loginService = loginService;
+//    };
+//
+//    @GetMapping("service/login")
+//    public String login(@RequestParam String account, @RequestParam String passWord) {
+//        return loginService.verify(account,passWord);
+//    }

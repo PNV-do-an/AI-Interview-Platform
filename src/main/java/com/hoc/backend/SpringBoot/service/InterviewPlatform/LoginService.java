@@ -1,13 +1,16 @@
 package com.hoc.backend.SpringBoot.service.InterviewPlatform;
 
+import com.hoc.backend.SpringBoot.dto.LoginResponse;
 import com.hoc.backend.SpringBoot.exception.InvalidPassWordException;
 import com.hoc.backend.SpringBoot.model.User;
 import com.hoc.backend.SpringBoot.repository.UserRepository;
 import com.hoc.backend.SpringBoot.security.JwtUtil;
-
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class LoginService  {
@@ -20,7 +23,7 @@ public class LoginService  {
 
     //    private int counterFail = 0; // counter how many times password is incorect <- but now it's a gobal variable, every user when enter
     // incorrect password always counterFail plus 1 -> often lock login function. -> so assign a new attribute at object user
-    public final String verify(String account, String passWorld) {
+    public final LoginResponse verify(String account, String passWorld) {
 
         User user = userRepository.findUser(account); // verify exist account
 
@@ -84,10 +87,21 @@ public class LoginService  {
         // save login success
         // userRepository.save(user);
 
-        return JwtUtil.generateToken(
+       String  accessToken =  JwtUtil.generateAccessToken(
                 user.getAccount(),
                 user.getRole()
         );
+
+       String refreshToken = JwtUtil.genarateRefreshToken(
+               user.getAccount(),
+               user.getRole()
+       );
+
+       return new LoginResponse(accessToken,refreshToken);
+
+        // ở đây refresh token -> được sinh ra luôn nhưng return chỉ một giá trị
+
+
 
     }
 }

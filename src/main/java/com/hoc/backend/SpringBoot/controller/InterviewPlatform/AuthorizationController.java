@@ -13,6 +13,6 @@ public class AuthorizationController {
         if (auth == null) {
             return  "Unauthorized";
         }
-        return "Hello" + auth.getName();
+        return "Hello " + auth.getName();
     }
 }
