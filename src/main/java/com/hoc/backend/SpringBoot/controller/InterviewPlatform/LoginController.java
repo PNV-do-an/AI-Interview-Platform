@@ -19,11 +19,11 @@ public class LoginController {
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) { // create object of Login Request (Jackson) (
-        LoginResponse token = loginService.verify(
+        return  loginService.verify(
                 request.getAccount(),
                 request.getPassword()
         );
-        return token; // just return token, account is example
+
     }
 
 }

@@ -12,7 +12,7 @@ public class JwtUtil {
     private static final String REFRESH_SECRET = "refresh-secret-refresh-secret-refresh-secret";
     private static final Key accessKey = Keys.hmacShaKeyFor(ACCESS_SECRET.getBytes());
     private static final Key refreshKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
-    private static final long EXPIRATION_TIME_ACCESS_TOKEN = 1000 * 60 * 30;
+    private static final long EXPIRATION_TIME_ACCESS_TOKEN = 1000 * 20;
     private static final long EXPIRATION_TIME_REFRESH_TOKEN =  1000L * 60 * 60 * 24 * 7;
 
     public static String generateAccessToken(String account, String role) {
@@ -72,3 +72,8 @@ public class JwtUtil {
         return validateAccessToken(token).get("role", String.class);
     }
 }
+
+
+//
+//--> Tiếp tục endpoint gọi để refresh token -> ( đặt logic kểm tra ở đâu ) -> kiểm tra
+//        mỗi lần client gửi request

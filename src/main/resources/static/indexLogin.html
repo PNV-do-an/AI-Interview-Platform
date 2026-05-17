@@ -55,6 +55,7 @@
                 document.getElementById("refreshToken").innerText = refreshToken;
 
             });
+            window.location.href = localStorage.get("redirectAfterLogin")
 
     }
 
@@ -66,12 +67,26 @@
 
             headers: {
                 "Authorization":
-                    "Bearer " + localStorage.getItem("token")
+                    "Bearer " + localStorage.getItem("accessToken")
             }
 
         })
+            .then( async res => {
 
-            .then(res => res.text())
+                if (res.status === 401) {
+
+                    localStorage.setItem("redirectAfterLogin",window.location.pathname)
+
+                    await refreshAccessToken(); // if refreshToken expired  -> call to refreshAccessToken -> it will call to login -> user login
+                                                // -> after that user will back to home page not feature page how to when user completed login
+                                                // will back this feature.
+
+                    return callApi();
+                }
+
+                return res.text();
+
+            })
             .then(data => {
 
                 document.getElementById("result").innerText = data;
@@ -80,7 +95,52 @@
 
     }
 
+    async function refreshAccessToken() {
+
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        const response = fetch("/api/refresh", {
+            method : "POST",
+
+            headers :  {
+                "Content-Type" : "application/json"
+            },
+
+            body: JSON.stringify({
+                refreshToken: refreshToken
+            })
+        })
+
+        // const data = await response.json(); // <- tại sao như này mà ko phải
+            .then(res => {
+                if(res.status === 401) { //
+                    document.getElementById("result").innerText = "Refresh Token is expired" // ví dụ lỗi 401 -> refreshToken : hết hạn đăng nhập lại
+                    return login(); // tôi băn khoăn là nên gọi function hay lúc khác sẽ là trả về path
+                }
+            })
+
+        .then( res => res.json()) // <- nhưng ko phải như này
+
+        .then(data => {
+
+            localStorage.setItem("accessToken", data.accessToken);
+        }) // nếu
+
+
+
+    }
+
 </script>
 
 </body>
 </html>
+
+
+
+<!--
+
+TÌM HIỂU + TEST
+UNIT TEST
+CHUYỂN CALL API -> FILE RIÊNG TÁI SỬ DỤNG
+
+-->

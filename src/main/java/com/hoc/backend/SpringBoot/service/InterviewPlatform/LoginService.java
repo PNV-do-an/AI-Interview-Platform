@@ -5,6 +5,7 @@ import com.hoc.backend.SpringBoot.exception.InvalidPassWordException;
 import com.hoc.backend.SpringBoot.model.User;
 import com.hoc.backend.SpringBoot.repository.UserRepository;
 import com.hoc.backend.SpringBoot.security.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
@@ -98,9 +99,16 @@ public class LoginService  {
        );
 
        return new LoginResponse(accessToken,refreshToken);
+    }
+    public LoginResponse resfreshAccesToken(String refreshToken) {
+        Claims claims = JwtUtil.validateRefreshToken(refreshToken);
 
-        // ở đây refresh token -> được sinh ra luôn nhưng return chỉ một giá trị
+        String account = claims.getSubject();
+        String role  = (String) claims.get("role");
 
+        String newAccessToken = JwtUtil.generateAccessToken(account,role);
+
+        return new LoginResponse(newAccessToken,refreshToken);
 
 
     }

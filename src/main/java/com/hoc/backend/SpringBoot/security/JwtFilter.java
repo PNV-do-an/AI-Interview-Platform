@@ -23,6 +23,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        System.out.println( ">>> AUTH HEADER " + authHeader);
+
         // Chỉ xử lý và log khi thấy có Header Authorization đúng định dạng Bearer
         if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
             String token = authHeader.substring(7).trim();
@@ -34,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
             
             String path = request.getRequestURI();
             
-            System.out.println(">>> DEBUG: Final Token before validate: [" + token + "]");
+            System.out.println(">>> DEBUG: Final Token before validate: " + token );
 
             try {
                 var claims = JwtUtil.validateAccessToken(token);
