@@ -1,5 +1,6 @@
-package com.hoc.backend.SpringBoot.security;
+package com.hoc.backend.SpringBoot.security.jwt;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,8 +50,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
                 System.out.println(">>> Success: Authenticated user [" + account + "] for path [" + path + "]");
 
-            } catch (Exception e) {
+            } catch (JwtException e) { // JwtException just catch a bug have relative about JWT
                 System.err.println(">>> Error: JWT Validation Failed - " + e.getMessage());
+
                 // Không set Authentication, Spring Security sẽ tự chặn ở các bước sau nếu cần
             }
         }

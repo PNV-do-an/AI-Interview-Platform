@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile User</title>
+</head>
+<body>
+    <p id="error"></p>
+
+    <p id="name"></p>
+
+    <p id="counterFail"></p>
+
+    <p id="role"></p>
+
+</body>
+
+<script>
+    async function provideInformation() {
+
+        try {
+            const data = await getProfile();
+
+            document.getElementById("name").innerText = data.account;
+
+            document.getElementById("counterFail").innerText = data.counterFail;
+
+            document.getElementById("role").innerText = data.role;
+
+        }
+        catch (error) {
+            console.error(error)
+
+            document.getElementById("error").innerText = error.messages
+
+        }
+    }
+    provideInformation()
+</script>
+</html>

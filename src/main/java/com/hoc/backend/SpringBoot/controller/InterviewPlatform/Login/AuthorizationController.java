@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.controller.InterviewPlatform;
+package com.hoc.backend.SpringBoot.controller.InterviewPlatform.Login;
 // verify token the owner of this token : what this user can do, role
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;

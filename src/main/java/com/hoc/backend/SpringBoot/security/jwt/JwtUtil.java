@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.security;
+package com.hoc.backend.SpringBoot.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -72,7 +72,6 @@ public class JwtUtil {
         return validateAccessToken(token).get("role", String.class);
     }
 }
-
 
 //
 //--> Tiếp tục endpoint gọi để refresh token -> ( đặt logic kểm tra ở đâu ) -> kiểm tra

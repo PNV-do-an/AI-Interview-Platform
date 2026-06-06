@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.security;
+package com.hoc.backend.SpringBoot.security.jwt;
 // l.............
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ public class JwtSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/indexLogin.html", "/favicon.ico").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/api/auth/login","api/test").permitAll() // những endppint được cho phép
+                        .requestMatchers("/api/auth/login","/api/test","api/register").permitAll() // những endppint được cho phép
                         .anyRequest().authenticated() // bất kỳ request nào cũng phải được xác minh bằng token ( đã đăng nhập )
                 )
 

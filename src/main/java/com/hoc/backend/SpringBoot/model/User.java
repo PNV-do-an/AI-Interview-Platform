@@ -4,18 +4,18 @@ import java.time.LocalDateTime;
 
 public class User {
 
+    private Long id;
     private String nameAccount;
     private String account;
     private String passWord;
     private String userName;
     private String role;
-
     private int counterFail = 0;
-
     private boolean locked;
-
     private LocalDateTime lockedUntil;
+    private Boolean Active = false;
 
+    public User () {}
     public User(String account, String passWord, String role) {
         this.account = account;
         this.passWord = passWord;
@@ -28,6 +28,10 @@ public class User {
         this.userName = userName;
         this.role = role;
     }
+
+    public void setId(Long id) {this.id = id;}
+
+    public Long getId() {return id;}
 
     public String getUserName() {
         return userName;

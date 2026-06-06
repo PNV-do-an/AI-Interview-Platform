@@ -1,10 +1,11 @@
 package com.hoc.backend.SpringBoot.dto;
 
+import java.time.LocalDateTime;
+
 public class LoginResponse {
 
-    private String accessToken;
-    private String refreshToken;
-//    private String account;
+    private final String accessToken;
+    private final String refreshToken;
 
     public LoginResponse(String accessToken,String refreshToken)
     {

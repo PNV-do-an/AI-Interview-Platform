@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.controller.InterviewPlatform;
+package com.hoc.backend.SpringBoot.controller.InterviewPlatform.Login;
 
 import com.hoc.backend.SpringBoot.dto.LoginResponse;
 import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.hoc.backend.SpringBoot.dto.RefreshTokenRequest;
-
 
 @RestController
 @RequestMapping("/api/")
@@ -18,7 +17,6 @@ public class RefreshTokenController {
     }
     @PostMapping("/refresh")
     public LoginResponse refreshAccessToken (@RequestBody RefreshTokenRequest refreshToken ) {
-        return loginService.resfreshAccesToken(refreshToken.getRefreshToken());
+        return loginService.refreshAccessToken(refreshToken.getRefreshToken());
     }
 }
-

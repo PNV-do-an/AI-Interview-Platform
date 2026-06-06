@@ -1,11 +1,9 @@
-package com.hoc.backend.SpringBoot.controller.InterviewPlatform;
+package com.hoc.backend.SpringBoot.controller.InterviewPlatform.Login;
 
 import com.hoc.backend.SpringBoot.dto.LoginRequest;
 import com.hoc.backend.SpringBoot.dto.LoginResponse;
 import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,7 +25,6 @@ public class LoginController {
     }
 
 }
-
 
 
 
