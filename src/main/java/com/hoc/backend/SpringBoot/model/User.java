@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class User {
 
-    private Long id;
+    private Long id = 0L;
     private String nameAccount;
     private String account;
     private String passWord;
@@ -13,10 +13,11 @@ public class User {
     private int counterFail = 0;
     private boolean locked;
     private LocalDateTime lockedUntil;
-    private Boolean Active = false;
+    private Boolean Active = false; // trạng thái xác nhận của user
 
     public User () {}
-    public User(String account, String passWord, String role) {
+    public User(Long id, String account, String passWord, String role) {
+        this.id = id;
         this.account = account;
         this.passWord = passWord;
         this.role = role;
@@ -72,4 +73,7 @@ public class User {
     public void setLockedUntil(LocalDateTime lockedUntil) {
         this.lockedUntil = lockedUntil;
     }
+
+
+
 }

@@ -13,7 +13,13 @@
 
     <p id="role"></p>
 
+    <button onclick="logout()">Logout</button>
+
 </body>
+
+<script src="/js/apiClients.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/profile.js"></script>
 
 <script>
     async function provideInformation() {
@@ -35,6 +41,12 @@
 
         }
     }
-    provideInformation()
+    provideInformation();
+
+    function logout() {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/indexLogin.html";
+    }
 </script>
 </html>

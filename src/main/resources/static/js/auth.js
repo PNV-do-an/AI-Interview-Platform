@@ -1,69 +1,69 @@
 async function refreshAccessToken() {
 
     const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+        redirectToLogin();
+        return null;
+    }
 
-    const response = fetch("/api/refresh", {
-        method : "POST",
+    try {
+        const response = await fetch("/api/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken: refreshToken })
+        });
 
-        headers :  {
-            "Content-Type" : "application/json"
-        },
+        if (response.status === 401) {
+            redirectToLogin();
+            return null;
+        }
 
-        body: JSON.stringify({
-            refreshToken: refreshToken
-        })
-    })
-
-        // const data = await response.json(); // <- tại sao như này mà ko phải
-        .then(res => {
-            if(res.status === 401) { //
-                document.getElementById("result").innerText = "Refresh Token is expired" // ví dụ lỗi 401 -> refreshToken : hết hạn đăng nhập lại
-                return login();
-            }
-        })
-
-        .then( res => res.json())
-
-        .then(data => {
-
-            localStorage.setItem("accessToken", data.accessToken);
-        })
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.accessToken);
+        return data.accessToken;
+    } catch (error) {
+        redirectToLogin();
+        return null;
+    }
 }
 
-function login() {
+function redirectToLogin() {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.setItem("redirectAfterLogin", window.location.pathname);
+    window.location.href = "/indexLogin.html";
+}
+
+async function login() {
     const account = document.getElementById("account").value;
     const password = document.getElementById("password").value;
+    const errorEl = document.getElementById("error");
 
-    fetch("/api/auth/login", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-            account: account,
-            password: password
-        })
-
-    })
-
-        .then(res => res.json())
-        .then(data => {
-
-            const accessToken = data.accessToken;
-            const refreshToken = data.refreshToken;
-            // const name = data.
-
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
-
-            document.getElementById("accessToken").innerText = accessToken;
-            document.getElementById("refreshToken").innerText = refreshToken;
-
+    try {
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ account: account, password: password })
         });
-    window.location.href = localStorage.getItem("redirectAfterLogin") // after login if before user use another page like profile, cart, ...
-    // when user's refeshToken is epxired so user have to login again and item "redirectAfterLogin" will call back page before
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            errorEl.innerText = errorData.message || "Login failed";
+            return;
+        }
+
+        const data = await response.json();
+
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+
+        document.getElementById("accessToken").innerText = data.accessToken;
+        document.getElementById("refreshToken").innerText = data.refreshToken;
+
+        const redirectUrl = localStorage.getItem("redirectAfterLogin");
+        localStorage.removeItem("redirectAfterLogin");
+        window.location.href = redirectUrl || "/indexLogin.html";
+    } catch (error) {
+        errorEl.innerText = "Error: " + error.message;
+    }
 }

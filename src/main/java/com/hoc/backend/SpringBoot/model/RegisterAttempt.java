@@ -39,7 +39,7 @@ public class RegisterAttempt {
     }
 
     public RegisterAttempt (Long idUser, String address, int counterFail, LocalDateTime lockUntil) {
-            this.idUser = null;
+            this.idUser = idUser;
             this.address = address;
             this.counterFail = counterFail;
             this.lockUntil = lockUntil;

@@ -1,7 +1,5 @@
 package com.hoc.backend.SpringBoot.repository;
 
-import com.hoc.backend.SpringBoot.exception.InvaildAccountLockedException;
-import com.hoc.backend.SpringBoot.exception.InvalidAccountException;
 import com.hoc.backend.SpringBoot.model.RegisterAttempt;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +17,7 @@ public class FakeRegisterAttempt implements RegisterAttemptRepository{
                 return temp;
             }
         }
-         throw new InvalidAccountException("Can't find that idUser");
+        return null;
     }
 
     @Override
@@ -29,11 +27,15 @@ public class FakeRegisterAttempt implements RegisterAttemptRepository{
                     return true;
                 }
             }
-            throw new InvalidAccountException("Can't find that idAttempt");
+            return false;
     }
 
     @Override
     public Boolean addRegisterAttempt(RegisterAttempt registerAttempt) {
         return registerAttemptArrayList.add(registerAttempt);
     }
+
+
+
+
 }

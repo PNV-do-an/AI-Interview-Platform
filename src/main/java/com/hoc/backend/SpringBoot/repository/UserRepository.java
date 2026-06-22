@@ -9,4 +9,6 @@ public interface UserRepository {
     public Boolean checkExistUser (String account);
 
     public Boolean addUser (User user);
+
+    public Long generateIdUser();
 }

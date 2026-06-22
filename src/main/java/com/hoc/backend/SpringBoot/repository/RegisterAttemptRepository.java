@@ -9,4 +9,5 @@ public interface RegisterAttemptRepository {
     public Boolean checkRegisterAttempt(String ipClient);
 
     public Boolean addRegisterAttempt (RegisterAttempt registerAttempt);
+
 }

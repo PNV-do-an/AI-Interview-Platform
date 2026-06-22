@@ -1,14 +1,12 @@
 async function callApi(url, options = {}) {
 
+    let accessToken = localStorage.getItem("accessToken");
+
     const response = await fetch(url, {
-
         ...options,
-
         headers: {
             ...options.headers,
-            "Authorization":
-                "Bearer " +
-                localStorage.getItem("accessToken")
+            "Authorization": "Bearer " + accessToken
         }
     });
 
@@ -19,45 +17,19 @@ async function callApi(url, options = {}) {
             window.location.pathname
         );
 
-        await refreshAccessToken();
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+            return response;
+        }
 
-        return callApi(url, options);
+        return fetch(url, {
+            ...options,
+            headers: {
+                ...options.headers,
+                "Authorization": "Bearer " + newToken
+            }
+        });
     }
 
     return response;
 }
-// function callApi() {
-//     // gửi để token mỗi lần để có thể xác minh ( mỗi requset với mỗi chức năng )
-//     fetch("/api/test", {
-//
-//         method: "GET",
-//
-//         headers: {
-//             "Authorization":
-//                 "Bearer " + localStorage.getItem("accessToken")
-//         }
-//
-//     })
-//         .then( async res => {
-//
-//             if (res.status === 401) {
-//
-//                 localStorage.setItem("redirectAfterLogin",window.location.pathname)
-//
-//                 await refreshAccessToken(); // if refreshToken expired  -> call to refreshAccessToken -> it will call to login -> user login
-//                                             // -> after that user will back to home page not feature page how to when user completed login
-//                                             // will back this feature. => set Item : ("redirectAfterLogin",window.location.pathname)
-//
-//                 return callApi();
-//             }
-//
-//             return res.text();
-//
-//         })
-//         .then(data => {
-//
-//             document.getElementById("result").innerText = data;
-//
-//         });
-//
-// }

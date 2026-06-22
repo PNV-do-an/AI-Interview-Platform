@@ -2,12 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
 </head>
 <body>
+    <h2>Register</h2>
+    <input id="account" placeholder="Account"><br><br>
+    <input id="password" type="password" placeholder="Password"><br><br>
+    <input id="confirmPassword" type="password" placeholder="Confirm Password"><br><br>
+    <button onclick="register()">Register</button>
+    <p id="message"></p>
+    <p>Already have an account? <a href="/indexLogin.html">Login here</a></p>
 
+    <script>
+        async function register() {
+            const account = document.getElementById("account").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const messageEl = document.getElementById("message");
+
+            if (password !== confirmPassword) {
+                messageEl.innerText = "Passwords do not match";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ account, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageEl.innerText = data.message + " - Redirecting to login...";
+                    setTimeout(() => { window.location.href = "/indexLogin.html"; }, 1500);
+                } else {
+                    messageEl.innerText = data.message || "Registration failed";
+                }
+            } catch (error) {
+                messageEl.innerText = "Error: " + error.message;
+            }
+        }
+    </script>
 </body>
 </html>
