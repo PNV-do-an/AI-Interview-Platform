@@ -5,22 +5,17 @@ import lombok.Setter;
 
 public class ProfileResponse {
 
-    @Setter
-    @Getter
-    private String account;
+    @Setter @Getter private String email;
+    @Setter @Getter private String fullName;
+    @Setter @Getter private String phone;
+    @Setter @Getter private int counterFail;
+    @Setter @Getter private String role;
 
-    @Setter
-    @Getter
-    private int counterFail;
-
-    @Setter
-    @Getter
-    private String role;
-
-    public ProfileResponse (String account, int counterFail, String role) {
-        this.account = account;
+    public ProfileResponse(String email, String fullName, String phone, int counterFail, String role) {
+        this.email = email;
+        this.fullName = fullName;
+        this.phone = phone;
         this.counterFail = counterFail;
-        this.role =role;
+        this.role = role;
     }
-
 }

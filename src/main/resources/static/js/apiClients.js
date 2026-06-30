@@ -1,6 +1,14 @@
 async function callApi(url, options = {}) {
 
-    let accessToken = localStorage.getItem("accessToken");
+    let accessToken = TOKEN_STORE.getAccessToken();
+
+    if (!accessToken) {
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+            return new Response(null, { status: 401 });
+        }
+        accessToken = newToken;
+    }
 
     const response = await fetch(url, {
         ...options,
@@ -11,11 +19,7 @@ async function callApi(url, options = {}) {
     });
 
     if (response.status === 401) {
-
-        localStorage.setItem(
-            "redirectAfterLogin",
-            window.location.pathname
-        );
+        localStorage.setItem("redirectAfterLogin", window.location.pathname);
 
         const newToken = await refreshAccessToken();
         if (!newToken) {

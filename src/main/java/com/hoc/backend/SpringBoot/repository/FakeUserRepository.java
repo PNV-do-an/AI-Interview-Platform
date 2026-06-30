@@ -4,37 +4,27 @@ import com.hoc.backend.SpringBoot.exception.InvalidAccountException;
 import com.hoc.backend.SpringBoot.model.User;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 @Repository
 public class FakeUserRepository implements UserRepository {
 
     public ArrayList<User> userArrayList = new ArrayList<>();
-//    public ArrayList<RegisterAttempt> registerAttemptArrayList = new ArrayList<>();
-
-//    public FakeUserRepository() {
-//        userArrayList.add(
-////                new User(, "lenamle799@gmail.com", "123456", "admin")
-//        );
-//    }
 
     @Override
-    public User findUser(String account) {
+    public User findUserByEmail(String email) {
         for (User user : userArrayList) {
-            if (user.getAccount().equals(account)) {
+            if (user.getEmail().equals(email)) {
                 return user;
             }
         }
-
-        System.out.println("Throw exection");
-        throw new InvalidAccountException("The account does't exist");
+        throw new InvalidAccountException("Email không tồn tại");
     }
 
     @Override
-    public  Boolean checkExistUser (String account) {
+    public  Boolean checkExistUser (String email) {
         for (User user : userArrayList) {
-            if (user.getAccount().equals(account)) {
+            if (user.getEmail().equals(email)) {
                 return true;
             }
         }
@@ -47,16 +37,11 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public Long generateIdUser() { // this funtion for mock
+    public Long generateIdUser() {
         if (userArrayList.isEmpty()) {
             return 1L;
         }
-        Long lastestId = userArrayList.get(userArrayList.size()-1).getId(); // get lastest User -> get Id
-        return ++lastestId ;
-
-
+        Long lastestId = userArrayList.get(userArrayList.size()-1).getId();
+        return ++lastestId;
     }
-
-//    Override
-//    public
 }

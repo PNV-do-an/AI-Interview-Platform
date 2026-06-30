@@ -12,10 +12,13 @@ public class ProfileService {
 
     public ProfileService (UserRepository userRepository) {this.userRepository = userRepository;}
 
-    public ProfileResponse getInfor(String account) {
+    public ProfileResponse getInfor(String email) {
 
-        User user = userRepository.findUser(account);
+        User user = userRepository.findUserByEmail(email);
 
-        return new ProfileResponse(user.getAccount(),user.getCounterFail(),user.getRole());
+        return new ProfileResponse(
+                user.getEmail(), user.getFullName(), user.getPhone(),
+                user.getCounterFail(), user.getRole()
+        );
     }
 }

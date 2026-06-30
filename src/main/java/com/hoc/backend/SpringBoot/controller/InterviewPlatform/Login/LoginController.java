@@ -3,7 +3,11 @@ package com.hoc.backend.SpringBoot.controller.InterviewPlatform.Login;
 import com.hoc.backend.SpringBoot.dto.LoginRequest;
 import com.hoc.backend.SpringBoot.dto.LoginResponse;
 import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
-import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,28 +20,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) { // create object of Login Request (Jackson) (
-        return  loginService.verify(
-                request.getAccount(),
-                request.getPassword()
+    public LoginResponse login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        return loginService.verify(
+                request.getEmail(),
+                request.getPassword(),
+                httpRequest
         );
-
     }
-
 }
-
-
-
-
-
-//    -- demo
-//    private LoginService loginService;
-//
-//    public Lo ginController(LoginService loginService) {
-//        this.loginService = loginService;
-//    };
-//
-//    @GetMapping("service/login")
-//    public String login(@RequestParam String account, @RequestParam String passWord) {
-//        return loginService.verify(account,passWord);
-//    }
