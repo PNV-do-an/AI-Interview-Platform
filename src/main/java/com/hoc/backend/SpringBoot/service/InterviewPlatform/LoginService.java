@@ -33,7 +33,7 @@ public class LoginService  {
     }
 
     public final LoginResponse verify(String email, String passWord, HttpServletRequest request) {
-        String ipClient = getClientIP(request);
+        String ipClient = getClientIP(request); // ??? tại sao là ip user ko cấm vào email
 
         User user; // ???
         try {
@@ -45,7 +45,7 @@ public class LoginService  {
 
         // Check if account is active
         if (!user.getActive()) {
-            throw new InvalidAccountException("Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.");
+            throw new InvalidAccountException("Tài khoản chưa được kích hoạt.Vui lòng kiểm tra email.");
         }
 
         // Check if account is locked
@@ -103,7 +103,7 @@ public class LoginService  {
         return new LoginResponse(accessToken, refreshToken, user.getRole());
     }
 
-    public LoginResponse refreshAccessToken(String refreshToken) {
+    public LoginResponse refreshAccessToken(String refreshToken) { // this function call to generate new access token when refresh token is  
         Claims claims = JwtUtil.validateRefreshToken(refreshToken);
 
         String email = claims.getSubject();
