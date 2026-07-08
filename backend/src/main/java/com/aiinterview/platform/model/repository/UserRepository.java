@@ -1,13 +1,14 @@
-package com.aiinterview.platform.model.repository;
+package com.hoc.backend.SpringBoot.repository;
 
-import com.aiinterview.platform.model.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.hoc.backend.SpringBoot.model.User;
 
-import java.util.Optional;
+public interface UserRepository {
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
-    boolean existsByEmail(String email);
+    public User findUserByEmail(String email);
+
+    public Boolean checkExistUser(String email);
+
+    public Boolean addUser(User user);
+
+    public Long generateIdUser();
 }
