@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.dto;
+package com.aiinterview.platform.model.dto.response;
 
 public class LoginResponse {
 

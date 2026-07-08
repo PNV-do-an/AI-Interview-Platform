@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.security.utils;
+package com.aiinterview.platform.security.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 

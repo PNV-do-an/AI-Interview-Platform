@@ -1,6 +1,6 @@
-package com.hoc.backend.SpringBoot.repository;
+package com.aiinterview.platform.model.repository;
 
-import com.hoc.backend.SpringBoot.model.LoginAttempt;
+import com.aiinterview.platform.model.entity.LoginAttempt;
 import java.util.List;
 
 public interface LoginAttemptRepository {

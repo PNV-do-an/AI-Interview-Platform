@@ -1,8 +1,11 @@
-package com.hoc.backend.SpringBoot.controller.InterviewPlatform.Login;
+package com.aiinterview.platform.controller.Login;
 
-import com.hoc.backend.SpringBoot.dto.LoginRequest;
-import com.hoc.backend.SpringBoot.dto.LoginResponse;
-import com.hoc.backend.SpringBoot.service.InterviewPlatform.LoginService;
+package com.aiinterview.platform.controller.Login;
+
+import com.aiinterview.platform.model.dto.request.LoginRequest;
+import com.aiinterview.platform.model.dto.response.AuthResponse;
+import com.aiinterview.platform.model.dto.response.LoginResponse;
+import com.aiinterview.platform.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,18 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class LoginController {
 
-    private final LoginService loginService;
+    private final AuthService authService;
 
-    public LoginController(LoginService loginService) {
-        this.loginService = loginService;
+    public LoginController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
-        return loginService.verify(
-                request.getEmail(),
-                request.getPassword(),
-                httpRequest
+        AuthResponse response = authService.login(request);
+        return new LoginResponse(
+                response.getAccessToken(),
+                response.getRefreshToken(),
+                response.getUser().getRole()
         );
     }
 }

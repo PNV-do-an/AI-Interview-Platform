@@ -1,7 +1,7 @@
-package com.hoc.backend.SpringBoot.controller.InterviewPlatform.Register;
+package com.aiinterview.platform.controller.Register;
 
-import com.hoc.backend.SpringBoot.model.User;
-import com.hoc.backend.SpringBoot.repository.FakeUserRepository;
+import com.aiinterview.platform.model.entity.User;
+import com.aiinterview.platform.model.repository.FakeUserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

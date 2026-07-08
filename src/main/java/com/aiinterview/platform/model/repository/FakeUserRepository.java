@@ -1,7 +1,7 @@
-package com.hoc.backend.SpringBoot.repository;
+package com.aiinterview.platform.model.repository;
 
-import com.hoc.backend.SpringBoot.exception.InvalidAccountException;
-import com.hoc.backend.SpringBoot.model.User;
+import com.aiinterview.platform.common.exception.InvalidAccountException;
+import com.aiinterview.platform.model.entity.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

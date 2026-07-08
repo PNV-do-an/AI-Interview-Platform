@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.security.jwt;
+package com.aiinterview.platform.security.jwt;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
