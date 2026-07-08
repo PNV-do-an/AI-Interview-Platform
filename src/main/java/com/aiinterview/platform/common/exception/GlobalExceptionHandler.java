@@ -1,64 +1,50 @@
-package com.aiinterview.platform.common.exception;
+package com.hoc.backend.SpringBoot.exception;
 
-import com.aiinterview.platform.common.response.ApiResponse;
-import org.springframework.http.HttpStatus;
+import com.hoc.backend.SpringBoot.model.ErrorModel;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(ex.getMessage()));
+    @ExceptionHandler(InvalidPassWordException.class)
+    public ResponseEntity<?> handleInvalidPassWorld(InvalidPassWordException ex, HttpServletRequest request) {
+        ErrorModel error =  new ErrorModel(401,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(), // base information about bug
+                new HashMap<>()); // if any information about bug
+
+        return ResponseEntity .status(401) .body(error);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadRequest(BadRequestException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ex.getMessage()));
+    @ExceptionHandler(InvalidAccountException.class)
+    public ResponseEntity<?> handleInvalidAccount(InvalidAccountException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(401,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>());
+        return ResponseEntity.status(401).body(error);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error("Invalid email or password"));
+    @ExceptionHandler(InvaildAccountLockedException.class)
+    public ResponseEntity<?> handleInvalidAccountLocked(InvaildAccountLockedException ex,HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(423,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>(
+                        Map.of(
+                                "lockedUntil", ex.getlockUntil()
+                        )
+                ));
+        return ResponseEntity.status(423).body(error);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error("Access denied"));
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.<Map<String, String>>builder()
-                        .success(false)
-                        .message("Validation failed")
-                        .data(errors)
-                        .build());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("An unexpected error occurred"));
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleOther(RuntimeException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(500,"Internal serve error", request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>(
+                ));
+        return ResponseEntity.status(500).body(error);
     }
 }

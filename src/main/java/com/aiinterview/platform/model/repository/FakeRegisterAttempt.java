@@ -1,0 +1,41 @@
+package com.hoc.backend.SpringBoot.repository;
+
+import com.hoc.backend.SpringBoot.model.RegisterAttempt;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+
+@Repository
+public class FakeRegisterAttempt implements RegisterAttemptRepository{
+
+    private ArrayList<RegisterAttempt> registerAttemptArrayList = new ArrayList<>();
+
+    @Override
+    public RegisterAttempt findRegisterAttempt(String ipClient) {
+        for (RegisterAttempt temp : registerAttemptArrayList) {
+            if (temp.getAddress().equals(ipClient)) {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean checkRegisterAttempt(String ipClient) {
+            for (RegisterAttempt temp : registerAttemptArrayList) {
+                if (temp.getAddress().equals(ipClient)) {
+                    return true;
+                }
+            }
+            return false;
+    }
+
+    @Override
+    public Boolean addRegisterAttempt(RegisterAttempt registerAttempt) {
+        return registerAttemptArrayList.add(registerAttempt);
+    }
+
+
+
+
+}
