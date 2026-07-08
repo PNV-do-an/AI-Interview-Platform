@@ -1,7 +1,8 @@
-package com.hoc.backend.SpringBoot.controller.InterviewPlatform.User;
+package com.aiinterview.platform.controller.User;
 
-import com.hoc.backend.SpringBoot.dto.ProfileResponse;
-import com.hoc.backend.SpringBoot.service.InterviewPlatform.User.ProfileService;
+import com.aiinterview.platform.model.dto.response.ProfileResponse;
+import com.aiinterview.platform.model.entity.User;
+import com.aiinterview.platform.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,12 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/user")
 public class ProfileController {
 
-    private ProfileService profileService;
+    private final UserService userService;
 
-    public ProfileController(ProfileService profileService) {this.profileService = profileService;}
+    public ProfileController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/profile")
-    public ProfileResponse profile (Authentication authentication) {
-        return profileService.getInfor(authentication.getName());
+    public ProfileResponse profile(Authentication authentication) {
+        User user = userService.findByEmail(authentication.getName());
+        return new ProfileResponse(
+                user.getEmail(),
+                user.getFullName(),
+                user.getPhone(),
+                user.getLoginAttempts(),
+                user.getRole().name()
+        );
     }
 }

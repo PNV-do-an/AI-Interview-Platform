@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.model;
+package com.aiinterview.platform.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;

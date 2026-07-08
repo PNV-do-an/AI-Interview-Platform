@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.security.jwt;
+package com.aiinterview.platform.security.jwt;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.exception;
+package com.aiinterview.platform.common.exception;
 
 import org.springframework.cglib.core.Local;
 

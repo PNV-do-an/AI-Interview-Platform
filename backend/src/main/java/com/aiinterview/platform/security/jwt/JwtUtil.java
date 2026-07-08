@@ -1,4 +1,4 @@
-package com.hoc.backend.SpringBoot.security.jwt;
+package com.aiinterview.platform.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

@@ -1,6 +1,6 @@
-package com.hoc.backend.SpringBoot.exception;
+package com.aiinterview.platform.common.exception;
 
-import com.hoc.backend.SpringBoot.model.ErrorModel;
+import com.aiinterview.platform.model.entity.ErrorModel;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
