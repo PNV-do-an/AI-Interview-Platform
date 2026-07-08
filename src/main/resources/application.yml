@@ -13,6 +13,9 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+
 server:
   port: 8080
 
@@ -24,3 +27,4 @@ app:
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
