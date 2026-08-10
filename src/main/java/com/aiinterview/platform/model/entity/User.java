@@ -51,6 +51,12 @@ public class User implements UserDetails {
     private String verificationToken;
     private LocalDateTime verificationTokenExpiry;
 
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
+
+    @Builder.Default
+    private int tokenVersion = 0;
+
     @Builder.Default
     private int loginAttempts = 0;
 

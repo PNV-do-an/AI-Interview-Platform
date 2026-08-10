@@ -14,8 +14,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidPassWordException.class)
-    public ResponseEntity<?> handleInvalidPassWorld(InvalidPassWordException ex, HttpServletRequest request) {
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<?> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
         ErrorModel error =  new ErrorModel(401,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(), // base information about bug
                 new HashMap<>()); // if any information about bug
 
@@ -29,12 +29,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401).body(error);
     }
 
-    @ExceptionHandler(InvaildAccountLockedException.class)
-    public ResponseEntity<?> handleInvalidAccountLocked(InvaildAccountLockedException ex,HttpServletRequest request) {
+    @ExceptionHandler(InvalidAccountLockedException.class)
+    public ResponseEntity<?> handleInvalidAccountLocked(InvalidAccountLockedException ex,HttpServletRequest request) {
         ErrorModel error = new ErrorModel(423,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
                 new HashMap<>(
                         Map.of(
-                                "lockedUntil", ex.getlockUntil()
+                                "lockedUntil", ex.getLockUntil()
                         )
                 ));
         return ResponseEntity.status(423).body(error);

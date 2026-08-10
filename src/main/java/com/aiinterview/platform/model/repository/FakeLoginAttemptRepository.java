@@ -19,12 +19,21 @@ public class FakeLoginAttemptRepository implements LoginAttemptRepository {
     }
 
     @Override
-    public List<LoginAttempt> getFailedAttempts(String email, LocalDateTime since) { // !!!
+    public List<LoginAttempt> getFailedAttempts(String email, LocalDateTime since) {
         return attempts.stream()
                 .filter(a -> a.getEmail().equals(email))
                 .filter(a -> !a.isSuccess())
                 .filter(a -> a.getTimestamp().isAfter(since))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public long countFailedByIp(String ip, LocalDateTime since) {
+        return attempts.stream()
+                .filter(a -> a.getIpAddress().equals(ip))
+                .filter(a -> !a.isSuccess())
+                .filter(a -> a.getTimestamp().isAfter(since))
+                .count();
     }
 
     @Override

@@ -1,0 +1,71 @@
+### Đăng ký tài khoản mới
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Test User",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@1234",
+  "phone": "0123456789"
+}
+
+### Xác thực email (copy token từ console log: ">>> EMAIL VERIFICATION" hoặc "Email sent to")
+# GET http://localhost:8080/api/v1/auth/verify?token=UUID_TOKEN
+
+### Gửi lại email xác thực
+POST http://localhost:8080/api/v1/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "huyooo.com@gmail.com "
+}
+
+### Đăng nhập -> tự động lưu accessToken + refreshToken
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test@1234"
+}
+
+> {%
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+### Lấy thông tin profile (dùng accessToken từ login)
+GET http://localhost:8080/api/user/profile
+Authorization: Bearer {{accessToken}}
+
+### Refresh token (dùng refreshToken từ login)
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.data.accessToken);
+%}
+
+### Quên mật khẩu
+POST http://localhost:8080/api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)
+# POST http://localhost:8080/api/v1/auth/reset-password
+# Content-Type: application/json
+#
+# {
+#   "token": "UUID_TOKEN",
+#   "password": "NewPass@456"
+# }
+
+### Test endpoint (không cần auth)
+GET http://localhost:8080/api/test
