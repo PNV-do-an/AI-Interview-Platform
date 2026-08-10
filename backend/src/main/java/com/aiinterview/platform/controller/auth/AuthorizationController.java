@@ -1,4 +1,4 @@
-package com.aiinterview
+package com.aiinterview.platform.controller.auth;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;

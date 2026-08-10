@@ -1,4 +1,4 @@
-package com.aiinterview.platform.controller.User;
+package com.aiinterview.platform.controller.user;
 
 import com.aiinterview.platform.model.dto.response.ProfileResponse;
 import com.aiinterview.platform.model.entity.User;

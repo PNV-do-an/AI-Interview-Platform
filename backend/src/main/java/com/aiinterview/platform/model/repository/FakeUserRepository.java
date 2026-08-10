@@ -1,34 +1,63 @@
 package com.aiinterview.platform.model.repository;
 
-import com.aiinterview.platform.common.exception.InvalidAccountException;
 import com.aiinterview.platform.model.entity.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Repository
 public class FakeUserRepository implements UserRepository {
 
-    public ArrayList<User> userArrayList = new ArrayList<>();
+    private final ArrayList<User> userArrayList = new ArrayList<>();
 
     @Override
-    public User findUserByEmail(String email) {
-        for (User user : userArrayList) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
-        }
-        throw new InvalidAccountException("Email không tồn tại");
+    public Optional<User> findByEmail(String email) {
+        return userArrayList.stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findFirst();
     }
 
     @Override
-    public  Boolean checkExistUser (String email) {
-        for (User user : userArrayList) {
-            if (user.getEmail().equals(email)) {
-                return true;
-            }
+    public boolean existsByEmail(String email) {
+        return userArrayList.stream()
+                .anyMatch(user -> user.getEmail().equals(email));
+    }
+
+    @Override
+    public Optional<User> findByVerificationToken(String verificationToken) { //
+        return userArrayList.stream()
+                .filter(user -> verificationToken.equals(user.getVerificationToken()))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<User> findByResetToken(String resetToken) {
+        return userArrayList.stream()
+                .filter(user -> resetToken != null && resetToken.equals(user.getResetToken()))
+                .findFirst();
+    }
+
+    @Override
+    public User save(User user) {
+        if (user.getId() == null) {
+            user.setId(generateIdUser());
         }
-        return false;
+        Optional<User> existing = findByEmail(user.getEmail());
+        if (existing.isPresent()) {
+            int index = userArrayList.indexOf(existing.get());
+            userArrayList.set(index, user);
+        } else {
+            userArrayList.add(user);
+        }
+        return user;
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return userArrayList.stream()
+                .filter(user -> id.equals(user.getId()))
+                .findFirst();
     }
 
     @Override
@@ -41,7 +70,7 @@ public class FakeUserRepository implements UserRepository {
         if (userArrayList.isEmpty()) {
             return 1L;
         }
-        Long lastestId = userArrayList.get(userArrayList.size()-1).getId();
-        return ++lastestId;
+        Long latestId = userArrayList.get(userArrayList.size() - 1).getId();
+        return latestId + 1;
     }
 }

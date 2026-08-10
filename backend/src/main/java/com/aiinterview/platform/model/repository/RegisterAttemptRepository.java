@@ -4,10 +4,14 @@ import com.aiinterview.platform.model.entity.RegisterAttempt;
 
 public interface RegisterAttemptRepository {
 
-    public RegisterAttempt findRegisterAttempt (String ipClient);
+    RegisterAttempt findRegisterAttempt(String ipClient);
 
-    public Boolean checkRegisterAttempt(String ipClient);
+    RegisterAttempt findRegisterAttemptByEmail(String email);
 
-    public Boolean addRegisterAttempt (RegisterAttempt registerAttempt);
+    Boolean checkRegisterAttempt(String ipClient);
+
+    Boolean addRegisterAttempt(RegisterAttempt registerAttempt);
+
+    long countFailedByIp(String ip, java.time.LocalDateTime since);
 
 }

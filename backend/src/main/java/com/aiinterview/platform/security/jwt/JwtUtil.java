@@ -33,7 +33,7 @@ public class JwtUtil {
         return accessToken;
     }
 
-    public static String genarateRefreshToken(String account, String role) {
+    public static String generateRefreshToken(String account, String role) {
 
         String refreshToken = Jwts.builder()
                 .setSubject(account)
