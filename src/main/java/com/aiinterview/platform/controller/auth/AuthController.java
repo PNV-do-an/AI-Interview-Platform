@@ -33,7 +33,7 @@ public class AuthController {
                                                                HttpServletRequest httpRequest) {
         RegisterResponse response = registerInterface.register(
                 request.getEmail(), request.getPassword(),
-                request.getFullName(), request.getPhone(),
+                request.getFullName(),request.getPhone(),
                 httpRequest
         );
         return ResponseEntity.status(HttpStatus.CREATED)

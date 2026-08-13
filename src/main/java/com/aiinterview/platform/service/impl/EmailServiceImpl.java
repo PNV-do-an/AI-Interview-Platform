@@ -27,6 +27,7 @@ public class EmailServiceImpl implements EmailService {
         );
     }
 
+
     @Override
     public void sendResendVerificationEmail(String to, String fullName, String token) {
         String verifyLink = baseUrl + "/api/v1/auth/verify?token=" + token;

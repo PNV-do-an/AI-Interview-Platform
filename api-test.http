@@ -3,9 +3,9 @@ POST http://localhost:8080/api/v1/auth/register
 Content-Type: application/json
 
 {
-  "fullName": "Test User",
-  "email": "huyooo.com@gmail.com ",
-  "password": "Test@1234",
+  "fullName": "Test User2",
+  "email": "huyooocom@gmail.com",
+  "password": "Test@12345",
   "phone": "0123456789"
 }
 
@@ -17,7 +17,7 @@ POST http://localhost:8080/api/v1/auth/resend-verification
 Content-Type: application/json
 
 {
-  "email": "huyooo.com@gmail.com "
+  "email": "huyooocom@gmail.com"
 }
 
 ### Đăng nhập -> tự động lưu accessToken + refreshToken
