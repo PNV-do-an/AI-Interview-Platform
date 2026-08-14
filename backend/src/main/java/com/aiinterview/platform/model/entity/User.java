@@ -32,6 +32,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String fullName;
 
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -39,12 +41,26 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     @Builder.Default
-    private boolean enabled = true;
+    private boolean enabled = false;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private String verificationToken;
+    private LocalDateTime verificationTokenExpiry;
+
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
+
+    @Builder.Default
+    private int tokenVersion = 0;
+
+    @Builder.Default
+    private int loginAttempts = 0;
+
+    private LocalDateTime lockUntil;
 
     @PrePersist
     protected void onCreate() {
@@ -57,7 +73,6 @@ public class User implements UserDetails {
         updatedAt = LocalDateTime.now();
     }
 
-    // --- UserDetails ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

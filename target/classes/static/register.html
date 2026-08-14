@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        .error { color: red; font-size: 14px; }
+        .success { color: green; font-size: 14px; }
+        .password-hint { font-size: 12px; color: #666; }
+        .password-valid { color: green; }
+        .password-invalid { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Register</h2>
+    <input id="email" placeholder="Email"><br><br>
+    <input id="fullName" placeholder="Full Name"><br><br>
+    <input id="phone" placeholder="Phone Number"><br><br>
+    <input id="password" type="password" placeholder="Password"><br>
+    <div class="password-hint" id="passwordHint">
+        <p id="charCheck" class="password-invalid">✗ At least 8 characters</p>
+        <p id="upperCheck" class="password-invalid">✗ At least 1 uppercase letter</p>
+        <p id="lowerCheck" class="password-invalid">✗ At least 1 lowercase letter</p>
+        <p id="digitCheck" class="password-invalid">✗ At least 1 number</p>
+        <p id="specialCheck" class="password-invalid">✗ At least 1 special character (@#$%^&+=!)</p>
+    </div>
+    <br>
+    <input id="confirmPassword" type="password" placeholder="Confirm Password"><br><br>
+    <button onclick="register()">Register</button>
+    <p id="message" class="error"></p>
+    <p>Already have an account? <a href="/indexLogin.html">Login here</a></p>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+
+        function validatePassword(password) {
+            return {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                digit: /\d/.test(password),
+                special: /[@#$%^&+=!]/.test(password)
+            };
+        }
+
+        function updatePasswordHint(password) {
+            const checks = validatePassword(password);
+            document.getElementById("charCheck").className = checks.length ? "password-valid" : "password-invalid";
+            document.getElementById("charCheck").innerText = (checks.length ? "✓" : "✗") + " At least 8 characters";
+            document.getElementById("upperCheck").className = checks.upper ? "password-valid" : "password-invalid";
+            document.getElementById("upperCheck").innerText = (checks.upper ? "✓" : "✗") + " At least 1 uppercase letter";
+            document.getElementById("lowerCheck").className = checks.lower ? "password-valid" : "password-invalid";
+            document.getElementById("lowerCheck").innerText = (checks.lower ? "✓" : "✗") + " At least 1 lowercase letter";
+            document.getElementById("digitCheck").className = checks.digit ? "password-valid" : "password-invalid";
+            document.getElementById("digitCheck").innerText = (checks.digit ? "✓" : "✗") + " At least 1 number";
+            document.getElementById("specialCheck").className = checks.special ? "password-valid" : "password-invalid";
+            document.getElementById("specialCheck").innerText = (checks.special ? "✓" : "✗") + " At least 1 special character (@#$%^&+=!)";
+        }
+
+        passwordInput.addEventListener("input", function() {
+            updatePasswordHint(this.value);
+        });
+
+        async function register() {
+            const email = document.getElementById("email").value;
+            const fullName = document.getElementById("fullName").value;
+            const phone = document.getElementById("phone").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const messageEl = document.getElementById("message");
+
+            if (!email || !fullName || !phone || !password) {
+                messageEl.innerText = "Vui lòng điền đầy đủ thông tin";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                messageEl.innerText = "Mật khẩu xác nhận không khớp";
+                return;
+            }
+
+            const checks = validatePassword(password);
+            if (!(checks.length && checks.upper && checks.lower && checks.digit && checks.special)) {
+                messageEl.innerText = "Mật khẩu không đủ mạnh";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password, fullName, phone })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageEl.className = "success";
+                    messageEl.innerText = data.message;
+                    setTimeout(() => { window.location.href = "/indexLogin.html"; }, 3000);
+                } else {
+                    messageEl.className = "error";
+                    messageEl.innerText = data.message || "Đăng ký thất bại";
+                }
+            } catch (error) {
+                messageEl.innerText = "Lỗi: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
