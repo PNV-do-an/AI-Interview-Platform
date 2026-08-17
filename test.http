@@ -1,0 +1,153 @@
+### ==================== Auth APIs ====================
+
+### Login - Get Authentication Token
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+
+> {% client.global.set("auth_token", response.body.data.token); %}
+
+###
+### Register User
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "fullName": "New User",
+  "role": "ROLE_USER"
+}
+
+###
+### Refresh Token
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+### ==================== Admin User APIs ====================
+
+### 1. Get All Users (Paginated with Filters)
+GET http://localhost:8080/api/v1/admin/users?page=0&size=20
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+### Get All Users with Search
+GET http://localhost:8080/api/v1/admin/users?page=0&size=20&search=user
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+### Get All Users with Status Filter
+GET http://localhost:8080/api/v1/admin/users?page=0&size=20&status=ACTIVE
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+### Get All Users with Role Filter
+GET http://localhost:8080/api/v1/admin/users?page=0&size=20&role=ROLE_USER
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+### Get User Detail
+GET http://localhost:8080/api/v1/admin/users/1
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+
+### ==================== User Management APIs ====================
+
+### Lock User
+PATCH http://localhost:8080/api/v1/admin/users/2/lock
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+### Unlock User
+PATCH http://localhost:8080/api/v1/admin/users/2/unlock
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+### Delete User
+DELETE http://localhost:8080/api/v1/admin/users/3
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+### Change User Role
+PATCH http://localhost:8080/api/v1/admin/users/2/role
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "role": "ROLE_INTERVIEWER"
+}
+
+###
+### Reset Password
+POST http://localhost:8080/api/v1/admin/users/2/reset-password
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+
+### ==================== Audit Log APIs ====================
+
+### Get Audit Logs (Paginated)
+GET http://localhost:8080/api/v1/admin/audit-logs?page=0&size=20
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+### Get Audit Logs - Next Page
+GET http://localhost:8080/api/v1/admin/audit-logs?page=1&size=20
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+
+### ==================== Error Test Cases ====================
+
+### Test: Get User Detail (Invalid ID)
+GET http://localhost:8080/api/v1/admin/users/99999
+Authorization: Bearer {{auth_token}}
+Accept: application/json
+
+###
+### Test: Lock Already Locked User
+PATCH http://localhost:8080/api/v1/admin/users/2/lock
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+### Test: Change Own Role (Should Fail)
+PATCH http://localhost:8080/api/v1/admin/users/1/role
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "role": "ROLE_USER"
+}
+
+###
+### Test: Delete Own Account (Should Fail)
+DELETE http://localhost:8080/api/v1/admin/users/1
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+### Test: Unauthorized Request (Missing Token)
+GET http://localhost:8080/api/v1/admin/users
+Accept: application/json
+
+###
