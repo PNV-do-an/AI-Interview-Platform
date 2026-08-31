@@ -102,7 +102,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         }
         String resetToken = UUID.randomUUID().toString();
         saveAuditLog(admin, targetUserId, "RESET_PASSWORD", "Gửi email reset mật khẩu: " + target.getEmail());
-        emailService.sendPasswordResetEmail(target.getEmail(), target.getFullName(), resetToken);
+        emailService.sendResetPasswordEmail(target.getEmail(), target.getFullName(), resetToken);
     }
 
     @Override

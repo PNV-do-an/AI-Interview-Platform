@@ -6,12 +6,27 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:noreply@aiinterview.com}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 server:
   port: 8080
@@ -21,6 +36,7 @@ app:
     secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
     expiration: 86400000       # 1 day in ms
     refresh-expiration: 604800000  # 7 days in ms
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}

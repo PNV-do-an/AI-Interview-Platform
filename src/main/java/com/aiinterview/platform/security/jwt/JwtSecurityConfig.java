@@ -1,5 +1,7 @@
 package com.aiinterview.platform.security.jwt;
 
+import com.aiinterview.platform.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,36 +20,34 @@ import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class JwtSecurityConfig {
+
+    private final UserService userService;
 
     @Value("${cors.allowed-origins:http://localhost:3000}")
     private String allowedOrigins;
 
     @Bean
-    public SecurityFilterChain filterChain(
-            HttpSecurity http
-    ) throws Exception {
-
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/indexLogin.html", "/favicon.ico").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/api/v1/auth/**", "/api/test").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .addFilterBefore(
                         new JwtFilter(),
                         UsernamePasswordAuthenticationFilter.class
                 )
-
                 .build();
     }
 
