@@ -60,7 +60,11 @@ public class AdminUserServiceImpl implements AdminUserService {
         target.setLocked(true);
         userRepository.save(target);
         saveAuditLog(admin, targetUserId, "LOCK_USER", "Khóa tài khoản: " + target.getEmail());
-        emailService.sendAccountLockedEmail(target.getEmail(), target.getFullName());
+        try {
+            emailService.sendAccountLockedEmail(target.getEmail(), target.getFullName());
+        } catch (Exception e) {
+            log.warn("Không thể gửi email khóa tài khoản tới {}: {}", target.getEmail(), e.getMessage());
+        }
         return UserDetailResponse.from(target);
     }
 
@@ -90,7 +94,11 @@ public class AdminUserServiceImpl implements AdminUserService {
         target.setDeletedAt(LocalDateTime.now());
         userRepository.save(target);
         saveAuditLog(admin, targetUserId, "DELETE_USER", "Xóa tài khoản: " + target.getEmail());
-        emailService.sendAccountDeletedEmail(target.getEmail(), target.getFullName());
+        try {
+            emailService.sendAccountDeletedEmail(target.getEmail(), target.getFullName());
+        } catch (Exception e) {
+            log.warn("Không thể gửi email xóa tài khoản tới {}: {}", target.getEmail(), e.getMessage());
+        }
     }
 
     @Override
@@ -100,9 +108,17 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (target.getDeletedAt() != null) {
             throw new ResourceNotFoundException("Không tìm thấy tài khoản");
         }
+        // Generate token và lưu vào DB để link trong email hợp lệ
         String resetToken = UUID.randomUUID().toString();
+        target.setResetToken(resetToken);
+        target.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        userRepository.save(target);
         saveAuditLog(admin, targetUserId, "RESET_PASSWORD", "Gửi email reset mật khẩu: " + target.getEmail());
-        emailService.sendResetPasswordEmail(target.getEmail(), target.getFullName(), resetToken);
+        try {
+            emailService.sendResetPasswordEmail(target.getEmail(), target.getFullName(), resetToken);
+        } catch (Exception e) {
+            log.warn("Không thể gửi email reset password tới {}: {}", target.getEmail(), e.getMessage());
+        }
     }
 
     @Override

@@ -48,6 +48,14 @@ public class LoginInterfaceImpl implements LoginInterface {
             throw new InvalidAccountException("Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.");
         }
 
+        // Kiểm tra admin lock (khóa bởi Admin, khác với lockUntil do nhập sai password)
+        if (user.isLocked()) {
+            throw new InvalidAccountLockedException(
+                    "Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ hỗ trợ.",
+                    null
+            );
+        }
+
         if (user.getLockUntil() != null && LocalDateTime.now().isBefore(user.getLockUntil())) {
             throw new InvalidAccountLockedException(
                     "Tài khoản đã bị khóa do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.",
