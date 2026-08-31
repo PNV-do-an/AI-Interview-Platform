@@ -53,6 +53,15 @@ public class User implements UserDetails {
     @Column
     private LocalDateTime deletedAt;
 
+    /** Account is locked by admin. true = cannot login */
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean locked = false;
+
+    /** Soft delete: null = not deleted, non-null = deleted at this time */
+    @Column
+    private LocalDateTime deletedAt;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
