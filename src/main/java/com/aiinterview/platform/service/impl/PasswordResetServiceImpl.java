@@ -7,6 +7,7 @@ import com.aiinterview.platform.model.repository.UserRepository;
 import com.aiinterview.platform.service.EmailService;
 import com.aiinterview.platform.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PasswordResetServiceImpl implements PasswordResetService {
 
     private final UserRepository userRepository;
@@ -40,7 +42,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
 
-        emailService.sendResetPasswordEmail(email, user.getFullName(), resetToken);
+        try {
+            emailService.sendResetPasswordEmail(email, user.getFullName(), resetToken);
+        } catch (Exception e) {
+            log.warn("Không thể gửi email reset password tới {}: {}", email, e.getMessage());
+        }
 
         return GENERIC_MESSAGE;
     }
@@ -68,7 +74,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         user.setLockUntil(null);
         userRepository.save(user);
 
-        emailService.sendPasswordResetConfirmation(user.getEmail(), user.getFullName());
+        try {
+            emailService.sendPasswordResetConfirmation(user.getEmail(), user.getFullName());
+        } catch (Exception e) {
+            log.warn("Không thể gửi email xác nhận reset password tới {}: {}", user.getEmail(), e.getMessage());
+        }
 
         return "Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại.";
     }

@@ -1,22 +1,24 @@
 package com.aiinterview.platform.security.jwt;
 
+import com.aiinterview.platform.service.UserService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-//    @Override
-//    public boolean shouldNotFilter ()
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(
@@ -30,6 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
             String token = authHeader.substring(7).trim();
 
+            // Handle token wrapped in quotes (edge case from some clients)
             if (token.startsWith("\"") && token.endsWith("\"")) {
                 token = token.substring(1, token.length() - 1);
             }
@@ -37,15 +40,17 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 var claims = JwtUtil.validateAccessToken(token);
                 String email = claims.getSubject();
-                String role = (String) claims.get("role");
 
-                var authorities = List.of(new SimpleGrantedAuthority(role));
-                var auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
+                // Load full User entity so @AuthenticationPrincipal User works in controllers
+                UserDetails userDetails = userService.loadUserByUsername(email);
+
+                var auth = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-            } catch (JwtException e) {
-                // Token invalid, do not set authentication
+            } catch (JwtException | UsernameNotFoundException e) {
+                // Invalid token or user not found — continue without authentication
             }
         }
 

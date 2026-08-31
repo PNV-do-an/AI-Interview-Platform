@@ -52,10 +52,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(error);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(400, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>());
+        return ResponseEntity.status(400).body(error);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(404, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>());
+        return ResponseEntity.status(404).body(error);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleOther(RuntimeException ex, HttpServletRequest request) {
         ex.printStackTrace();
-        ErrorModel error = new ErrorModel(500, "Internal serve error: " + ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+        ErrorModel error = new ErrorModel(500, "Internal server error: " + ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
                 new HashMap<>());
         return ResponseEntity.status(500).body(error);
     }
