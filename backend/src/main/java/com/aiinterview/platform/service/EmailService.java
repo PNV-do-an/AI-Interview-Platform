@@ -9,4 +9,8 @@ public interface EmailService {
     void sendResetPasswordEmail(String to, String fullName, String token);
 
     void sendPasswordResetConfirmation(String to, String fullName);
+
+    void sendAccountLockedEmail(String to, String fullName);
+
+    void sendAccountDeletedEmail(String to, String fullName);
 }

@@ -39,9 +39,19 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.ROLE_USER;
 
+    /** Account is enabled (active). false = Inactive */
     @Column(nullable = false)
     @Builder.Default
     private boolean enabled = false;
+
+    /** Account is locked by admin. true = cannot login */
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean locked = false;
+
+    /** Soft delete: null = not deleted, non-null = deleted at this time */
+    @Column
+    private LocalDateTime deletedAt;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -84,11 +94,22 @@ public class User implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isEnabled() {
+        return enabled && deletedAt == null;
+    }
 
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isAccountNonLocked() {
+        return !locked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 }
