@@ -1,5 +1,7 @@
 # Environment
 .env
+.env.*
+!.env.example
 *.env.local
 
 # Java / Maven
@@ -8,17 +10,47 @@ backend/.mvn/
 *.class
 *.jar
 *.war
+target/
 
 # Node / React
 frontend/node_modules/
 frontend/build/
 frontend/.env.local
 
-# IDE
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Audio & Temporary Media Files
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+tmp/
+temp/
+
+# Large Model weights & Checkpoints
+*.onnx
+*.pt
+*.bin
+*.safetensors
+.cache/
+hf_cache/
+
+# IDE & OS
 .idea/
 .vscode/
 *.iml
-
-# OS
 .DS_Store
 Thumbs.db
