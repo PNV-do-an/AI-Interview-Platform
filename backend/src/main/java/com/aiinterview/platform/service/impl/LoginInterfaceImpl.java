@@ -44,6 +44,10 @@ public class LoginInterfaceImpl implements LoginInterface {
                     return new InvalidAccountException("Email không tồn tại");
                 });
 
+        if (user.getDeletedAt() != null) {
+            throw new InvalidAccountException("Tài khoản không tồn tại hoặc đã bị xóa");
+        }
+
         if (!user.isEnabled()) {
             throw new InvalidAccountException("Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.");
         }
