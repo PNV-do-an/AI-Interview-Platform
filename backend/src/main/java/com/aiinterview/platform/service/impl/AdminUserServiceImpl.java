@@ -16,11 +16,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,18 +49,24 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public UserDetailResponse getUserDetail(Long userId) {
         User user = findUserOrThrow(userId);
+        User admin = resolveAdmin();
+        saveAuditLog(admin, userId, "VIEW_USER", "Xem chi tiết tài khoản: " + user.getEmail());
         return UserDetailResponse.from(user);
     }
 
     @Override
     @Transactional
-    public UserDetailResponse lockUser(User admin, Long targetUserId) {
+    public UserDetailResponse lockUser(Long targetUserId) {
+        User admin = resolveAdmin();
         User target = findUserOrThrow(targetUserId);
         if (target.getDeletedAt() != null) {
             throw new BadRequestException("Không thể khóa tài khoản đã bị xóa");
         }
         if (target.isLocked()) {
             throw new BadRequestException("Tài khoản đã bị khóa");
+        }
+        if (admin != null && admin.getId().equals(targetUserId)) {
+            throw new BadRequestException("Không thể khóa tài khoản của chính mình");
         }
         target.setLocked(true);
         userRepository.save(target);
@@ -70,7 +81,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public UserDetailResponse unlockUser(User admin, Long targetUserId) {
+    public UserDetailResponse unlockUser(Long targetUserId) {
+        User admin = resolveAdmin();
         User target = findUserOrThrow(targetUserId);
         if (!target.isLocked()) {
             throw new BadRequestException("Tài khoản không trong trạng thái bị khóa");
@@ -78,13 +90,19 @@ public class AdminUserServiceImpl implements AdminUserService {
         target.setLocked(false);
         userRepository.save(target);
         saveAuditLog(admin, targetUserId, "UNLOCK_USER", "Mở khóa tài khoản: " + target.getEmail());
+        try {
+            emailService.sendAccountUnlockedEmail(target.getEmail(), target.getFullName());
+        } catch (Exception e) {
+            log.warn("Không thể gửi email mở khóa tài khoản tới {}: {}", target.getEmail(), e.getMessage());
+        }
         return UserDetailResponse.from(target);
     }
 
     @Override
     @Transactional
-    public void deleteUser(User admin, Long targetUserId) {
-        if (admin.getId().equals(targetUserId)) {
+    public void deleteUser(Long targetUserId) {
+        User admin = resolveAdmin();
+        if (admin != null && admin.getId().equals(targetUserId)) {
             throw new BadRequestException("Không thể xóa tài khoản của chính mình");
         }
         User target = findUserOrThrow(targetUserId);
@@ -103,12 +121,12 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public void resetPassword(User admin, Long targetUserId) {
+    public void resetPassword(Long targetUserId) {
+        User admin = resolveAdmin();
         User target = findUserOrThrow(targetUserId);
         if (target.getDeletedAt() != null) {
             throw new ResourceNotFoundException("Không tìm thấy tài khoản");
         }
-        // Generate token và lưu vào DB để link trong email hợp lệ
         String resetToken = UUID.randomUUID().toString();
         target.setResetToken(resetToken);
         target.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
@@ -123,13 +141,21 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public UserDetailResponse changeRole(User admin, Long targetUserId, Role newRole) {
-        if (admin.getId().equals(targetUserId)) {
+    public UserDetailResponse changeRole(Long targetUserId, Role newRole) {
+        User admin = resolveAdmin();
+        if (admin != null && admin.getId().equals(targetUserId)) {
             throw new BadRequestException("Không thể thay đổi vai trò của chính mình");
         }
         User target = findUserOrThrow(targetUserId);
         if (target.getDeletedAt() != null) {
             throw new ResourceNotFoundException("Không tìm thấy tài khoản");
+        }
+        if (target.getRole() == Role.ROLE_ADMIN && newRole != Role.ROLE_ADMIN) {
+            Page<User> adminPage = userRepository.findAllWithFilters(null, Role.ROLE_ADMIN, null, Pageable.unpaged());
+            long adminCount = adminPage.getContent().size();
+            if (adminCount <= 1) {
+                throw new BadRequestException("Không thể thay đổi vai trò: phải luôn có ít nhất một tài khoản Quản trị viên trong hệ thống");
+            }
         }
         String detail = String.format("Đổi role: %s → %s | user: %s",
                 target.getRole().name(), newRole.name(), target.getEmail());
@@ -152,10 +178,39 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng với id: " + userId));
     }
 
+    /**
+     * Resolve the currently authenticated admin User entity from SecurityContext.
+     * Returns null if the context has no valid authentication, or the principal
+     * cannot be mapped to a User (e.g. in tests with @WithMockUser).
+     */
+    private User resolveAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return null;
+        }
+        Object principal = auth.getPrincipal();
+        if (principal instanceof User u) {
+            return u;
+        }
+        String email = null;
+        if (principal instanceof UserDetails ud) {
+            email = ud.getUsername();
+        } else if (principal instanceof String s) {
+            email = s;
+        }
+        if (email != null) {
+            Optional<User> opt = userRepository.findByEmail(email);
+            if (opt.isPresent()) return opt.get();
+        }
+        return null;
+    }
+
     private void saveAuditLog(User admin, Long targetUserId, String action, String detail) {
+        Long adminId = admin != null ? admin.getId() : 0L;
+        String adminEmail = admin != null ? admin.getEmail() : "system";
         AdminAuditLog log = AdminAuditLog.builder()
-                .adminId(admin.getId())
-                .adminEmail(admin.getEmail())
+                .adminId(adminId)
+                .adminEmail(adminEmail)
                 .targetUserId(targetUserId)
                 .action(action)
                 .detail(detail)

@@ -13,15 +13,15 @@ public interface AdminUserService {
 
     UserDetailResponse getUserDetail(Long userId);
 
-    UserDetailResponse lockUser(User admin, Long targetUserId);
+    UserDetailResponse lockUser(Long targetUserId);
 
-    UserDetailResponse unlockUser(User admin, Long targetUserId);
+    UserDetailResponse unlockUser(Long targetUserId);
 
-    void deleteUser(User admin, Long targetUserId);
+    void deleteUser(Long targetUserId);
 
-    void resetPassword(User admin, Long targetUserId);
+    void resetPassword(Long targetUserId);
 
-    UserDetailResponse changeRole(User admin, Long targetUserId, Role newRole);
+    UserDetailResponse changeRole(Long targetUserId, Role newRole);
 
     Page<AuditLogResponse> getAuditLogs(int page, int size);
 }
