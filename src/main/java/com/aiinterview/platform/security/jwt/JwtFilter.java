@@ -1,5 +1,6 @@
 package com.aiinterview.platform.security.jwt;
 
+import com.aiinterview.platform.model.entity.User;
 import com.aiinterview.platform.service.UserService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -43,6 +44,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 // Load full User entity so @AuthenticationPrincipal User works in controllers
                 UserDetails userDetails = userService.loadUserByUsername(email);
+
+                User user = (User) userDetails;
+                if (!user.isEnabled() || user.isLocked() || user.getDeletedAt() != null) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 var auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
