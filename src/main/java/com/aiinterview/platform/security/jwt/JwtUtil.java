@@ -17,8 +17,6 @@ public class JwtUtil {
 
     public static String generateAccessToken(String account, String role) {
 
-        System.out.println(">>> GENERATE ACCESS TOKEN WITH: " + account);
-
         String accessToken = Jwts.builder()
                 .setSubject(account)
                 .claim("role", role)
@@ -27,8 +25,6 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_ACCESS_TOKEN))
                 .signWith(accessKey)
                 .compact();
-
-        System.out.println(">>> ACCESS TOKEN: " + accessToken);
 
         return accessToken;
     }
@@ -42,8 +38,6 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_REFRESH_TOKEN))
                 .signWith(refreshKey)
                 .compact();
-
-        System.out.println(">>> REFRESH TOKEN " + refreshToken );
 
         return refreshToken;
     }

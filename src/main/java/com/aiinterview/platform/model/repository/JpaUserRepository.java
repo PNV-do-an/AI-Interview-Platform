@@ -39,14 +39,15 @@ public interface JpaUserRepository extends JpaRepository<User, Long>, UserReposi
     @Override
     @Query("""
         SELECT u FROM User u
-        WHERE (:search IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))
-                               OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')))
+        WHERE u.deletedAt IS NULL
+          AND (:search IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%'))
+                                 OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')))
           AND (:role IS NULL OR u.role = :role)
           AND (
             :status IS NULL
-            OR (:status = 'ACTIVE'   AND u.enabled = true  AND u.locked = false AND u.deletedAt IS NULL)
-            OR (:status = 'INACTIVE' AND u.enabled = false AND u.deletedAt IS NULL)
-            OR (:status = 'LOCKED'   AND u.locked = true   AND u.deletedAt IS NULL)
+            OR (:status = 'ACTIVE'   AND u.enabled = true  AND u.locked = false)
+            OR (:status = 'INACTIVE' AND u.enabled = false)
+            OR (:status = 'LOCKED'   AND u.locked = true)
           )
         """)
     Page<User> findAllWithFilters(

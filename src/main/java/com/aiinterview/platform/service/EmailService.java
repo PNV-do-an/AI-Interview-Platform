@@ -12,5 +12,7 @@ public interface EmailService {
 
     void sendAccountLockedEmail(String to, String fullName);
 
+    void sendAccountUnlockedEmail(String to, String fullName);
+
     void sendAccountDeletedEmail(String to, String fullName);
 }
