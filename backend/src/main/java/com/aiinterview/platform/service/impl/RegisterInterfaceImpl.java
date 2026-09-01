@@ -114,7 +114,7 @@ public class RegisterInterfaceImpl implements RegisterInterface {
                 .fullName(fullName)
                 .phone(phone)
                 .role(Role.ROLE_USER)
-                .enabled(false)
+                .enabled(true)
                 .verificationToken(verificationToken)
                 .verificationTokenExpiry(LocalDateTime.now().plusHours(24))
                 .build();

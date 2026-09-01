@@ -5,7 +5,6 @@ import com.aiinterview.platform.model.dto.request.ChangeRoleRequest;
 import com.aiinterview.platform.model.dto.response.AuditLogResponse;
 import com.aiinterview.platform.model.dto.response.UserDetailResponse;
 import com.aiinterview.platform.model.dto.response.UserSummaryResponse;
-import com.aiinterview.platform.model.entity.User;
 import com.aiinterview.platform.model.enums.Role;
 import com.aiinterview.platform.service.AdminUserService;
 import jakarta.validation.Valid;
@@ -13,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,46 +42,37 @@ public class AdminUserController {
 
     /** PATCH /api/v1/admin/users/{id}/lock */
     @PatchMapping("/users/{id}/lock")
-    public ResponseEntity<ApiResponse<UserDetailResponse>> lockUser(
-            @AuthenticationPrincipal User admin,
-            @PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success("Tài khoản đã bị khóa", adminUserService.lockUser(admin, id)));
+    public ResponseEntity<ApiResponse<UserDetailResponse>> lockUser(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Tài khoản đã bị khóa", adminUserService.lockUser(id)));
     }
 
     /** PATCH /api/v1/admin/users/{id}/unlock */
     @PatchMapping("/users/{id}/unlock")
-    public ResponseEntity<ApiResponse<UserDetailResponse>> unlockUser(
-            @AuthenticationPrincipal User admin,
-            @PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success("Tài khoản đã được mở khóa", adminUserService.unlockUser(admin, id)));
+    public ResponseEntity<ApiResponse<UserDetailResponse>> unlockUser(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Tài khoản đã được mở khóa", adminUserService.unlockUser(id)));
     }
 
     /** DELETE /api/v1/admin/users/{id} */
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(
-            @AuthenticationPrincipal User admin,
-            @PathVariable Long id) {
-        adminUserService.deleteUser(admin, id);
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
+        adminUserService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success("Tài khoản đã được xóa", null));
     }
 
     /** POST /api/v1/admin/users/{id}/reset-password */
     @PostMapping("/users/{id}/reset-password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(
-            @AuthenticationPrincipal User admin,
-            @PathVariable Long id) {
-        adminUserService.resetPassword(admin, id);
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@PathVariable Long id) {
+        adminUserService.resetPassword(id);
         return ResponseEntity.ok(ApiResponse.success("Email đặt lại mật khẩu đã được gửi", null));
     }
 
     /** PATCH /api/v1/admin/users/{id}/role */
     @PatchMapping("/users/{id}/role")
     public ResponseEntity<ApiResponse<UserDetailResponse>> changeRole(
-            @AuthenticationPrincipal User admin,
             @PathVariable Long id,
             @Valid @RequestBody ChangeRoleRequest request) {
         return ResponseEntity.ok(ApiResponse.success("Vai trò đã được cập nhật",
-                adminUserService.changeRole(admin, id, request.getRole())));
+                adminUserService.changeRole(id, request.getRole())));
     }
 
     /** GET /api/v1/admin/audit-logs?page=0&size=20 */
