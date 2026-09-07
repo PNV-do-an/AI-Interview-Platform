@@ -1,0 +1,10 @@
+{
+  "status": 400,
+  "message": "Invalid value for parameter 'role': 'Y7bSpnWX'",
+  "path": "http://localhost:8080/api/v1/admin/users",
+  "timestamp": "2026-09-01T15:33:48.9732984",
+  "detail": {
+    "parameter": "role",
+    "value": "Y7bSpnWX"
+  }
+}

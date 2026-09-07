@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e88a00eb-2f5f-4fff-9376-08b0920bfcb4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/AI-Interview-Platform.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HELP.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/LoginRegister.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/api-test.http" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/AiInterviewPlatformApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/BadRequestException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/ResourceNotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/response/ApiResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/config/DataInitializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/AdminUserController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthorizationController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ProfileController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/ChangeRoleRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/LoginRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RefreshTokenRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RegisterRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuditLogResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuthResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/LoginResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/ProfileResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/RegisterResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserDetailResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserSummaryResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/AdminAuditLog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/ErrorModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/LoginAttempt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/RegisterAttempt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/enums/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/AdminAuditLogRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeLoginAttemptRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeRegisterAttempt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeUserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/JpaUserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/LoginAttemptRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/RegisterAttemptRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtSecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/JwtUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/SecurityUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/AdminUserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/EmailService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/LoginInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/PasswordResetService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/RegisterInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/AdminUserServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V1__init_users.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V2__add_user_status_fields.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V3__create_admin_audit_log.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V4__add_user_missing_fields.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V5__add_role_staff.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/aiinterview/platform/controller/AdminUserControllerIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/nginx.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/context/AuthContext.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/controllers/useAdminUserController.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/controllers/useAuthController.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/models/Api.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/models/User.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/services/admin.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/services/auth.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/services/http.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/ConfirmDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/ProtectedRoute.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/UserDetailModal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/AdminUserManagementPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/DashboardPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/ForgotPasswordPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/LoginPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/RegisterPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/ResetPasswordPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/UnauthorizedPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/static/Profile.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/static/indexLogin.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/static/js/apiClients.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/static/js/auth.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/static/js/profile.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/classes/static/register.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/generated-sources/annotations/InvaildAccountLockedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.http" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTTP Public Environment File" />
+        <option value="AnnotationType" />
+        <option value="HTML File" />
+        <option value="Exception" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Nam-hoc-code&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/PNV-do-an/AI-Interview-Platform.git&quot;,
+    &quot;accountId&quot;: &quot;d1ea13a5-d275-4f37-9e98-89c085cf3d1c&quot;
+  }
+}</component>
+  <component name="HttpClientEndpointsTabState">
+    <option name="cachedRequestData" value="&lt;CachedHttpClientTabRequests /&gt;" />
+  </component>
+  <component name="HttpClientOnboardingState">{
+  &quot;isOnboardingCommentShown&quot;: true
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="3AzAbDss2oyeAW6zqhF8XzRQHeY" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;HTTP Request.SpringBoot-endpoints | #1.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.api-test | #1.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.api-test | Xác thực email (copy token từ console log: \&quot;&gt;&gt;&gt; EMAIL VERIFICATION\&quot; hoặc \&quot;Email sent to\&quot;).executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.api-test | Đăng ký tài khoản mới.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password).executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #1.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #10.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #11.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #12.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #13.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #14.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #15.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #16.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #18.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #19.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #2.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #3.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #4.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #5.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #7.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #8.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #9.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SpringBoot [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.SpringBoot [install].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.AiInterviewPlatformApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Ai-test-implement&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/LENOVO/Downloads/SpringBoot/SpringBoot&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;swagger&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\IntelliJIdea\\IntelliJ IDEA 2025.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.hoc.backend.SpringBoot.dto" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\LENOVO\Downloads\SpringBoot\SpringBoot\src\main\resources\static" />
+      <recent name="C:\Users\LENOVO\Downloads\SpringBoot\SpringBoot\src\main\resources\static\js" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationStatuses">
+      <map>
+        <entry key="HttpClient.HttpRequestRunConfigurationType">
+          <value>
+            <map>
+              <entry key="SpringBoot-endpoints | #1" value="STOPPED" />
+              <entry key="api-test | #1" value="STOPPED" />
+              <entry key="api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)" value="STOPPED" />
+              <entry key="api-test | Đăng ký tài khoản mới" value="STOPPED" />
+              <entry key="api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.AiInterviewPlatformApplication">
+    <configuration name="SpringBoot-endpoints | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/SpringBoot-endpoints.http" executionIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/api-test.http" executionIdentifier="Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)" index="2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="api-test | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/api-test.http" executionIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="api-test | Đăng ký tài khoản mới" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/api-test.http" executionIdentifier="Đăng ký tài khoản mới" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/api-test.http" executionIdentifier="Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" index="7" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="AiInterviewPlatformApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="ai-interview-platform" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.aiinterview.platform.AiInterviewPlatformApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="SpringBoot" />
+      <option name="SPRING_BOOT_MAIN_CLASS" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="HTTP Request.SpringBoot-endpoints | #1" />
+      <item itemvalue="HTTP Request.api-test | #1" />
+      <item itemvalue="HTTP Request.api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" />
+      <item itemvalue="HTTP Request.api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)" />
+      <item itemvalue="HTTP Request.api-test | Đăng ký tài khoản mới" />
+      <item itemvalue="Spring Boot.AiInterviewPlatformApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.api-test | Đăng ký tài khoản mới" />
+        <item itemvalue="HTTP Request.SpringBoot-endpoints | #1" />
+        <item itemvalue="HTTP Request.api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)" />
+        <item itemvalue="HTTP Request.api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" />
+        <item itemvalue="HTTP Request.api-test | #1" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-cffe25b9f5b3-intellij.indexing.shared.core-IU-253.28294.334" />
+        <option value="bundled-js-predefined-d6986cc7102b-c7e53b3be11b-JavaScript-IU-253.28294.334" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e88a00eb-2f5f-4fff-9376-08b0920bfcb4" name="Changes" comment="" />
+      <created>1773585095018</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1773585095018</updated>
+      <workItem from="1773585096495" duration="3098000" />
+      <workItem from="1773663322993" duration="264000" />
+      <workItem from="1774104963441" duration="1652000" />
+      <workItem from="1774182391534" duration="1847000" />
+      <workItem from="1774234691463" duration="1330000" />
+      <workItem from="1774272659336" duration="6587000" />
+      <workItem from="1774354984543" duration="6019000" />
+      <workItem from="1774447127492" duration="4362000" />
+      <workItem from="1774603780177" duration="1239000" />
+      <workItem from="1774705397903" duration="1867000" />
+      <workItem from="1774795314502" duration="3613000" />
+      <workItem from="1775029670652" duration="2803000" />
+      <workItem from="1775303240738" duration="7685000" />
+      <workItem from="1775400335696" duration="4940000" />
+      <workItem from="1775634231607" duration="16703000" />
+      <workItem from="1775713167071" duration="294000" />
+      <workItem from="1775976345672" duration="14000" />
+      <workItem from="1776178268271" duration="10000" />
+      <workItem from="1776228943945" duration="1248000" />
+      <workItem from="1776347254679" duration="6222000" />
+      <workItem from="1776417729270" duration="210000" />
+      <workItem from="1776433247618" duration="3774000" />
+      <workItem from="1776438582469" duration="3358000" />
+      <workItem from="1776506842947" duration="111000" />
+      <workItem from="1776515262197" duration="6866000" />
+      <workItem from="1776580838040" duration="13960000" />
+      <workItem from="1776616752621" duration="1032000" />
+      <workItem from="1776698267644" duration="70000" />
+      <workItem from="1776905012991" duration="4981000" />
+      <workItem from="1777643648661" duration="598000" />
+      <workItem from="1777951765436" duration="208000" />
+      <workItem from="1777985589046" duration="2054000" />
+      <workItem from="1777994434833" duration="2045000" />
+      <workItem from="1778035044308" duration="3339000" />
+      <workItem from="1778050399272" duration="3601000" />
+      <workItem from="1778070911265" duration="3257000" />
+      <workItem from="1778074240542" duration="322000" />
+      <workItem from="1778074649183" duration="4242000" />
+      <workItem from="1778251166438" duration="4281000" />
+      <workItem from="1778312536926" duration="18611000" />
+      <workItem from="1778422618966" duration="6336000" />
+      <workItem from="1778470113085" duration="852000" />
+      <workItem from="1778559466992" duration="9252000" />
+      <workItem from="1778579697176" duration="7986000" />
+      <workItem from="1778651969447" duration="3871000" />
+      <workItem from="1778676971017" duration="7323000" />
+      <workItem from="1778761855387" duration="6960000" />
+      <workItem from="1778769025026" duration="5438000" />
+      <workItem from="1778831993426" duration="19278000" />
+      <workItem from="1778935543372" duration="9922000" />
+      <workItem from="1779005780536" duration="12980000" />
+      <workItem from="1779087807829" duration="10000" />
+      <workItem from="1779201739934" duration="4464000" />
+      <workItem from="1779281204611" duration="2030000" />
+      <workItem from="1779289207170" duration="404000" />
+      <workItem from="1779520430078" duration="7278000" />
+      <workItem from="1779538758654" duration="9238000" />
+      <workItem from="1779609752319" duration="577000" />
+      <workItem from="1779632127577" duration="36000" />
+      <workItem from="1779633885294" duration="848000" />
+      <workItem from="1779713390925" duration="288000" />
+      <workItem from="1779805420724" duration="5441000" />
+      <workItem from="1779979404193" duration="4147000" />
+      <workItem from="1780026652045" duration="247000" />
+      <workItem from="1780040277996" duration="9908000" />
+      <workItem from="1780103566880" duration="11000" />
+      <workItem from="1780130036543" duration="12280000" />
+      <workItem from="1780211309086" duration="8964000" />
+      <workItem from="1780317985353" duration="618000" />
+      <workItem from="1780319729417" duration="1517000" />
+      <workItem from="1780364373134" duration="1098000" />
+      <workItem from="1780386023615" duration="2491000" />
+      <workItem from="1780408929950" duration="2751000" />
+      <workItem from="1780585665932" duration="661000" />
+      <workItem from="1780643706971" duration="23631000" />
+      <workItem from="1780734933964" duration="9693000" />
+      <workItem from="1780795889258" duration="11461000" />
+      <workItem from="1781095287168" duration="1286000" />
+      <workItem from="1781357321127" duration="2840000" />
+      <workItem from="1781452706790" duration="1208000" />
+      <workItem from="1781535488884" duration="128000" />
+      <workItem from="1781614785831" duration="3759000" />
+      <workItem from="1781702090824" duration="4365000" />
+      <workItem from="1781771239503" duration="1565000" />
+      <workItem from="1782113252081" duration="6490000" />
+      <workItem from="1782270760080" duration="792000" />
+      <workItem from="1782459765508" duration="2496000" />
+      <workItem from="1782720099379" duration="4244000" />
+      <workItem from="1782804897521" duration="932000" />
+      <workItem from="1782823586807" duration="9132000" />
+      <workItem from="1782881221963" duration="590000" />
+      <workItem from="1783238105234" duration="776000" />
+      <workItem from="1783257892138" duration="1787000" />
+      <workItem from="1783318162599" duration="8266000" />
+      <workItem from="1783345162244" duration="2459000" />
+      <workItem from="1783347651905" duration="295000" />
+      <workItem from="1783348001521" duration="826000" />
+      <workItem from="1783437830206" duration="1500000" />
+      <workItem from="1783473166991" duration="1341000" />
+      <workItem from="1783474999395" duration="16569000" />
+      <workItem from="1783583827119" duration="644000" />
+      <workItem from="1783674293726" duration="1817000" />
+      <workItem from="1783760825181" duration="3727000" />
+      <workItem from="1783930991447" duration="2129000" />
+      <workItem from="1783992846576" duration="2637000" />
+      <workItem from="1784020109500" duration="5116000" />
+      <workItem from="1784102793393" duration="4641000" />
+      <workItem from="1784217804200" duration="362000" />
+      <workItem from="1784424372185" duration="1799000" />
+      <workItem from="1784448113187" duration="7033000" />
+      <workItem from="1784478305134" duration="6179000" />
+      <workItem from="1784536605909" duration="1539000" />
+      <workItem from="1784538183581" duration="1338000" />
+      <workItem from="1784540990982" duration="7256000" />
+      <workItem from="1784624392726" duration="12543000" />
+      <workItem from="1784705831819" duration="6556000" />
+      <workItem from="1784791828829" duration="8083000" />
+      <workItem from="1784823383325" duration="380000" />
+      <workItem from="1784861476929" duration="4645000" />
+      <workItem from="1785156788874" duration="2258000" />
+      <workItem from="1785331888573" duration="2700000" />
+      <workItem from="1785371898694" duration="14878000" />
+      <workItem from="1785654786505" duration="4414000" />
+      <workItem from="1785894701347" duration="6023000" />
+      <workItem from="1786370589279" duration="168000" />
+      <workItem from="1786371137746" duration="111000" />
+      <workItem from="1786372817564" duration="3761000" />
+      <workItem from="1786411836486" duration="7693000" />
+      <workItem from="1786433051530" duration="7016000" />
+      <workItem from="1786608430855" duration="2058000" />
+      <workItem from="1786695776603" duration="3321000" />
+      <workItem from="1786721333610" duration="1080000" />
+      <workItem from="1787026092057" duration="2886000" />
+      <workItem from="1787144619899" duration="339000" />
+      <workItem from="1787146132016" duration="1336000" />
+      <workItem from="1787650656769" duration="950000" />
+      <workItem from="1788166624845" duration="1330000" />
+      <workItem from="1788181728541" duration="1239000" />
+      <workItem from="1788183062604" duration="2118000" />
+      <workItem from="1788188492614" duration="819000" />
+      <workItem from="1788227746313" duration="6896000" />
+      <workItem from="1788251360523" duration="3792000" />
+      <workItem from="1788255579408" duration="9963000" />
+      <workItem from="1788419766994" duration="3254000" />
+      <workItem from="1788511748821" duration="6525000" />
+      <workItem from="1788599744361" duration="1244000" />
+      <workItem from="1788776572809" duration="318000" />
+      <workItem from="1788789865869" duration="1010000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.security:spring-security-core" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

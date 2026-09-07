@@ -1,0 +1,7 @@
+{
+  "status": 401,
+  "message": "Email đã tồn tại trong hệ thống",
+  "path": "http://localhost:8080/api/v1/auth/register",
+  "timestamp": "2026-09-01T09:50:35.6303403",
+  "detail": {}
+}

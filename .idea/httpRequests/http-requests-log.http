@@ -1,0 +1,618 @@
+GET http://localhost:8080/api/v1/admin/users?page=85&size=24&search=va_xdfgp&status=vxBhkUDs&role=Y7bSpnWX
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-09-01T153349.400.json
+
+###
+
+GET http://localhost:8080/api/v1/admin/users?page=97&size=40&search=jcb0UCvJ&status=PE0dRiKh&role=ZH6eyhDj
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-09-01T151531.500.json
+
+###
+
+GET http://localhost:8080/api/v1/admin/users?page=0&size=79&search=z6HFnLA4&status=4CpKnNq7&role=o5bYEPV9
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-09-01T110441.500.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 115
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "namnah3@gmail.com",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+<> 2026-09-01T103359.401.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 115
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "namnah3@gmail.com",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+<> 2026-09-01T102923.201.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 118
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "lenamle799@gmail.com",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+<> 2026-09-01T095035.401.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 118
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "lenamle799@gmail.com",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+<> 2026-09-01T093257.201.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "lenamele799@gmail.com",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+<> 2026-09-01T093053.201.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 107
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Nam",
+  "email": "huyooo.com@gmail.com",
+  "password": "Nam12345",
+  "phone": "0987654e"
+}
+
+<> 2026-08-11T164410.400.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/resend-verification
+Content-Type: application/json
+Content-Length: 36
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "email": "huyooocom@gmail.com"
+}
+
+<> 2026-08-11T164202.200.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 117
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooocom@gmail.com",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+<> 2026-08-11T164107.201.json
+
+###
+
+GET http://localhost:8080/api/test
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-08-11T164025.200.txt
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/resend-verification
+Content-Type: application/json
+Content-Length: 36
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "email": "huyooocom@gmail.com"
+}
+
+<> 2026-08-11T163749.401.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/registerContent-Type:%20application/json
+Content-Length: 141
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+    {
+      "fullName": "Test User2",
+      "email": "huyooocom@gmail.com",
+      "password": "Test@12345",
+      "phone": "0123456789"
+    }
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 118
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooocom@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 107
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Nam",
+  "email": "huyooo.com@gmail.com",
+  "password": "Nam12345",
+  "phone": "0987654e"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 106
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Nam",
+  "email": "huyooo.com@gmail.com",
+  "password": "Nam1234",
+  "phone": "0987654e"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/resend-verification
+Content-Type: application/json
+Content-Length: 33
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "email": "test@example.com"
+}
+
+<> 2026-08-11T142647.401.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 119
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User2",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@12345",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/resend-verification
+Content-Type: application/json
+Content-Length: 38
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "email": "huyooo.com@gmail.com "
+}
+
+<> 2026-08-10T224109.401.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 117
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User",
+  "email": "huyooo.com@gmail.com ",
+  "password": "Test@1234",
+  "phone": "0123456789"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/resend-verification
+Content-Type: application/json
+Content-Length: 38
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "email": "huyooo.com@gmail.com "
+}
+
+<> 2026-08-10T222554.401.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 112
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Test User",
+  "email": "test@example.com",
+  "password": "Test@1234",
+  "phone": "0123456789"
+}
+
+<> 2026-07-27T203429.201.json
+
+###
+
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+Content-Length: 101
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Nam",
+  "email": "nam@gmail.com",
+  "password": "123124123",
+  "phone": "09876543"
+}
+
+###
+
+POST http://localhost:8080/api/v1/auth/refresh
+Content-Type: application/json
+Content-Length: 103
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "fullName": "Nam Le",
+  "email": "nam@gmail.com",
+  "password": "123456",
+  "phone": "0123456789"
+}
+
+<> 2026-07-24T095727.500.json
+
+###
+
