@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+
+<h2>Login</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+
+<label>
+    <input type="checkbox" id="rememberMe"> Remember Me
+</label><br><br>
+
+<button onclick="login()">Login</button>
+
+<p id="error" style="color:red"></p>
+
+<h3>Token:</h3>
+<p id="accessToken"></p>
+<p id="refreshToken"></p>
+
+<h3>Call API:</h3>
+<button onclick="callApi('/api/test')">Call API /api/test</button>
+<p id="result"></p>
+
+<p>Don't have an account? <a href="/register.html">Register here</a></p>
+
+<script src="/js/apiClients.js"></script>
+<script src="/js/auth.js"></script>
+
+</body>
+</html>
