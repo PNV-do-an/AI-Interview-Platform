@@ -1,0 +1,540 @@
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch	(revision cd4070628268d778bc0dc3c58173919b3d43758e)
++++ /dev/null	(revision cd4070628268d778bc0dc3c58173919b3d43758e)
+@@ -1,359 +0,0 @@
+-Index: backend/src/main/resources/application.yml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>spring:\r\n  datasource:\r\n    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ai_interview_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC\r\n    username: ${DB_USERNAME:root}\r\n    password: ${DB_PASSWORD:root}\r\n    driver-class-name: com.mysql.cj.jdbc.Driver\r\n  jpa:\r\n    hibernate:\r\n      ddl-auto: update\r\n    show-sql: false\r\n    properties:\r\n      hibernate:\r\n        dialect: org.hibernate.dialect.MySQLDialect\r\n  flyway:\r\n    enabled: false\r\n    locations: classpath:db/migration\r\n    baseline-on-migrate: true\r\n  mail:\r\n    host: ${MAIL_HOST:smtp.gmail.com}\r\n    port: ${MAIL_PORT:587}\r\n    username: ${MAIL_USERNAME:noreply@aiinterview.com}\r\n    password: ${MAIL_PASSWORD:}\r\n    properties:\r\n      mail:\r\n        smtp:\r\n          auth: true\r\n          starttls:\r\n            enable: true\r\n\r\nserver:\r\n  port: 8080\r\n\r\napp:\r\n  jwt:\r\n    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}\r\n    expiration: 86400000       # 1 day in ms\r\n    refresh-expiration: 604800000  # 7 days in ms\r\n  frontend-url: ${FRONTEND_URL:http://localhost:3000}\r\n\r\ncors:\r\n  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/resources/application.yml b/backend/src/main/resources/application.yml
+---- a/backend/src/main/resources/application.yml	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/resources/application.yml	(date 1788233193988)
+-@@ -1,8 +1,8 @@
+- spring:
+-   datasource:
+--    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ai_interview_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+--    username: ${DB_USERNAME:root}
+--    password: ${DB_PASSWORD:root}
+-+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:ai_interview_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+-+    username: ${DB_USERNAME:aiuser}
+-+    password: ${DB_PASSWORD:aipassword}
+-     driver-class-name: com.mysql.cj.jdbc.Driver
+-   jpa:
+-     hibernate:
+-@@ -18,8 +18,8 @@
+-   mail:
+-     host: ${MAIL_HOST:smtp.gmail.com}
+-     port: ${MAIL_PORT:587}
+--    username: ${MAIL_USERNAME:noreply@aiinterview.com}
+--    password: ${MAIL_PASSWORD:}
+-+    username: ${MAIL_USERNAME:lenamle799@gmail.com}
+-+    password: ${MAIL_PASSWORD:sjjynlazsjyqweig}
+-     properties:
+-       mail:
+-         smtp:
+-Index: backend/api-test.http
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>### Đăng ký tài khoản mới\r\nPOST http://localhost:8080/api/v1/auth/register\r\nContent-Type: application/json\r\n\r\n{\r\n  \"fullName\": \"Test User2\",\r\n  \"email\": \"huyooocom@gmail.com\",\r\n  \"password\": \"Test@12345\",\r\n  \"phone\": \"0123456789\"\r\n}\r\n\r\n### Xác thực email (copy token từ console log: \">>> EMAIL VERIFICATION\" hoặc \"Email sent to\")\r\n# GET http://localhost:8080/api/v1/auth/verify?token=UUID_TOKEN\r\n\r\n### Gửi lại email xác thực\r\nPOST http://localhost:8080/api/v1/auth/resend-verification\r\nContent-Type: application/json\r\n\r\n{\r\n  \"email\": \"huyooocom@gmail.com\"\r\n}\r\n\r\n### Đăng nhập -> tự động lưu accessToken + refreshToken\r\nPOST http://localhost:8080/api/v1/auth/login\r\nContent-Type: application/json\r\n\r\n{\r\n  \"email\": \"test@example.com\",\r\n  \"password\": \"Test@1234\"\r\n}\r\n\r\n> {%\r\n    client.global.set(\"accessToken\", response.body.data.accessToken);\r\n    client.global.set(\"refreshToken\", response.body.data.refreshToken);\r\n%}\r\n\r\n### Lấy thông tin profile (dùng accessToken từ login)\r\nGET http://localhost:8080/api/user/profile\r\nAuthorization: Bearer {{accessToken}}\r\n\r\n### Refresh token (dùng refreshToken từ login)\r\nPOST http://localhost:8080/api/v1/auth/refresh\r\nContent-Type: application/json\r\n\r\n{\r\n  \"refreshToken\": \"{{refreshToken}}\"\r\n}\r\n\r\n> {%\r\n    client.global.set(\"accessToken\", response.body.data.accessToken);\r\n%}\r\n\r\n### Quên mật khẩu\r\nPOST http://localhost:8080/api/v1/auth/forgot-password\r\nContent-Type: application/json\r\n\r\n{\r\n  \"email\": \"test@example.com\"\r\n}\r\n\r\n### Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)\r\n# POST http://localhost:8080/api/v1/auth/reset-password\r\n# Content-Type: application/json\r\n#\r\n# {\r\n#   \"token\": \"UUID_TOKEN\",\r\n#   \"password\": \"NewPass@456\"\r\n# }\r\n\r\n### Test endpoint (không cần auth)\r\nGET http://localhost:8080/api/test\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/api-test.http b/backend/api-test.http
+---- a/backend/api-test.http	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/api-test.http	(date 1788234064677)
+-@@ -4,7 +4,7 @@
+- 
+- {
+-   "fullName": "Test User2",
+--  "email": "huyooocom@gmail.com",
+-+  "email": "namnah3@gmail.com",
+-   "password": "Test@12345",
+-   "phone": "0123456789"
+- }
+-Index: backend/src/main/java/com/aiinterview/platform/common/exception/InvalidPassWordException.java
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidPassWordException.java b/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidPassWordException.java
+-deleted file mode 100644
+---- a/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidPassWordException.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ /dev/null	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-@@ -1,7 +0,0 @@
+--package com.aiinterview.platform.common.exception;
+--
+--public class InvalidPasswordException extends RuntimeException {
+--    public InvalidPasswordException(String message) {
+--        super(message);
+--    }
+--}
+-Index: CHANGELOG.md
+-===================================================================
+-diff --git a/CHANGELOG.md b/CHANGELOG.md
+-deleted file mode 100644
+---- a/CHANGELOG.md	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ /dev/null	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-@@ -1,33 +0,0 @@
+--# CHANGELOG - Auth Feature Implementation
+--
+--## Summary
+--Implemented US-1.1 (Registration) and US-1.2 (Login) requirements into the standard project structure under `backend/` and `frontend/` folders, branch `refactor/auth-api21`.
+--
+--## Backend Changes (9 files)
+--
+--| File | Changes |
+--|------|---------|
+--| `User.java` | Added phone, verificationToken, verificationTokenExpiry, loginAttempts, lockUntil; enabled default = false |
+--| `Role.java` | Added ROLE_EMPLOYEE |
+--| `RegisterRequest.java` | Added phone, @Size(min=8), @Pattern for password strength |
+--| `AuthResponse.java` | Added phone to UserInfo |
+--| `UserRepository.java` | Added findByVerificationToken() |
+--| `AuthService.java` | Added refreshToken(), verifyEmail(), resendVerification() |
+--| `AuthServiceImpl.java` | Full auth logic: BCrypt, email verification (log URL), rate limit (5 attempts / 15min lock), Vietnamese error messages, refresh token |
+--| `AuthController.java` | Added POST /refresh, GET /verify, POST /resend-verification |
+--| `application.yml` | Added app.base-url config |
+--
+--## Frontend Changes (7 files)
+--
+--| File | Changes |
+--|------|---------|
+--| `Api.model.ts` | Added phone to AuthResponse and RegisterRequest |
+--| `User.model.ts` | Added phone, ROLE_EMPLOYEE |
+--| `http.service.ts` | Added refresh token queue, rememberMe storage support |
+--| `useAuthController.ts` | Added rememberMe, role-based redirect (Admin/Employee/User) |
+--| `AuthContext.tsx` | Updated login signature with rememberMe param |
+--| `LoginPage.tsx` | Added Remember Me checkbox, registered success message |
+--| `RegisterPage.tsx` | Added phone, confirmPassword, password strength indicator |
+--
+--## Root (1 file created)
+--- `CHANGELOG.md`
+-Index: backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.aiinterview.platform.common.exception;\r\n\r\nimport java.time.LocalDateTime;\r\n\r\npublic class InvalidAccountLockedException extends RuntimeException {\r\n\r\n    private LocalDateTime lockedUntil;\r\n\r\n    public InvalidAccountLockedException(String message, LocalDateTime lockedUntil) {\r\n        super(message);\r\n        this.lockedUntil = lockedUntil;\r\n    }\r\n\r\n    public LocalDateTime getLockUntil() {\r\n        return lockedUntil;\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java b/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java
+---- a/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java	(date 1788187527311)
+-@@ -14,4 +14,10 @@
+-     public LocalDateTime getLockUntil() {
+-         return lockedUntil;
+-     }
+-+
+-+    public static class InvalidPasswordException extends RuntimeException {
+-+        public InvalidPasswordException(String message) {
+-+            super(message);
+-+        }
+-+    }
+- }
+-Index: backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.aiinterview.platform.service.impl;\r\n\r\nimport com.aiinterview.platform.service.EmailService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.mail.SimpleMailMessage;\r\nimport org.springframework.mail.javamail.JavaMailSender;\r\nimport org.springframework.stereotype.Service;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class EmailServiceImpl implements EmailService {\r\n\r\n    private final JavaMailSender mailSender;\r\n\r\n    @Override\r\n    public void sendVerificationEmail(String to, String fullName, String token) {\r\n        SimpleMailMessage message = new SimpleMailMessage();\r\n        message.setTo(to);\r\n        message.setSubject(\"Xác thực tài khoản AI Interview Platform\");\r\n        message.setText(\"Xin chào \" + fullName + \",\\n\\n\"\r\n                + \"Vui lòng xác thực tài khoản bằng cách nhấn vào link sau:\\n\"\r\n                + \"http://localhost:8080/api/v1/auth/verify-email?token=\" + token + \"\\n\\n\"\r\n                + \"Link có hiệu lực trong 24 giờ.\");\r\n        mailSender.send(message);\r\n    }\r\n\r\n    @Override\r\n    public void sendResendVerificationEmail(String to, String fullName, String token) {\r\n        SimpleMailMessage message = new SimpleMailMessage();\r\n        message.setTo(to);\r\n        message.setSubject(\"Gửi lại xác thực tài khoản AI Interview Platform\");\r\n        message.setText(\"Xin chào \" + fullName + \",\\n\\n\"\r\n                + \"Đây là link xác thực mới của bạn:\\n\"\r\n                + \"http://localhost:8080/api/v1/auth/verify-email?token=\" + token + \"\\n\\n\"\r\n                + \"Link có hiệu lực trong 24 giờ.\");\r\n        mailSender.send(message);\r\n    }\r\n\r\n    @Override\r\n    public void sendResetPasswordEmail(String to, String fullName, String token) {\r\n        SimpleMailMessage message = new SimpleMailMessage();\r\n        message.setTo(to);\r\n        message.setSubject(\"Đặt lại mật khẩu AI Interview Platform\");\r\n        message.setText(\"Xin chào \" + fullName + \",\\n\\n\"\r\n                + \"Bạn đã yêu cầu đặt lại mật khẩu. Nhấn vào link sau:\\n\"\r\n                + \"http://localhost:3000/reset-password?token=\" + token + \"\\n\\n\"\r\n                + \"Link có hiệu lực trong 1 giờ. Nếu bạn không yêu cầu điều này, hãy bỏ qua email này.\");\r\n        mailSender.send(message);\r\n    }\r\n\r\n    @Override\r\n    public void sendPasswordResetConfirmation(String to, String fullName) {\r\n        SimpleMailMessage message = new SimpleMailMessage();\r\n        message.setTo(to);\r\n        message.setSubject(\"Mật khẩu đã được đặt lại thành công\");\r\n        message.setText(\"Xin chào \" + fullName + \",\\n\\n\"\r\n                + \"Mật khẩu của bạn đã được đặt lại thành công.\\n\"\r\n                + \"Nếu bạn không thực hiện điều này, vui lòng liên hệ ngay với chúng tôi.\");\r\n        mailSender.send(message);\r\n    }\r\n\r\n    @Override\r\n    public void sendAccountLockedEmail(String to, String fullName) {\r\n        SimpleMailMessage message = new SimpleMailMessage();\r\n        message.setTo(to);\r\n        message.setSubject(\"Tài khoản của bạn đã bị khóa\");\r\n        message.setText(\"Xin chào \" + fullName + \",\\n\\n\"\r\n                + \"Tài khoản của bạn trên AI Interview Platform đã bị khóa bởi quản trị viên.\\n\"\r\n                + \"Vui lòng liên hệ hỗ trợ để biết thêm thông tin.\");\r\n        mailSender.send(message);\r\n    }\r\n\r\n    @Override\r\n    public void sendAccountDeletedEmail(String to, String fullName) {\r\n        SimpleMailMessage message = new SimpleMailMessage();\r\n        message.setTo(to);\r\n        message.setSubject(\"Tài khoản của bạn đã bị xóa\");\r\n        message.setText(\"Xin chào \" + fullName + \",\\n\\n\"\r\n                + \"Tài khoản của bạn trên AI Interview Platform đã bị xóa bởi quản trị viên.\\n\"\r\n                + \"Vui lòng liên hệ hỗ trợ nếu bạn có thắc mắc.\");\r\n        mailSender.send(message);\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java b/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java
+---- a/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java	(date 1788233461025)
+-@@ -19,7 +19,7 @@
+-         message.setSubject("Xác thực tài khoản AI Interview Platform");
+-         message.setText("Xin chào " + fullName + ",\n\n"
+-                 + "Vui lòng xác thực tài khoản bằng cách nhấn vào link sau:\n"
+--                + "http://localhost:8080/api/v1/auth/verify-email?token=" + token + "\n\n"
+-+                + "http://localhost:8080/api/v1/auth/verify?token=" + token + "\n\n"
+-                 + "Link có hiệu lực trong 24 giờ.");
+-         mailSender.send(message);
+-     }
+-@@ -31,7 +31,7 @@
+-         message.setSubject("Gửi lại xác thực tài khoản AI Interview Platform");
+-         message.setText("Xin chào " + fullName + ",\n\n"
+-                 + "Đây là link xác thực mới của bạn:\n"
+--                + "http://localhost:8080/api/v1/auth/verify-email?token=" + token + "\n\n"
+-+                + "http://localhost:8080/api/v1/auth/verify?token=" + token + "\n\n"
+-                 + "Link có hiệu lực trong 24 giờ.");
+-         mailSender.send(message);
+-     }
+-Index: backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.aiinterview.platform.service.impl;\r\n\r\nimport com.aiinterview.platform.common.exception.InvalidAccountException;\r\nimport com.aiinterview.platform.common.exception.InvalidPasswordException;\r\nimport com.aiinterview.platform.model.entity.User;\r\nimport com.aiinterview.platform.model.repository.UserRepository;\r\nimport com.aiinterview.platform.service.EmailService;\r\nimport com.aiinterview.platform.service.PasswordResetService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.time.LocalDateTime;\r\nimport java.util.UUID;\r\nimport java.util.regex.Pattern;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\n@Slf4j\r\npublic class PasswordResetServiceImpl implements PasswordResetService {\r\n\r\n    private final UserRepository userRepository;\r\n    private final EmailService emailService;\r\n    private final PasswordEncoder passwordEncoder;\r\n\r\n    private static final Pattern PASSWORD_PATTERN =\r\n            Pattern.compile(\"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@#$%^&+=!]).{8,}$\");\r\n\r\n    private static final String GENERIC_MESSAGE = \"Nếu email tồn tại, bạn sẽ nhận được link đặt lại mật khẩu.\";\r\n\r\n    @Override\r\n    public String forgotPassword(String email) {\r\n        User user = userRepository.findByEmail(email).orElse(null);\r\n\r\n        if (user == null) {\r\n            return GENERIC_MESSAGE;\r\n        }\r\n\r\n        String resetToken = UUID.randomUUID().toString();\r\n        user.setResetToken(resetToken);\r\n        user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));\r\n        userRepository.save(user);\r\n\r\n        try {\r\n            emailService.sendResetPasswordEmail(email, user.getFullName(), resetToken);\r\n        } catch (Exception e) {\r\n            log.warn(\"Không thể gửi email reset password tới {}: {}\", email, e.getMessage());\r\n        }\r\n\r\n        return GENERIC_MESSAGE;\r\n    }\r\n\r\n    @Override\r\n    public String resetPassword(String token, String newPassword) {\r\n        User user = userRepository.findByResetToken(token)\r\n                .orElseThrow(() -> new InvalidAccountException(\"Link đặt lại mật khẩu không hợp lệ\"));\r\n\r\n        if (user.getResetTokenExpiry() == null || LocalDateTime.now().isAfter(user.getResetTokenExpiry())) {\r\n            throw new InvalidAccountException(\"Link đặt lại mật khẩu đã hết hạn. Vui lòng yêu cầu lại.\");\r\n        }\r\n\r\n        if (newPassword == null || !PASSWORD_PATTERN.matcher(newPassword).matches()) {\r\n            throw new InvalidPasswordException(\r\n                    \"Mật khẩu phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@#$%^&+=!)\"\r\n            );\r\n        }\r\n\r\n        user.setPassword(passwordEncoder.encode(newPassword));\r\n        user.setTokenVersion(user.getTokenVersion() + 1);\r\n        user.setResetToken(null);\r\n        user.setResetTokenExpiry(null);\r\n        user.setLoginAttempts(0);\r\n        user.setLockUntil(null);\r\n        userRepository.save(user);\r\n\r\n        try {\r\n            emailService.sendPasswordResetConfirmation(user.getEmail(), user.getFullName());\r\n        } catch (Exception e) {\r\n            log.warn(\"Không thể gửi email xác nhận reset password tới {}: {}\", user.getEmail(), e.getMessage());\r\n        }\r\n\r\n        return \"Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại.\";\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java b/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java
+---- a/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java	(date 1788187527271)
+-@@ -1,7 +1,7 @@
+- package com.aiinterview.platform.service.impl;
+- 
+- import com.aiinterview.platform.common.exception.InvalidAccountException;
+--import com.aiinterview.platform.common.exception.InvalidPasswordException;
+-+import com.aiinterview.platform.common.exception.InvalidAccountLockedException;
+- import com.aiinterview.platform.model.entity.User;
+- import com.aiinterview.platform.model.repository.UserRepository;
+- import com.aiinterview.platform.service.EmailService;
+-@@ -61,7 +61,7 @@
+-         }
+- 
+-         if (newPassword == null || !PASSWORD_PATTERN.matcher(newPassword).matches()) {
+--            throw new InvalidPasswordException(
+-+            throw new InvalidAccountLockedException.InvalidPasswordException(
+-                     "Mật khẩu phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@#$%^&+=!)"
+-             );
+-         }
+-Index: .idea/misc.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"openjdk-26\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/out\" />\r\n  </component>\r\n</project>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/.idea/misc.xml b/.idea/misc.xml
+---- a/.idea/misc.xml	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/.idea/misc.xml	(date 1788188252462)
+-@@ -1,6 +1,14 @@
+- <?xml version="1.0" encoding="UTF-8"?>
+- <project version="4">
+--  <component name="ProjectRootManager" version="2" project-jdk-name="openjdk-26" project-jdk-type="JavaSDK">
+-+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+-+  <component name="MavenProjectsManager">
+-+    <option name="originalFiles">
+-+      <list>
+-+        <option value="$PROJECT_DIR$/backend/pom.xml" />
+-+      </list>
+-+    </option>
+-+  </component>
+-+  <component name="ProjectRootManager" version="2" project-jdk-name="17" project-jdk-type="JavaSDK">
+-     <output url="file://$PROJECT_DIR$/out" />
+-   </component>
+- </project>
+-\ No newline at end of file
+-Index: backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.aiinterview.platform.common.exception;\r\n\r\nimport com.aiinterview.platform.model.entity.ErrorModel;\r\nimport jakarta.servlet.http.HttpServletRequest;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.validation.FieldError;\r\nimport org.springframework.web.bind.MethodArgumentNotValidException;\r\nimport org.springframework.web.bind.annotation.ExceptionHandler;\r\nimport org.springframework.web.bind.annotation.RestControllerAdvice;\r\n\r\nimport java.time.LocalDateTime;\r\nimport java.util.HashMap;\r\nimport java.util.Map;\r\n\r\n@RestControllerAdvice\r\npublic class GlobalExceptionHandler {\r\n\r\n    @ExceptionHandler(InvalidPasswordException.class)\r\n    public ResponseEntity<?> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {\r\n        ErrorModel error =  new ErrorModel(401,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(), // base information about bug\r\n                new HashMap<>()); // if any information about bug\r\n\r\n        return ResponseEntity .status(401) .body(error);\r\n    }\r\n\r\n    @ExceptionHandler(InvalidAccountException.class)\r\n    public ResponseEntity<?> handleInvalidAccount(InvalidAccountException ex, HttpServletRequest request) {\r\n        ErrorModel error = new ErrorModel(401,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),\r\n                new HashMap<>());\r\n        return ResponseEntity.status(401).body(error);\r\n    }\r\n\r\n    @ExceptionHandler(InvalidAccountLockedException.class)\r\n    public ResponseEntity<?> handleInvalidAccountLocked(InvalidAccountLockedException ex,HttpServletRequest request) {\r\n        ErrorModel error = new ErrorModel(423,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),\r\n                new HashMap<>(\r\n                        Map.of(\r\n                                \"lockedUntil\", ex.getLockUntil()\r\n                        )\r\n                ));\r\n        return ResponseEntity.status(423).body(error);\r\n    }\r\n\r\n    @ExceptionHandler(MethodArgumentNotValidException.class)\r\n    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {\r\n        Map<String, Object> fieldErrors = new HashMap<>();\r\n        for (FieldError error : ex.getBindingResult().getFieldErrors()) {\r\n            fieldErrors.put(error.getField(), error.getDefaultMessage());\r\n        }\r\n        ErrorModel error = new ErrorModel(400, \"Validation failed\", request.getRequestURL().toString(), LocalDateTime.now(),\r\n                fieldErrors);\r\n        return ResponseEntity.status(400).body(error);\r\n    }\r\n\r\n    @ExceptionHandler(BadRequestException.class)\r\n    public ResponseEntity<?> handleBadRequest(BadRequestException ex, HttpServletRequest request) {\r\n        ErrorModel error = new ErrorModel(400, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),\r\n                new HashMap<>());\r\n        return ResponseEntity.status(400).body(error);\r\n    }\r\n\r\n    @ExceptionHandler(ResourceNotFoundException.class)\r\n    public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {\r\n        ErrorModel error = new ErrorModel(404, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),\r\n                new HashMap<>());\r\n        return ResponseEntity.status(404).body(error);\r\n    }\r\n\r\n    @ExceptionHandler(RuntimeException.class)\r\n    public ResponseEntity<?> handleOther(RuntimeException ex, HttpServletRequest request) {\r\n        ex.printStackTrace();\r\n        ErrorModel error = new ErrorModel(500, \"Internal server error: \" + ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),\r\n                new HashMap<>());\r\n        return ResponseEntity.status(500).body(error);\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java b/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java
+---- a/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java	(date 1788235579065)
+-@@ -4,9 +4,12 @@
+- import jakarta.servlet.http.HttpServletRequest;
+- import org.springframework.http.ResponseEntity;
+- import org.springframework.validation.FieldError;
+-+import org.springframework.http.converter.HttpMessageNotReadableException;
+- import org.springframework.web.bind.MethodArgumentNotValidException;
+-+import org.springframework.web.bind.MissingServletRequestParameterException;
+- import org.springframework.web.bind.annotation.ExceptionHandler;
+- import org.springframework.web.bind.annotation.RestControllerAdvice;
+-+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+- 
+- import java.time.LocalDateTime;
+- import java.util.HashMap;
+-@@ -15,8 +18,8 @@
+- @RestControllerAdvice
+- public class GlobalExceptionHandler {
+- 
+--    @ExceptionHandler(InvalidPasswordException.class)
+--    public ResponseEntity<?> handleInvalidPassword(InvalidPasswordException ex, HttpServletRequest request) {
+-+    @ExceptionHandler(InvalidAccountLockedException.InvalidPasswordException.class)
+-+    public ResponseEntity<?> handleInvalidPassword(InvalidAccountLockedException.InvalidPasswordException ex, HttpServletRequest request) {
+-         ErrorModel error =  new ErrorModel(401,ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(), // base information about bug
+-                 new HashMap<>()); // if any information about bug
+- 
+-@@ -51,6 +54,32 @@
+-                 fieldErrors);
+-         return ResponseEntity.status(400).body(error);
+-     }
+-+
+-+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+-+    public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+-+        String name = ex.getName();
+-+        Object value = ex.getValue();
+-+        Map<String, Object> details = Map.of(
+-+                "parameter", name,
+-+                "value", value == null ? "null" : value.toString()
+-+        );
+-+        String message = "Invalid value for parameter '" + name + "': '" + value + "'";
+-+        ErrorModel error = new ErrorModel(400, message, request.getRequestURL().toString(), LocalDateTime.now(), details);
+-+        return ResponseEntity.status(400).body(error);
+-+    }
+-+
+-+    @ExceptionHandler(HttpMessageNotReadableException.class)
+-+    public ResponseEntity<?> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+-+        ErrorModel error = new ErrorModel(400, "Malformed request body", request.getRequestURL().toString(), LocalDateTime.now(), new HashMap<>());
+-+        return ResponseEntity.status(400).body(error);
+-+    }
+-+
+-+    @ExceptionHandler(MissingServletRequestParameterException.class)
+-+    public ResponseEntity<?> handleMissingParam(MissingServletRequestParameterException ex, HttpServletRequest request) {
+-+        ErrorModel error = new ErrorModel(400, "Missing required parameter: " + ex.getParameterName(),
+-+                request.getRequestURL().toString(), LocalDateTime.now(), new HashMap<>());
+-+        return ResponseEntity.status(400).body(error);
+-+    }
+- 
+-     @ExceptionHandler(BadRequestException.class)
+-     public ResponseEntity<?> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+-Index: backend/src/main/java/com/aiinterview/platform/service/impl/RegisterInterfaceImpl.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.aiinterview.platform.service.impl;\r\n\r\nimport com.aiinterview.platform.common.exception.InvalidAccountException;\r\nimport com.aiinterview.platform.common.exception.InvalidPasswordException;\r\nimport com.aiinterview.platform.model.dto.response.RegisterResponse;\r\nimport com.aiinterview.platform.model.entity.RegisterAttempt;\r\nimport com.aiinterview.platform.model.entity.User;\r\nimport com.aiinterview.platform.model.enums.Role;\r\nimport com.aiinterview.platform.model.repository.RegisterAttemptRepository;\r\nimport com.aiinterview.platform.model.repository.UserRepository;\r\nimport com.aiinterview.platform.security.utils.SecurityUtils;\r\nimport com.aiinterview.platform.service.EmailService;\r\nimport com.aiinterview.platform.service.RegisterInterface;\r\nimport jakarta.servlet.http.HttpServletRequest;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.time.LocalDateTime;\r\nimport java.util.UUID;\r\nimport java.util.regex.Pattern;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\n@Slf4j\r\npublic class RegisterInterfaceImpl implements RegisterInterface {\r\n\r\n    private final UserRepository userRepository;\r\n    private final RegisterAttemptRepository registerAttemptRepository;\r\n    private final PasswordEncoder passwordEncoder;\r\n    private final EmailService emailService;\r\n\r\n    private static final Pattern PASSWORD_PATTERN =\r\n            Pattern.compile(\"^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@#$%^&+=!]).{8,}$\");\r\n\r\n    @Override\r\n    public RegisterResponse register(String email, String password, String fullName, String phone,\r\n                                     HttpServletRequest request) {\r\n        String ipClient = SecurityUtils.getClientIP(request);\r\n\r\n        // Bước 1: Check IP rate-limit — 10 lần thất bại từ IP này trong 5 phút\r\n        long ipFailures = registerAttemptRepository.countFailedByIp(ipClient, LocalDateTime.now().minusMinutes(5));\r\n        if (ipFailures >= 10) {\r\n            throw new InvalidPasswordException(\r\n                    \"Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau.\"\r\n            );\r\n        }\r\n\r\n        // Bước 2: Check email rate-limit — 5 lần thất bại từ email này\r\n        RegisterAttempt emailAttempt = registerAttemptRepository.findRegisterAttemptByEmail(email);\r\n        if (emailAttempt == null) {\r\n            emailAttempt = new RegisterAttempt(ipClient, email);\r\n            emailAttempt.setTimestamp(LocalDateTime.now());\r\n            registerAttemptRepository.addRegisterAttempt(emailAttempt);\r\n        }\r\n        if (emailAttempt.getLocked() != null && emailAttempt.getLocked()) {\r\n            if (LocalDateTime.now().isBefore(emailAttempt.getLockUntil())) {\r\n                throw new InvalidPasswordException(\r\n                        \"Email này đã thực hiện quá nhiều lần đăng ký thất bại. Vui lòng thử lại sau 5 phút.\"\r\n                );\r\n            }\r\n            emailAttempt.setLocked(false);\r\n            emailAttempt.setCounterFail(0);\r\n            emailAttempt.setLockUntil(null);\r\n        }\r\n\r\n        // Bước 3: Check IP-based lock (giữ từ code cũ)\r\n        RegisterAttempt ipAttempt = registerAttemptRepository.findRegisterAttempt(ipClient);\r\n        if (ipAttempt == null) {\r\n            ipAttempt = new RegisterAttempt(ipClient, email);\r\n            ipAttempt.setTimestamp(LocalDateTime.now());\r\n            registerAttemptRepository.addRegisterAttempt(ipAttempt);\r\n        }\r\n        if (ipAttempt.getLocked() != null && ipAttempt.getLocked()) {\r\n            if (LocalDateTime.now().isBefore(ipAttempt.getLockUntil())) {\r\n                throw new InvalidPasswordException(\r\n                        \"Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau.\"\r\n                );\r\n            }\r\n            ipAttempt.setLocked(false);\r\n            ipAttempt.setCounterFail(0);\r\n            ipAttempt.setLockUntil(null);\r\n        }\r\n\r\n        if (userRepository.existsByEmail(email)) {\r\n            throw new InvalidAccountException(\"Email đã tồn tại trong hệ thống\");\r\n        }\r\n\r\n        if (password == null || !PASSWORD_PATTERN.matcher(password).matches()) {\r\n            // Tăng counter cho cả email và IP\r\n            emailAttempt.setCounterFail(emailAttempt.getCounterFail() + 1);\r\n            ipAttempt.setCounterFail(ipAttempt.getCounterFail() + 1);\r\n\r\n            if (emailAttempt.getCounterFail() >= 5) {\r\n                emailAttempt.setLocked(true);\r\n                emailAttempt.setLockUntil(LocalDateTime.now().plusMinutes(5));\r\n            }\r\n            if (ipAttempt.getCounterFail() >= 10) {\r\n                ipAttempt.setLocked(true);\r\n                ipAttempt.setLockUntil(LocalDateTime.now().plusMinutes(5));\r\n            }\r\n\r\n            throw new InvalidPasswordException(\r\n                    \"Mật khẩu phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@#$%^&+=!)\"\r\n            );\r\n        }\r\n\r\n        String verificationToken = UUID.randomUUID().toString();\r\n\r\n        User newUser = User.builder()\r\n                .email(email)\r\n                .password(passwordEncoder.encode(password))\r\n                .fullName(fullName)\r\n                .phone(phone)\r\n                .role(Role.ROLE_USER)\r\n                .enabled(false)\r\n                .verificationToken(verificationToken)\r\n                .verificationTokenExpiry(LocalDateTime.now().plusHours(24))\r\n                .build();\r\n\r\n        userRepository.save(newUser);\r\n\r\n        // Reset counters sau khi đăng ký thành công\r\n        emailAttempt.setCounterFail(0);\r\n        emailAttempt.setLocked(false);\r\n        emailAttempt.setLockUntil(null);\r\n        ipAttempt.setCounterFail(0);\r\n        ipAttempt.setLocked(false);\r\n        ipAttempt.setLockUntil(null);\r\n\r\n        try {\r\n            emailService.sendVerificationEmail(email, fullName, verificationToken);\r\n        } catch (Exception e) {\r\n            log.warn(\"Không thể gửi email xác thực tới {}: {}\", email, e.getMessage());\r\n        }\r\n\r\n        return new RegisterResponse(\"Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.\");\r\n    }\r\n\r\n    @Override\r\n    public String verifyEmail(String token) {\r\n        User user = userRepository.findByVerificationToken(token)\r\n                .orElseThrow(() -> new InvalidAccountException(\"Token xác thực không hợp lệ\"));\r\n\r\n        if (LocalDateTime.now().isAfter(user.getVerificationTokenExpiry())) {\r\n            throw new InvalidAccountException(\"Link xác thực đã hết hạn (quá 24 giờ)\");\r\n        }\r\n\r\n        user.setEnabled(true);\r\n        user.setVerificationToken(null);\r\n        user.setVerificationTokenExpiry(null);\r\n        userRepository.save(user);\r\n\r\n        return \"Tài khoản đã được kích hoạt thành công! Bạn có thể đăng nhập ngay.\";\r\n    }\r\n\r\n    @Override\r\n    public void resendVerification(String email) {\r\n        User user = userRepository.findByEmail(email)\r\n                .orElseThrow(() -> new InvalidAccountException(\"Email không tồn tại trong hệ thống\"));\r\n\r\n        if (user.isEnabled()) {\r\n            throw new InvalidAccountException(\"Tài khoản đã được kích hoạt\");\r\n        }\r\n\r\n        String newToken = UUID.randomUUID().toString();\r\n        user.setVerificationToken(newToken);\r\n        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));\r\n        userRepository.save(user);\r\n\r\n        try {\r\n            emailService.sendResendVerificationEmail(email, user.getFullName(), newToken);\r\n        } catch (Exception e) {\r\n            log.warn(\"Không thể gửi lại email xác thực tới {}: {}\", email, e.getMessage());\r\n        }\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/service/impl/RegisterInterfaceImpl.java b/backend/src/main/java/com/aiinterview/platform/service/impl/RegisterInterfaceImpl.java
+---- a/backend/src/main/java/com/aiinterview/platform/service/impl/RegisterInterfaceImpl.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/java/com/aiinterview/platform/service/impl/RegisterInterfaceImpl.java	(date 1788187527288)
+-@@ -1,7 +1,7 @@
+- package com.aiinterview.platform.service.impl;
+- 
+- import com.aiinterview.platform.common.exception.InvalidAccountException;
+--import com.aiinterview.platform.common.exception.InvalidPasswordException;
+-+import com.aiinterview.platform.common.exception.InvalidAccountLockedException;
+- import com.aiinterview.platform.model.dto.response.RegisterResponse;
+- import com.aiinterview.platform.model.entity.RegisterAttempt;
+- import com.aiinterview.platform.model.entity.User;
+-@@ -42,7 +42,7 @@
+-         // Bước 1: Check IP rate-limit — 10 lần thất bại từ IP này trong 5 phút
+-         long ipFailures = registerAttemptRepository.countFailedByIp(ipClient, LocalDateTime.now().minusMinutes(5));
+-         if (ipFailures >= 10) {
+--            throw new InvalidPasswordException(
+-+            throw new InvalidAccountLockedException.InvalidPasswordException(
+-                     "Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau."
+-             );
+-         }
+-@@ -56,7 +56,7 @@
+-         }
+-         if (emailAttempt.getLocked() != null && emailAttempt.getLocked()) {
+-             if (LocalDateTime.now().isBefore(emailAttempt.getLockUntil())) {
+--                throw new InvalidPasswordException(
+-+                throw new InvalidAccountLockedException.InvalidPasswordException(
+-                         "Email này đã thực hiện quá nhiều lần đăng ký thất bại. Vui lòng thử lại sau 5 phút."
+-                 );
+-             }
+-@@ -74,7 +74,7 @@
+-         }
+-         if (ipAttempt.getLocked() != null && ipAttempt.getLocked()) {
+-             if (LocalDateTime.now().isBefore(ipAttempt.getLockUntil())) {
+--                throw new InvalidPasswordException(
+-+                throw new InvalidAccountLockedException.InvalidPasswordException(
+-                         "Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau."
+-                 );
+-             }
+-@@ -101,7 +101,7 @@
+-                 ipAttempt.setLockUntil(LocalDateTime.now().plusMinutes(5));
+-             }
+- 
+--            throw new InvalidPasswordException(
+-+            throw new InvalidAccountLockedException.InvalidPasswordException(
+-                     "Mật khẩu phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@#$%^&+=!)"
+-             );
+-         }
+-Index: backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.aiinterview.platform.service.impl;\r\n\r\nimport com.aiinterview.platform.common.exception.InvalidAccountLockedException;\r\nimport com.aiinterview.platform.common.exception.InvalidAccountException;\r\nimport com.aiinterview.platform.common.exception.InvalidPasswordException;\r\nimport com.aiinterview.platform.model.dto.response.LoginResponse;\r\nimport com.aiinterview.platform.model.entity.LoginAttempt;\r\nimport com.aiinterview.platform.model.entity.User;\r\nimport com.aiinterview.platform.model.repository.LoginAttemptRepository;\r\nimport com.aiinterview.platform.model.repository.UserRepository;\r\nimport com.aiinterview.platform.security.jwt.JwtUtil;\r\nimport com.aiinterview.platform.security.utils.SecurityUtils;\r\nimport com.aiinterview.platform.service.LoginInterface;\r\nimport jakarta.servlet.http.HttpServletRequest;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.time.LocalDateTime;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class LoginInterfaceImpl implements LoginInterface {\r\n\r\n    private final UserRepository userRepository;\r\n    private final PasswordEncoder passwordEncoder;\r\n    private final LoginAttemptRepository loginAttemptRepository;\r\n\r\n    @Override\r\n    public LoginResponse login(String email, String password, HttpServletRequest request) {\r\n        String ipClient = SecurityUtils.getClientIP(request);\r\n\r\n        // Bước 1: Check IP rate-limit — 20 lần thất bại từ IP này trong 15 phút (bất kể email nào)\r\n        long ipFailures = loginAttemptRepository.countFailedByIp(ipClient, LocalDateTime.now().minusMinutes(15));\r\n        if (ipFailures >= 20) {\r\n            throw new InvalidAccountException(\r\n                    \"Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau.\"\r\n            );\r\n        }\r\n\r\n        User user = userRepository.findByEmail(email)\r\n                .orElseThrow(() -> {\r\n                    loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, false));\r\n                    return new InvalidAccountException(\"Email không tồn tại\");\r\n                });\r\n\r\n        if (!user.isEnabled()) {\r\n            throw new InvalidAccountException(\"Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.\");\r\n        }\r\n\r\n        // Kiểm tra admin lock (khóa bởi Admin, khác với lockUntil do nhập sai password)\r\n        if (user.isLocked()) {\r\n            throw new InvalidAccountLockedException(\r\n                    \"Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ hỗ trợ.\",\r\n                    null\r\n            );\r\n        }\r\n\r\n        if (user.getLockUntil() != null && LocalDateTime.now().isBefore(user.getLockUntil())) {\r\n            throw new InvalidAccountLockedException(\r\n                    \"Tài khoản đã bị khóa do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.\",\r\n                    user.getLockUntil()\r\n            );\r\n        }\r\n\r\n        long recentFailures = loginAttemptRepository.getFailedAttempts(\r\n                email, LocalDateTime.now().minusMinutes(15)\r\n        ).size();\r\n        if (recentFailures >= 5) {\r\n            user.setLockUntil(LocalDateTime.now().plusMinutes(15));\r\n            userRepository.save(user);\r\n            throw new InvalidAccountLockedException(\r\n                    \"Tài khoản đã bị khóa do nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.\",\r\n                    user.getLockUntil()\r\n            );\r\n        }\r\n\r\n        if (!passwordEncoder.matches(password, user.getPassword())) {\r\n            user.setLoginAttempts(user.getLoginAttempts() + 1);\r\n            loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, false));\r\n\r\n            if (user.getLoginAttempts() >= 5) {\r\n                user.setLockUntil(LocalDateTime.now().plusMinutes(15));\r\n                userRepository.save(user);\r\n                throw new InvalidAccountLockedException(\r\n                        \"Tài khoản đã bị khóa do nhập sai quá nhiều lần. Khóa đến: \",\r\n                        user.getLockUntil()\r\n                );\r\n            }\r\n\r\n            throw new InvalidPasswordException(\"Mật khẩu sai\");\r\n        }\r\n\r\n        loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, true));\r\n        user.setLoginAttempts(0);\r\n        user.setLockUntil(null);\r\n        userRepository.save(user);\r\n\r\n        String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());\r\n        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());\r\n\r\n        return new LoginResponse(accessToken, refreshToken, user.getRole().name());\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java b/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java
+---- a/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java	(revision 2cfd0b2d39b7b4cf6b5ee88f30b95df16b3278d2)
+-+++ b/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java	(date 1788187527299)
+-@@ -2,7 +2,6 @@
+- 
+- import com.aiinterview.platform.common.exception.InvalidAccountLockedException;
+- import com.aiinterview.platform.common.exception.InvalidAccountException;
+--import com.aiinterview.platform.common.exception.InvalidPasswordException;
+- import com.aiinterview.platform.model.dto.response.LoginResponse;
+- import com.aiinterview.platform.model.entity.LoginAttempt;
+- import com.aiinterview.platform.model.entity.User;
+-@@ -88,7 +87,7 @@
+-                 );
+-             }
+- 
+--            throw new InvalidPasswordException("Mật khẩu sai");
+-+            throw new InvalidAccountLockedException.InvalidPasswordException("Mật khẩu sai");
+-         }
+- 
+-         loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, true));
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM__Changes_.xml	(revision cd4070628268d778bc0dc3c58173919b3d43758e)
++++ /dev/null	(revision cd4070628268d778bc0dc3c58173919b3d43758e)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]" date="1788251399654" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 9/1/2026 3:29 PM [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"e88a00eb-2f5f-4fff-9376-08b0920bfcb4\" name=\"Changes\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/.env.example\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/.gitignore\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/AI-Interview-Platform.iml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/vcs.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/HELP.md\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/LoginRegister.md\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/README.md\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/Dockerfile\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/api-test.http\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/mvnw.cmd\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/pom.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/AiInterviewPlatformApplication.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/BadRequestException.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountException.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/ResourceNotFoundException.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/response/ApiResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/config/DataInitializer.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/AdminUserController.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthController.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthorizationController.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ProfileController.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ViewController.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/ChangeRoleRequest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/LoginRequest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RefreshTokenRequest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RegisterRequest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuditLogResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuthResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/LoginResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/ProfileResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/RegisterResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserDetailResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserSummaryResponse.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/AdminAuditLog.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/ErrorModel.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/LoginAttempt.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/RegisterAttempt.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/User.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/enums/Role.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/AdminAuditLogRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeLoginAttemptRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeRegisterAttempt.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeUserRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/JpaUserRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/LoginAttemptRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/RegisterAttemptRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/UserRepository.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtFilter.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtSecurityConfig.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtUtil.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/JwtUtils.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/SecurityUtils.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/AdminUserService.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/EmailService.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/LoginInterface.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/PasswordResetService.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/RegisterInterface.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/UserService.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/AdminUserServiceImpl.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/UserServiceImpl.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/resources/application.yml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/resources/db/migration/V1__init_users.sql\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/resources/db/migration/V2__add_user_status_fields.sql\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/resources/db/migration/V3__create_admin_audit_log.sql\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/resources/db/migration/V4__add_user_missing_fields.sql\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/resources/db/migration/V5__add_role_staff.sql\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/backend/src/test/java/com/aiinterview/platform/controller/AdminUserControllerIntegrationTest.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/docker-compose.yml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/Dockerfile\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/nginx.conf\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/package-lock.json\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/package.json\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/public/index.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/App.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/context/AuthContext.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/controllers/useAdminUserController.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/controllers/useAuthController.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/index.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/models/Api.model.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/models/User.model.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/services/admin.service.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/services/auth.service.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/services/http.service.ts\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/components/ConfirmDialog.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/components/ProtectedRoute.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/components/UserDetailModal.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/AdminUserManagementPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/DashboardPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/ForgotPasswordPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/LoginPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/RegisterPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/ResetPasswordPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/src/views/pages/UnauthorizedPage.tsx\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/frontend/tsconfig.json\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/application.properties\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/static/Profile.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/static/indexLogin.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/static/js/apiClients.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/static/js/auth.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/static/js/profile.js\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/classes/static/register.html\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/generated-sources/annotations/InvaildAccountLockedException.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/test.http\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"HTTP Public Environment File\" />\r\n        <option value=\"AnnotationType\" />\r\n        <option value=\"HTML File\" />\r\n        <option value=\"Exception\" />\r\n        <option value=\"Interface\" />\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"dev\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Nam-hoc-code&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/PNV-do-an/AI-Interview-Platform.git&quot;,\r\n    &quot;accountId&quot;: &quot;d1ea13a5-d275-4f37-9e98-89c085cf3d1c&quot;\r\n  }\r\n}</component>\r\n  <component name=\"HttpClientEndpointsTabState\">\r\n    <option name=\"cachedRequestData\" value=\"&lt;CachedHttpClientTabRequests /&gt;\" />\r\n  </component>\r\n  <component name=\"HttpClientOnboardingState\">{\r\n  &quot;isOnboardingCommentShown&quot;: true\r\n}</component>\r\n  <component name=\"KubernetesApiPersistence\">{}</component>\r\n  <component name=\"KubernetesApiProvider\">{\r\n  &quot;isMigrated&quot;: true\r\n}</component>\r\n  <component name=\"MavenImportPreferences\">\r\n    <option name=\"generalSettings\">\r\n      <MavenGeneralSettings>\r\n        <option name=\"mavenHomeTypeForPersistence\" value=\"WRAPPER\" />\r\n      </MavenGeneralSettings>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 5\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3AzAbDss2oyeAW6zqhF8XzRQHeY\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,\r\n    &quot;HTTP Request.SpringBoot-endpoints | #1.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.api-test | #1.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.api-test | Xác thực email (copy token từ console log: \\&quot;&gt;&gt;&gt; EMAIL VERIFICATION\\&quot; hoặc \\&quot;Email sent to\\&quot;).executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.api-test | Đăng ký tài khoản mới.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password).executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #1.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #10.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #11.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #12.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #13.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #14.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #15.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #16.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #18.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #19.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #2.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #3.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #4.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #5.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #7.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #8.executor&quot;: &quot;Run&quot;,\r\n    &quot;HTTP Request.generated-requests | #9.executor&quot;: &quot;Run&quot;,\r\n    &quot;Maven.SpringBoot [clean].executor&quot;: &quot;Run&quot;,\r\n    &quot;Maven.SpringBoot [install].executor&quot;: &quot;Run&quot;,\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,\r\n    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,\r\n    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,\r\n    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,\r\n    &quot;Spring Boot.AiInterviewPlatformApplication.executor&quot;: &quot;Run&quot;,\r\n    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,\r\n    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;Ai-test-implement&quot;,\r\n    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,\r\n    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/LENOVO/Downloads/SpringBoot/SpringBoot&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,\r\n    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,\r\n    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;swagger&quot;,\r\n    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,\r\n    &quot;ts.external.directory.path&quot;: &quot;D:\\\\IntelliJIdea\\\\IntelliJ IDEA 2025.3\\\\plugins\\\\javascript-plugin\\\\jsLanguageServicesImpl\\\\external&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CreateClassDialog.RecentsKey\">\r\n      <recent name=\"com.hoc.backend.SpringBoot.dto\" />\r\n    </key>\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\LENOVO\\Downloads\\SpringBoot\\SpringBoot\\src\\main\\resources\\static\" />\r\n      <recent name=\"C:\\Users\\LENOVO\\Downloads\\SpringBoot\\SpringBoot\\src\\main\\resources\\static\\js\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunDashboard\">\r\n    <option name=\"configurationStatuses\">\r\n      <map>\r\n        <entry key=\"HttpClient.HttpRequestRunConfigurationType\">\r\n          <value>\r\n            <map>\r\n              <entry key=\"SpringBoot-endpoints | #1\" value=\"STOPPED\" />\r\n              <entry key=\"api-test | #1\" value=\"STOPPED\" />\r\n              <entry key=\"api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)\" value=\"STOPPED\" />\r\n              <entry key=\"api-test | Đăng ký tài khoản mới\" value=\"STOPPED\" />\r\n              <entry key=\"api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)\" value=\"STOPPED\" />\r\n            </map>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Spring Boot.AiInterviewPlatformApplication\">\r\n    <configuration name=\"SpringBoot-endpoints | #1\" type=\"HttpClient.HttpRequestRunConfigurationType\" factoryName=\"HTTP Request\" temporary=\"true\" nameIsGenerated=\"true\" path=\"$APPLICATION_CONFIG_DIR$/scratches/SpringBoot-endpoints.http\" executionIdentifier=\"#1\" runType=\"Run single request\">\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)\" type=\"HttpClient.HttpRequestRunConfigurationType\" factoryName=\"HTTP Request\" temporary=\"true\" nameIsGenerated=\"true\" path=\"$PROJECT_DIR$/backend/api-test.http\" executionIdentifier=\"Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)\" index=\"2\" runType=\"Run single request\">\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"api-test | #1\" type=\"HttpClient.HttpRequestRunConfigurationType\" factoryName=\"HTTP Request\" temporary=\"true\" nameIsGenerated=\"true\" path=\"$PROJECT_DIR$/backend/api-test.http\" executionIdentifier=\"#1\" runType=\"Run single request\">\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"api-test | Đăng ký tài khoản mới\" type=\"HttpClient.HttpRequestRunConfigurationType\" factoryName=\"HTTP Request\" temporary=\"true\" nameIsGenerated=\"true\" path=\"$PROJECT_DIR$/backend/api-test.http\" executionIdentifier=\"Đăng ký tài khoản mới\" runType=\"Run single request\">\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)\" type=\"HttpClient.HttpRequestRunConfigurationType\" factoryName=\"HTTP Request\" temporary=\"true\" nameIsGenerated=\"true\" path=\"$PROJECT_DIR$/backend/api-test.http\" executionIdentifier=\"Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)\" index=\"7\" runType=\"Run single request\">\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"AiInterviewPlatformApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <module name=\"ai-interview-platform\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.aiinterview.platform.AiInterviewPlatformApplication\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\">\r\n      <module name=\"SpringBoot\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <list>\r\n      <item itemvalue=\"HTTP Request.SpringBoot-endpoints | #1\" />\r\n      <item itemvalue=\"HTTP Request.api-test | #1\" />\r\n      <item itemvalue=\"HTTP Request.api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)\" />\r\n      <item itemvalue=\"HTTP Request.api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)\" />\r\n      <item itemvalue=\"HTTP Request.api-test | Đăng ký tài khoản mới\" />\r\n      <item itemvalue=\"Spring Boot.AiInterviewPlatformApplication\" />\r\n    </list>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"HTTP Request.api-test | Đăng ký tài khoản mới\" />\r\n        <item itemvalue=\"HTTP Request.SpringBoot-endpoints | #1\" />\r\n        <item itemvalue=\"HTTP Request.api-test | Xác thực email (copy token từ console log: &quot;&gt;&gt;&gt; EMAIL VERIFICATION&quot; hoặc &quot;Email sent to&quot;)\" />\r\n        <item itemvalue=\"HTTP Request.api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)\" />\r\n        <item itemvalue=\"HTTP Request.api-test | #1\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-30f59d01ecdd-cffe25b9f5b3-intellij.indexing.shared.core-IU-253.28294.334\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-c7e53b3be11b-JavaScript-IU-253.28294.334\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"StructureViewState\">\r\n    <option name=\"selectedTab\" value=\"Logical\" />\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"e88a00eb-2f5f-4fff-9376-08b0920bfcb4\" name=\"Changes\" comment=\"\" />\r\n      <created>1773585095018</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1773585095018</updated>\r\n      <workItem from=\"1773585096495\" duration=\"3098000\" />\r\n      <workItem from=\"1773663322993\" duration=\"264000\" />\r\n      <workItem from=\"1774104963441\" duration=\"1652000\" />\r\n      <workItem from=\"1774182391534\" duration=\"1847000\" />\r\n      <workItem from=\"1774234691463\" duration=\"1330000\" />\r\n      <workItem from=\"1774272659336\" duration=\"6587000\" />\r\n      <workItem from=\"1774354984543\" duration=\"6019000\" />\r\n      <workItem from=\"1774447127492\" duration=\"4362000\" />\r\n      <workItem from=\"1774603780177\" duration=\"1239000\" />\r\n      <workItem from=\"1774705397903\" duration=\"1867000\" />\r\n      <workItem from=\"1774795314502\" duration=\"3613000\" />\r\n      <workItem from=\"1775029670652\" duration=\"2803000\" />\r\n      <workItem from=\"1775303240738\" duration=\"7685000\" />\r\n      <workItem from=\"1775400335696\" duration=\"4940000\" />\r\n      <workItem from=\"1775634231607\" duration=\"16703000\" />\r\n      <workItem from=\"1775713167071\" duration=\"294000\" />\r\n      <workItem from=\"1775976345672\" duration=\"14000\" />\r\n      <workItem from=\"1776178268271\" duration=\"10000\" />\r\n      <workItem from=\"1776228943945\" duration=\"1248000\" />\r\n      <workItem from=\"1776347254679\" duration=\"6222000\" />\r\n      <workItem from=\"1776417729270\" duration=\"210000\" />\r\n      <workItem from=\"1776433247618\" duration=\"3774000\" />\r\n      <workItem from=\"1776438582469\" duration=\"3358000\" />\r\n      <workItem from=\"1776506842947\" duration=\"111000\" />\r\n      <workItem from=\"1776515262197\" duration=\"6866000\" />\r\n      <workItem from=\"1776580838040\" duration=\"13960000\" />\r\n      <workItem from=\"1776616752621\" duration=\"1032000\" />\r\n      <workItem from=\"1776698267644\" duration=\"70000\" />\r\n      <workItem from=\"1776905012991\" duration=\"4981000\" />\r\n      <workItem from=\"1777643648661\" duration=\"598000\" />\r\n      <workItem from=\"1777951765436\" duration=\"208000\" />\r\n      <workItem from=\"1777985589046\" duration=\"2054000\" />\r\n      <workItem from=\"1777994434833\" duration=\"2045000\" />\r\n      <workItem from=\"1778035044308\" duration=\"3339000\" />\r\n      <workItem from=\"1778050399272\" duration=\"3601000\" />\r\n      <workItem from=\"1778070911265\" duration=\"3257000\" />\r\n      <workItem from=\"1778074240542\" duration=\"322000\" />\r\n      <workItem from=\"1778074649183\" duration=\"4242000\" />\r\n      <workItem from=\"1778251166438\" duration=\"4281000\" />\r\n      <workItem from=\"1778312536926\" duration=\"18611000\" />\r\n      <workItem from=\"1778422618966\" duration=\"6336000\" />\r\n      <workItem from=\"1778470113085\" duration=\"852000\" />\r\n      <workItem from=\"1778559466992\" duration=\"9252000\" />\r\n      <workItem from=\"1778579697176\" duration=\"7986000\" />\r\n      <workItem from=\"1778651969447\" duration=\"3871000\" />\r\n      <workItem from=\"1778676971017\" duration=\"7323000\" />\r\n      <workItem from=\"1778761855387\" duration=\"6960000\" />\r\n      <workItem from=\"1778769025026\" duration=\"5438000\" />\r\n      <workItem from=\"1778831993426\" duration=\"19278000\" />\r\n      <workItem from=\"1778935543372\" duration=\"9922000\" />\r\n      <workItem from=\"1779005780536\" duration=\"12980000\" />\r\n      <workItem from=\"1779087807829\" duration=\"10000\" />\r\n      <workItem from=\"1779201739934\" duration=\"4464000\" />\r\n      <workItem from=\"1779281204611\" duration=\"2030000\" />\r\n      <workItem from=\"1779289207170\" duration=\"404000\" />\r\n      <workItem from=\"1779520430078\" duration=\"7278000\" />\r\n      <workItem from=\"1779538758654\" duration=\"9238000\" />\r\n      <workItem from=\"1779609752319\" duration=\"577000\" />\r\n      <workItem from=\"1779632127577\" duration=\"36000\" />\r\n      <workItem from=\"1779633885294\" duration=\"848000\" />\r\n      <workItem from=\"1779713390925\" duration=\"288000\" />\r\n      <workItem from=\"1779805420724\" duration=\"5441000\" />\r\n      <workItem from=\"1779979404193\" duration=\"4147000\" />\r\n      <workItem from=\"1780026652045\" duration=\"247000\" />\r\n      <workItem from=\"1780040277996\" duration=\"9908000\" />\r\n      <workItem from=\"1780103566880\" duration=\"11000\" />\r\n      <workItem from=\"1780130036543\" duration=\"12280000\" />\r\n      <workItem from=\"1780211309086\" duration=\"8964000\" />\r\n      <workItem from=\"1780317985353\" duration=\"618000\" />\r\n      <workItem from=\"1780319729417\" duration=\"1517000\" />\r\n      <workItem from=\"1780364373134\" duration=\"1098000\" />\r\n      <workItem from=\"1780386023615\" duration=\"2491000\" />\r\n      <workItem from=\"1780408929950\" duration=\"2751000\" />\r\n      <workItem from=\"1780585665932\" duration=\"661000\" />\r\n      <workItem from=\"1780643706971\" duration=\"23631000\" />\r\n      <workItem from=\"1780734933964\" duration=\"9693000\" />\r\n      <workItem from=\"1780795889258\" duration=\"11461000\" />\r\n      <workItem from=\"1781095287168\" duration=\"1286000\" />\r\n      <workItem from=\"1781357321127\" duration=\"2840000\" />\r\n      <workItem from=\"1781452706790\" duration=\"1208000\" />\r\n      <workItem from=\"1781535488884\" duration=\"128000\" />\r\n      <workItem from=\"1781614785831\" duration=\"3759000\" />\r\n      <workItem from=\"1781702090824\" duration=\"4365000\" />\r\n      <workItem from=\"1781771239503\" duration=\"1565000\" />\r\n      <workItem from=\"1782113252081\" duration=\"6490000\" />\r\n      <workItem from=\"1782270760080\" duration=\"792000\" />\r\n      <workItem from=\"1782459765508\" duration=\"2496000\" />\r\n      <workItem from=\"1782720099379\" duration=\"4244000\" />\r\n      <workItem from=\"1782804897521\" duration=\"932000\" />\r\n      <workItem from=\"1782823586807\" duration=\"9132000\" />\r\n      <workItem from=\"1782881221963\" duration=\"590000\" />\r\n      <workItem from=\"1783238105234\" duration=\"776000\" />\r\n      <workItem from=\"1783257892138\" duration=\"1787000\" />\r\n      <workItem from=\"1783318162599\" duration=\"8266000\" />\r\n      <workItem from=\"1783345162244\" duration=\"2459000\" />\r\n      <workItem from=\"1783347651905\" duration=\"295000\" />\r\n      <workItem from=\"1783348001521\" duration=\"826000\" />\r\n      <workItem from=\"1783437830206\" duration=\"1500000\" />\r\n      <workItem from=\"1783473166991\" duration=\"1341000\" />\r\n      <workItem from=\"1783474999395\" duration=\"16569000\" />\r\n      <workItem from=\"1783583827119\" duration=\"644000\" />\r\n      <workItem from=\"1783674293726\" duration=\"1817000\" />\r\n      <workItem from=\"1783760825181\" duration=\"3727000\" />\r\n      <workItem from=\"1783930991447\" duration=\"2129000\" />\r\n      <workItem from=\"1783992846576\" duration=\"2637000\" />\r\n      <workItem from=\"1784020109500\" duration=\"5116000\" />\r\n      <workItem from=\"1784102793393\" duration=\"4641000\" />\r\n      <workItem from=\"1784217804200\" duration=\"362000\" />\r\n      <workItem from=\"1784424372185\" duration=\"1799000\" />\r\n      <workItem from=\"1784448113187\" duration=\"7033000\" />\r\n      <workItem from=\"1784478305134\" duration=\"6179000\" />\r\n      <workItem from=\"1784536605909\" duration=\"1539000\" />\r\n      <workItem from=\"1784538183581\" duration=\"1338000\" />\r\n      <workItem from=\"1784540990982\" duration=\"7256000\" />\r\n      <workItem from=\"1784624392726\" duration=\"12543000\" />\r\n      <workItem from=\"1784705831819\" duration=\"6556000\" />\r\n      <workItem from=\"1784791828829\" duration=\"8083000\" />\r\n      <workItem from=\"1784823383325\" duration=\"380000\" />\r\n      <workItem from=\"1784861476929\" duration=\"4645000\" />\r\n      <workItem from=\"1785156788874\" duration=\"2258000\" />\r\n      <workItem from=\"1785331888573\" duration=\"2700000\" />\r\n      <workItem from=\"1785371898694\" duration=\"14878000\" />\r\n      <workItem from=\"1785654786505\" duration=\"4414000\" />\r\n      <workItem from=\"1785894701347\" duration=\"6023000\" />\r\n      <workItem from=\"1786370589279\" duration=\"168000\" />\r\n      <workItem from=\"1786371137746\" duration=\"111000\" />\r\n      <workItem from=\"1786372817564\" duration=\"3761000\" />\r\n      <workItem from=\"1786411836486\" duration=\"7693000\" />\r\n      <workItem from=\"1786433051530\" duration=\"7016000\" />\r\n      <workItem from=\"1786608430855\" duration=\"2058000\" />\r\n      <workItem from=\"1786695776603\" duration=\"3321000\" />\r\n      <workItem from=\"1786721333610\" duration=\"1080000\" />\r\n      <workItem from=\"1787026092057\" duration=\"2886000\" />\r\n      <workItem from=\"1787144619899\" duration=\"339000\" />\r\n      <workItem from=\"1787146132016\" duration=\"1336000\" />\r\n      <workItem from=\"1787650656769\" duration=\"950000\" />\r\n      <workItem from=\"1788166624845\" duration=\"1330000\" />\r\n      <workItem from=\"1788181728541\" duration=\"1239000\" />\r\n      <workItem from=\"1788183062604\" duration=\"2118000\" />\r\n      <workItem from=\"1788188492614\" duration=\"819000\" />\r\n      <workItem from=\"1788227746313\" duration=\"6896000\" />\r\n      <workItem from=\"1788251360523\" duration=\"3792000\" />\r\n      <workItem from=\"1788255579408\" duration=\"9963000\" />\r\n      <workItem from=\"1788419766994\" duration=\"3254000\" />\r\n      <workItem from=\"1788511748821\" duration=\"6525000\" />\r\n      <workItem from=\"1788599744361\" duration=\"1244000\" />\r\n      <workItem from=\"1788776572809\" duration=\"318000\" />\r\n      <workItem from=\"1788789865869\" duration=\"1010000\" />\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"UnknownFeatures\">\r\n    <option featureType=\"dependencySupport\" implementationName=\"java:org.springframework:spring-core\" />\r\n    <option featureType=\"dependencySupport\" implementationName=\"java:org.springframework.security:spring-security-core\" />\r\n    <option featureType=\"dependencySupport\" implementationName=\"java:org.springframework.boot:spring-boot\" />\r\n    <option featureType=\"dependencySupport\" implementationName=\"java:org.springframework:spring-webmvc\" />\r\n    <option featureType=\"dependencySupport\" implementationName=\"java:org.projectlombok:lombok\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State>\r\n              <option name=\"CUSTOM_BOOLEAN_PROPERTIES\">\r\n                <map>\r\n                  <entry key=\"Show.Git.Branches\" value=\"true\" />\r\n                </map>\r\n              </option>\r\n            </State>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"XSLT-Support.FileAssociations.UIState\">\r\n    <expand />\r\n    <select />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision cd4070628268d778bc0dc3c58173919b3d43758e)
++++ b/.idea/workspace.xml	(date 1789135370610)
+@@ -5,118 +5,9 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="e88a00eb-2f5f-4fff-9376-08b0920bfcb4" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/AI-Interview-Platform.iml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/HELP.md" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/LoginRegister.md" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/api-test.http" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/mvnw.cmd" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/AiInterviewPlatformApplication.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/BadRequestException.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountException.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/ResourceNotFoundException.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/response/ApiResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/config/DataInitializer.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/AdminUserController.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthController.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthorizationController.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ProfileController.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ViewController.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/ChangeRoleRequest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/LoginRequest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RefreshTokenRequest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RegisterRequest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuditLogResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuthResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/LoginResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/ProfileResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/RegisterResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserDetailResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserSummaryResponse.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/AdminAuditLog.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/ErrorModel.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/LoginAttempt.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/RegisterAttempt.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/User.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/enums/Role.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/AdminAuditLogRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeLoginAttemptRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeRegisterAttempt.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeUserRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/JpaUserRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/LoginAttemptRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/RegisterAttemptRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/UserRepository.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtFilter.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtSecurityConfig.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtUtil.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/JwtUtils.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/SecurityUtils.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/AdminUserService.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/EmailService.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/LoginInterface.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/PasswordResetService.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/RegisterInterface.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/UserService.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/AdminUserServiceImpl.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/UserServiceImpl.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V1__init_users.sql" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V2__add_user_status_fields.sql" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V3__create_admin_audit_log.sql" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V4__add_user_missing_fields.sql" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V5__add_role_staff.sql" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/aiinterview/platform/controller/AdminUserControllerIntegrationTest.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/nginx.conf" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/context/AuthContext.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/controllers/useAdminUserController.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/controllers/useAuthController.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/index.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/models/Api.model.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/models/User.model.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/services/admin.service.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/services/auth.service.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/services/http.service.ts" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/ConfirmDialog.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/ProtectedRoute.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/UserDetailModal.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/AdminUserManagementPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/DashboardPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/ForgotPasswordPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/LoginPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/RegisterPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/ResetPasswordPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/UnauthorizedPage.tsx" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/static/Profile.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/static/indexLogin.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/static/js/apiClients.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/static/js/auth.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/static/js/profile.js" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/classes/static/register.html" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/generated-sources/annotations/InvaildAccountLockedException.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/test.http" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM__Changes_.xml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -277,6 +168,17 @@
+       <method v="2" />
+     </configuration>
+     <configuration name="api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/api-test.http" executionIdentifier="Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" index="7" runType="Run single request">
++      <method v="2" />
++    </configuration>
++    <configuration default="true" type="JetRunConfigurationType">
++      <module name="SpringBoot" />
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
++      <module name="SpringBoot" />
++      <option name="filePath" />
+       <method v="2" />
+     </configuration>
+     <configuration name="AiInterviewPlatformApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+@@ -476,7 +378,10 @@
+       <workItem from="1788511748821" duration="6525000" />
+       <workItem from="1788599744361" duration="1244000" />
+       <workItem from="1788776572809" duration="318000" />
+-      <workItem from="1788789865869" duration="1010000" />
++      <workItem from="1788789865869" duration="2813000" />
++      <workItem from="1788797767589" duration="253000" />
++      <workItem from="1788829617980" duration="124000" />
++      <workItem from="1789134115273" duration="868000" />
+     </task>
+     <servers />
+   </component>

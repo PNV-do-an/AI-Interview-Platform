@@ -5,118 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e88a00eb-2f5f-4fff-9376-08b0920bfcb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/AI-Interview-Platform.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HELP.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/LoginRegister.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/api-test.http" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/AiInterviewPlatformApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/BadRequestException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/InvalidAccountLockedException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/exception/ResourceNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/common/response/ApiResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/config/DataInitializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/AdminUserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/auth/AuthorizationController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ProfileController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/controller/user/ViewController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/ChangeRoleRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/LoginRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RefreshTokenRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/request/RegisterRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuditLogResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/AuthResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/LoginResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/ProfileResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/RegisterResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserDetailResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/dto/response/UserSummaryResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/AdminAuditLog.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/ErrorModel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/LoginAttempt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/RegisterAttempt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/entity/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/enums/Role.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/AdminAuditLogRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeLoginAttemptRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeRegisterAttempt.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/FakeUserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/JpaUserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/LoginAttemptRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/RegisterAttemptRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/model/repository/UserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtSecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/jwt/JwtUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/JwtUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/security/utils/SecurityUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/AdminUserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/EmailService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/LoginInterface.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/PasswordResetService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/RegisterInterface.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/UserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/AdminUserServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/EmailServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/LoginInterfaceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/PasswordResetServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/aiinterview/platform/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V1__init_users.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V2__add_user_status_fields.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V3__create_admin_audit_log.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V4__add_user_missing_fields.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V5__add_role_staff.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/aiinterview/platform/controller/AdminUserControllerIntegrationTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/nginx.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/public/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/context/AuthContext.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/controllers/useAdminUserController.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/controllers/useAuthController.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/models/Api.model.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/models/User.model.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/services/admin.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/services/auth.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/services/http.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/ConfirmDialog.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/ProtectedRoute.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/components/UserDetailModal.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/AdminUserManagementPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/DashboardPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/ForgotPasswordPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/LoginPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/RegisterPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/ResetPasswordPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/pages/UnauthorizedPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/static/Profile.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/static/indexLogin.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/static/js/apiClients.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/static/js/auth.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/static/js/profile.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/static/register.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/generated-sources/annotations/InvaildAccountLockedException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.http" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_9_1_2026_3_29_PM__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -277,6 +168,17 @@
       <method v="2" />
     </configuration>
     <configuration name="api-test | Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/backend/api-test.http" executionIdentifier="Đặt lại mật khẩu (copy token từ console log sau khi gọi forgot-password)" index="7" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="SpringBoot" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="SpringBoot" />
+      <option name="filePath" />
       <method v="2" />
     </configuration>
     <configuration name="AiInterviewPlatformApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
@@ -476,7 +378,10 @@
       <workItem from="1788511748821" duration="6525000" />
       <workItem from="1788599744361" duration="1244000" />
       <workItem from="1788776572809" duration="318000" />
-      <workItem from="1788789865869" duration="1010000" />
+      <workItem from="1788789865869" duration="2813000" />
+      <workItem from="1788797767589" duration="253000" />
+      <workItem from="1788829617980" duration="124000" />
+      <workItem from="1789134115273" duration="868000" />
     </task>
     <servers />
   </component>
