@@ -68,7 +68,7 @@ User Upload CV
     ↓
 Extract text (Apache PDFBox cho PDF)
     ↓
-Send to AI (GPT-4o): "Phân tích CV này, trích xuất skills, experience, education"
+Send to AI (GPT-4o-mini): "Phân tích CV này, trích xuất skills, experience, education"
     ↓
 Parse AI response → Lưu vào user_cv + user_skill tables
     ↓
@@ -191,7 +191,7 @@ String cacheKey = hash(position + skillTag + difficulty + questionText);
 │                                                         │
 │  ┌────────────────────────────────────────────────────┐ │
 │  │              External Services                      │ │
-│  │  OpenAI GPT-4o (Generate + Evaluate)               │ │
+│  │  OpenAI GPT-4o-mini (Generate + Evaluate)            │ │
 │  │  OpenAI Whisper (Audio Transcription)              │ │
 │  └────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────┘
@@ -736,7 +736,8 @@ public class InterviewController {
 public class AIConfig {
     private String provider = "openai";
     private String apiKey;
-    private String model = "gpt-4o";
+    private String model = "gpt-4o-mini";
+    private String evalModel = "gpt-4o-mini";
     private String whisperModel = "whisper-1";
     private int maxTokens = 4096;
     private double temperature = 0.7;
@@ -926,7 +927,7 @@ Save audio file to disk (uploads/audio/{sessionId}/{answerId}.webm)
     ↓
 Send to Whisper API → Get transcription
     ↓
-Send transcription to GPT-4o → Get eloquence + coherence scores
+Send transcription to GPT-4o-mini → Get eloquence + coherence scores
     ↓
 Combine with text answer evaluation
     ↓
@@ -1428,7 +1429,7 @@ export interface QuestionOption {
 | New Enums     | DifficultyLevel, QuestionType, ProgramType, etc. | 5 enum files                       |
 | CV Entity     | UserCv + UserSkill entities + repositories       | 4 files                            |
 | CV Upload     | Upload PDF + text, Apache PDFBox extract text    | `CvController`, `CvService`        |
-| AI CV Parsing | Call GPT-4o to parse CV, save results            | `AIQuestionService`                |
+| AI CV Parsing | Call GPT-4o-mini to parse CV, save results        | `AIQuestionService`                |
 | DB Migration  | SQL for new tables                               | `V6_interview_tables.sql`          |
 
 ### Phase 2: Question System (Tuần 2-3)
@@ -1436,7 +1437,7 @@ export interface QuestionOption {
 | Task | Chi tiết | Output |
 |------|----------|--------|
 | Question Entity | Question + AiQuestionCache entities | 2 entities + repos |
-| AI Question Gen | Generate questions via GPT-4o | `AIQuestionService` |
+| AI Question Gen | Generate questions via GPT-4o-mini | `AIQuestionService` |
 | Cache System | Cache key generation, dedup logic | Cache service |
 | Study Program Entity | StudyProgram + StudyTopic entities | 2 entities + repos |
 | Study API | Generate program, get topics, get questions | `StudyProgramController` |
@@ -1479,7 +1480,7 @@ export interface QuestionOption {
 | Decision | Choice | Lý do | Alternative |
 |----------|--------|-------|-------------|
 | **PDF Parsing** | Apache PDFBox | Mature, no extra dependency | iText (paid), pdf.js (frontend) |
-| **AI Service** | OpenAI GPT-4o | Best quality, vision support | Gemini 1.5, Claude 3.5 |
+| **AI Service** | OpenAI GPT-4o-mini | Cost-effective, đủ chất lượng cho generate + evaluate | Gemini 1.5 Flash, Claude 3.5 |
 | **Audio Transcription** | OpenAI Whisper | Consistent ecosystem | Google Speech-to-Text |
 | **Audio Storage** | Local filesystem | Simple, start small | AWS S3, MinIO |
 | **Question Cache** | MySQL + hash | No extra infra needed | Redis (faster but extra setup) |
@@ -1498,7 +1499,8 @@ export interface QuestionOption {
 ai:
   provider: openai
   api-key: ${OPENAI_API_KEY:}
-  model: gpt-4o
+  model: ${AI_MODEL:gpt-4o-mini}
+  eval-model: ${AI_EVAL_MODEL:gpt-4o-mini}
   whisper-model: whisper-1
   max-tokens: 4096
   temperature: 0.7
@@ -1702,6 +1704,40 @@ AUDIO_UPLOAD_DIR=./uploads/audio
 4. **Rate Limiting:** Limit AI API calls per user (cost control)
 5. **Data Privacy:** CV data is sensitive, encrypt at rest if needed
 6. **JWT:** Existing auth system covers all new endpoints
+
+---
+
+## Appendix D: 5W1H — Phase 1 (Foundation)
+
+### What — Làm gì?
+Xây dựng **nền tảng (Foundation)** cho AI Interview Platform:
+- **AI Config**: `AIConfig.java` + `application.yml` — OpenAI, model `GPT-4o-mini` (generate câu hỏi + đánh giá), `whisper-1` (voice→text), `tts-1` (text→voice), cho phép override bằng biến môi trường.
+- **Enums**: `DifficultyLevel`, `QuestionType`, `ProgramType`, `SessionStatus`, `ProficiencyLevel`.
+- **CV Module**: entity `UserCv`/`UserSkill` + repositories, upload CV (PDF/TXT), trích text bằng Apache PDFBox, gọi AI parse ra JSON (skills/experience/education/knowledge gaps), lưu DB, API `/api/v1/cv`.
+- **DB Migration**: `V6__interview_tables.sql`.
+
+### Why — Tại sao phải làm?
+- Là nền tảng cho **Phase 2 (Study Program)** và **Phase 3 (Interview)**: CV giúp cá nhân hóa câu hỏi + đánh giá.
+- Team **chưa có OpenAI API key** → thiết kế *"kết nối trước, key sau"*: app vẫn khởi động, thiếu key chỉ trả 502 với message rõ ràng.
+- Chọn `GPT-4o-mini`: **tiết kiệm chi phí** (~1/20 so với gpt-4o), đủ chất lượng cho generate + đánh giá tự luận.
+
+### Who — Ai làm / cho ai?
+- **Thực hiện**: AI agent — code + smoke test; user duyệt kiến trúc và lựa chọn mô hình.
+- **Review/Hướng dẫn**: đồng đội (bản guide chạy project từng được soạn riêng).
+- **Người dùng cuối**: admin (seed sẵn `admin@aiinterview.com`) + học viên upload CV (sau khi FE nối xong).
+
+### When — Khi nào?
+- Theo plan: **Tuần 1–2**. Đã hoàn thành code + verify (compile/package `BUILD SUCCESS`, login OK, `GET /api/v1/cv`, `parse-text` trả 502 có kiểm soát).
+- Chưa commit (18 file, branch `interview_program`). Test AI thật khi có key: điền `OPENAI_API_KEY` vào `.env` → `docker compose up -d backend`.
+
+### Where — Ở đâu?
+- **Branch**: `interview_program` · **Backend**: `backend/` · **Package**: `com.aiinterview.platform.*` · **Migration**: `backend/src/main/resources/db/migration/V6__interview_tables.sql` · **Tài liệu**: file này.
+
+### How — Thực hiện thế nào?
+1. Parse CV: Upload (PDF/TXT) → **PDFBox** trích text → **GPT-4o-mini** (system prompt + JSON mode, retry tối đa 2 lần) → lưu `user_cv`/`user_skill`.
+2. Robustness: strip markdown fences, parse Jackson, validate giới hạn (skills≤30, experience≤20, education≤10), lỗi → `AIServiceException` → HTTP **502** kèm message rõ ràng.
+3. Bảo mật: `@PreAuthorize("isAuthenticated()")` trên `CvController`; user xác thực qua JWT.
+4. Tùy chỉnh model: `AI_MODEL` / `AI_EVAL_MODEL` / `OPENAI_API_KEY` qua `.env` — không cần sửa code.
 
 ---
 

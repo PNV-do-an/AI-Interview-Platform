@@ -46,6 +46,10 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
       MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
+      MAIL_TEST_CONNECTION: ${MAIL_TEST_CONNECTION:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      CV_UPLOAD_DIR: ${CV_UPLOAD_DIR:-./uploads/cv}
+      AUDIO_UPLOAD_DIR: ${AUDIO_UPLOAD_DIR:-./uploads/audio}
     ports:
       - "8080:8080"
     networks:
