@@ -1,12 +1,10 @@
 package com.aiinterview.platform.service.impl;
 
 import com.aiinterview.platform.service.EmailService;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,113 +13,151 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${app.base-url:http://localhost:8080}")
-    private String baseUrl;
+    @Value("${app.frontend-url:http://localhost:3000}")
+    private String frontendUrl;
 
     @Override
     public void sendVerificationEmail(String to, String fullName, String token) {
-        String verifyLink = baseUrl + "/api/v1/auth/verify?token=" + token;
-        sendHtmlEmail(to,
-                "Xác thực tài khoản - AI Interview Platform",
-                buildVerificationHtml(fullName, verifyLink)
-        );
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Xác thực tài khoản AI Interview Platform");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Vui lòng xác thực tài khoản bằng cách nhấn vào link sau:\n"
+                + "http://localhost:8080/api/v1/auth/verify?token=" + token + "\n\n"
+                + "Link có hiệu lực trong 24 giờ.");
+        mailSender.send(message);
     }
-
 
     @Override
     public void sendResendVerificationEmail(String to, String fullName, String token) {
-        String verifyLink = baseUrl + "/api/v1/auth/verify?token=" + token;
-        sendHtmlEmail(to,
-                "Xác thực lại tài khoản - AI Interview Platform",
-                buildResendHtml(fullName, verifyLink)
-        );
-    }
-
-    private void sendHtmlEmail(String to, String subject, String html) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(html, true);
-            mailSender.send(message);
-            System.out.println(">>> Email sent to: " + to);
-        } catch (MessagingException e) {
-            System.err.println(">>> Failed to send email to: " + to + " - " + e.getMessage());
-            throw new RuntimeException("Khong the gui email xac thuc", e);
-        }
-    }
-
-    private String buildVerificationHtml(String fullName, String verifyLink) {
-        return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'/></head>" +
-                "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
-                "<h2>Chào " + fullName + ",</h2>" +
-                "<p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>AI Interview Platform</strong>.</p>" +
-                "<p>Vui lòng nhấn vào nút bên dưới để xác thực email của bạn:</p>" +
-                "<a href='" + verifyLink + "' style='display: inline-block; padding: 12px 24px; " +
-                "background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;'>Xác thực ngay</a>" +
-                "<p style='margin-top: 20px;'>Hoặc copy link sau vào trình duyệt:</p>" +
-                "<p style='color: #666;'>" + verifyLink + "</p>" +
-                "<hr><p style='color: #999; font-size: 12px;'>Link có hiệu lực trong 24 giờ.</p>" +
-                "</body></html>";
-    }
-
-    private String buildResendHtml(String fullName, String verifyLink) {
-        return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'/></head>" +
-                "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
-                "<h2>Chào " + fullName + ",</h2>" +
-                "<p>Bạn vừa yêu cầu gửi lại link xác thực tại <strong>AI Interview Platform</strong>.</p>" +
-                "<p>Nhấn nút bên dưới để xác thực email:</p>" +
-                "<a href='" + verifyLink + "' style='display: inline-block; padding: 12px 24px; " +
-                "background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;'>Xác thực ngay</a>" +
-                "<p style='margin-top: 20px;'>Hoặc copy link sau vào trình duyệt:</p>" +
-                "<p style='color: #666;'>" + verifyLink + "</p>" +
-                "<hr><p style='color: #999; font-size: 12px;'>Link có hiệu lực trong 24 giờ.</p>" +
-                "</body></html>";
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Gửi lại xác thực tài khoản AI Interview Platform");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Đây là link xác thực mới của bạn:\n"
+                + "http://localhost:8080/api/v1/auth/verify?token=" + token + "\n\n"
+                + "Link có hiệu lực trong 24 giờ.");
+        mailSender.send(message);
     }
 
     @Override
     public void sendResetPasswordEmail(String to, String fullName, String token) {
-        String resetLink = baseUrl + "/api/v1/auth/reset-password?token=" + token;
-        sendHtmlEmail(to,
-                "Đặt lại mật khẩu - AI Interview Platform",
-                buildResetPasswordHtml(fullName, resetLink)
-        );
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Đặt lại mật khẩu AI Interview Platform");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Bạn đã yêu cầu đặt lại mật khẩu. Nhấn vào link sau:\n"
+                + frontendUrl + "/reset-password?token=" + token + "\n\n"
+                + "Link có hiệu lực trong 1 giờ. Nếu bạn không yêu cầu điều này, hãy bỏ qua email này.");
+        mailSender.send(message);
     }
 
     @Override
     public void sendPasswordResetConfirmation(String to, String fullName) {
-        sendHtmlEmail(to,
-                "Mật khẩu đã được đặt lại - AI Interview Platform",
-                buildResetConfirmationHtml(fullName)
-        );
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Mật khẩu đã được đặt lại thành công");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Mật khẩu của bạn đã được đặt lại thành công.\n"
+                + "Nếu bạn không thực hiện điều này, vui lòng liên hệ ngay với chúng tôi.");
+        mailSender.send(message);
     }
 
-    private String buildResetPasswordHtml(String fullName, String resetLink) {
-        return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'/></head>" +
-                "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
-                "<h2>Chào " + fullName + ",</h2>" +
-                "<p>Bạn vừa yêu cầu đặt lại mật khẩu tại <strong>AI Interview Platform</strong>.</p>" +
-                "<p>Nhấn nút bên dưới để đặt lại mật khẩu:</p>" +
-                "<a href='" + resetLink + "' style='display: inline-block; padding: 12px 24px; " +
-                "background-color: #2196F3; color: white; text-decoration: none; border-radius: 4px;'>Đặt lại mật khẩu</a>" +
-                "<p style='margin-top: 20px;'>Hoặc copy link sau vào trình duyệt:</p>" +
-                "<p style='color: #666;'>" + resetLink + "</p>" +
-                "<hr><p style='color: #999; font-size: 12px;'>Link có hiệu lực trong 1 giờ. Nếu bạn không yêu cầu, hãy bỏ qua email này.</p>" +
-                "</body></html>";
+    @Override
+    public void sendAccountLockedEmail(String to, String fullName) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Tài khoản của bạn đã bị khóa");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Tài khoản của bạn trên AI Interview Platform đã bị khóa bởi quản trị viên.\n"
+                + "Vui lòng liên hệ hỗ trợ để biết thêm thông tin.");
+        mailSender.send(message);
     }
 
-    private String buildResetConfirmationHtml(String fullName) {
-        return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'/></head>" +
-                "<body style='font-family: Arial, sans-serif; padding: 20px;'>" +
-                "<h2>Chào " + fullName + ",</h2>" +
-                "<p>Mật khẩu của bạn tại <strong>AI Interview Platform</strong> đã được đặt lại thành công.</p>" +
-                "<p>Nếu bạn không thực hiện yêu cầu này, vui lòng liên hệ hỗ trợ ngay.</p>" +
-                "<hr><p style='color: #999; font-size: 12px;'>Vui lòng đăng nhập lại với mật khẩu mới.</p>" +
-                "</body></html>";
+    @Override
+    public void sendAccountUnlockedEmail(String to, String fullName) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Tài khoản của bạn đã được mở khóa");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Tài khoản của bạn trên AI Interview Platform đã được quản trị viên mở khóa.\n"
+                + "Bây giờ bạn có thể đăng nhập lại bình thường.");
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendAccountDeletedEmail(String to, String fullName) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Tài khoản của bạn đã bị xóa");
+        message.setText("Xin chào " + fullName + ",\n\n"
+                + "Tài khoản của bạn trên AI Interview Platform đã bị xóa bởi quản trị viên.\n"
+                + "Vui lòng liên hệ hỗ trợ nếu bạn có thắc mắc.");
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendApplicationReceivedEmail(String to, String candidateName, String jobTitle) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Có ứng viên ứng tuyển: " + jobTitle);
+            message.setText("Xin chào,\n\n"
+                    + "Ứng viên " + candidateName + " vừa ứng tuyển vào vị trí \"" + jobTitle + "\".\n"
+                    + "Vui lòng đăng nhập hệ thống để xem chi tiết và sắp xếp lịch phỏng vấn.");
+            mailSender.send(message);
+        } catch (Exception e) {
+            // notification email must not break the main flow
+        }
+    }
+
+    @Override
+    public void sendApplicationStatusEmail(String to, String candidateName, String jobTitle, String statusLabel) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Cập nhật trạng thái ứng tuyển: " + jobTitle);
+            message.setText("Xin chào " + candidateName + ",\n\n"
+                    + "Đơn ứng tuyển của bạn vào vị trí \"" + jobTitle + "\" đã chuyển sang trạng thái: " + statusLabel + ".\n"
+                    + "Vui lòng đăng nhập hệ thống để xem chi tiết.");
+            mailSender.send(message);
+        } catch (Exception e) {
+            // notification email must not break the main flow
+        }
+    }
+
+    @Override
+    public void sendSlotBookedEmail(String to, String name, String jobTitle, String startTime, String role) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Xác nhận lịch phỏng vấn: " + jobTitle);
+            message.setText("Xin chào " + name + ",\n\n"
+                    + "Lịch phỏng vấn cho vị trí \"" + jobTitle + "\" vào lúc " + startTime
+                    + " đã được xác nhận (" + role + ").\n"
+                    + "Vui lòng tham gia đúng giờ.");
+            mailSender.send(message);
+        } catch (Exception e) {
+            // notification email must not break the main flow
+        }
+    }
+
+    @Override
+    public void sendOrderConfirmationEmail(String to, String fullName, String packageName, Long amount, String orderCode) {
+        try {
+            String amountText = String.format("%,d", amount).replace(',', '.');
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Xác nhận thanh toán đơn hàng " + orderCode);
+            message.setText("Xin chào " + fullName + ",\n\n"
+                    + "Thanh toán của bạn đã thành công.\n"
+                    + "Mã đơn hàng: " + orderCode + "\n"
+                    + "Gói dịch vụ: " + packageName + "\n"
+                    + "Số tiền: " + amountText + " VND\n\n"
+                    + "Cảm ơn bạn đã sử dụng AI Interview Platform!");
+            mailSender.send(message);
+        } catch (Exception e) {
+            // notification email must not break the main flow
+        }
     }
 }

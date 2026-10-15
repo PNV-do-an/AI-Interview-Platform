@@ -13,6 +13,7 @@ import com.aiinterview.platform.service.EmailService;
 import com.aiinterview.platform.service.RegisterInterface;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RegisterInterfaceImpl implements RegisterInterface {
 
     private final UserRepository userRepository;
@@ -114,7 +116,7 @@ public class RegisterInterfaceImpl implements RegisterInterface {
                 .fullName(fullName)
                 .phone(phone)
                 .role(Role.ROLE_USER)
-                .enabled(false)
+                .enabled(true)
                 .verificationToken(verificationToken)
                 .verificationTokenExpiry(LocalDateTime.now().plusHours(24))
                 .build();
@@ -129,7 +131,11 @@ public class RegisterInterfaceImpl implements RegisterInterface {
         ipAttempt.setLocked(false);
         ipAttempt.setLockUntil(null);
 
-        emailService.sendVerificationEmail(email, fullName, verificationToken);
+        try {
+            emailService.sendVerificationEmail(email, fullName, verificationToken);
+        } catch (Exception e) {
+            log.warn("Không thể gửi email xác thực tới {}: {}", email, e.getMessage());
+        }
 
         return new RegisterResponse("Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.");
     }
@@ -165,6 +171,10 @@ public class RegisterInterfaceImpl implements RegisterInterface {
         user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
         userRepository.save(user);
 
-        emailService.sendResendVerificationEmail(email, user.getFullName(), newToken);
+        try {
+            emailService.sendResendVerificationEmail(email, user.getFullName(), newToken);
+        } catch (Exception e) {
+            log.warn("Không thể gửi lại email xác thực tới {}: {}", email, e.getMessage());
+        }
     }
 }

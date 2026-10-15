@@ -1,20 +1,28 @@
 package com.aiinterview.platform.controller.auth;
 
 import com.aiinterview.platform.common.response.ApiResponse;
+import com.aiinterview.platform.model.dto.request.GithubLoginRequest;
+import com.aiinterview.platform.model.dto.request.GoogleLoginRequest;
 import com.aiinterview.platform.model.dto.request.LoginRequest;
 import com.aiinterview.platform.model.dto.request.RegisterRequest;
 import com.aiinterview.platform.model.dto.response.AuthResponse;
 import com.aiinterview.platform.model.dto.response.LoginResponse;
 import com.aiinterview.platform.model.dto.response.RegisterResponse;
+import com.aiinterview.platform.model.entity.User;
+import com.aiinterview.platform.security.jwt.JwtUtil;
 import com.aiinterview.platform.security.utils.JwtUtils;
+import com.aiinterview.platform.service.GithubAuthInterface;
+import com.aiinterview.platform.service.GoogleAuthInterface;
 import com.aiinterview.platform.service.LoginInterface;
 import com.aiinterview.platform.service.PasswordResetService;
 import com.aiinterview.platform.service.RegisterInterface;
+import com.aiinterview.platform.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,6 +35,9 @@ public class AuthController {
     private final LoginInterface loginInterface;
     private final RegisterInterface registerInterface;
     private final PasswordResetService passwordResetService;
+    private final UserService userService;
+    private final GoogleAuthInterface googleAuthInterface;
+    private final GithubAuthInterface githubAuthInterface;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request,
@@ -41,19 +52,109 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request,
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request,
                                                              HttpServletRequest httpRequest) {
         LoginResponse response = loginInterface.login(
                 request.getEmail(), request.getPassword(), httpRequest
         );
-        return ResponseEntity.ok(ApiResponse.success("Dang nhap thanh cong", response));
+        // Load user info để trả về AuthResponse đầy đủ cho frontend
+        var user = userService.findByEmail(request.getEmail());
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(response.getAccessToken())
+                .refreshToken(response.getRefreshToken())
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", authResponse));
+    }
+
+    /** GET /api/v1/auth/google/client-id — frontend hỏi OAuth client ID (rỗng = chưa bật) */
+    @GetMapping("/google/client-id")
+    public ResponseEntity<ApiResponse<String>> googleClientId() {
+        return ResponseEntity.ok(ApiResponse.success("ok", googleAuthInterface.getClientId()));
+    }
+
+    /** POST /api/v1/auth/google — nhận idToken từ Google Identity Services, cấp JWT nội bộ */
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody GoogleLoginRequest request,
+                                                                  HttpServletRequest httpRequest) {
+        User user = googleAuthInterface.loginWithGoogle(request.getIdToken(), httpRequest);
+
+        String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", authResponse));
+    }
+
+    /** GET /api/v1/auth/github/client-id — frontend hỏi OAuth client ID (rỗng = chưa bật) */
+    @GetMapping("/github/client-id")
+    public ResponseEntity<ApiResponse<String>> githubClientId() {
+        return ResponseEntity.ok(ApiResponse.success("ok", githubAuthInterface.getClientId()));
+    }
+
+    /** POST /api/v1/auth/github — nhận OAuth code từ callback, đổi lấy token GitHub, cấp JWT nội bộ */
+    @PostMapping("/github")
+    public ResponseEntity<ApiResponse<AuthResponse>> githubLogin(@Valid @RequestBody GithubLoginRequest request,
+                                                                  HttpServletRequest httpRequest) {
+        User user = githubAuthInterface.loginWithGithub(request.getCode(), request.getRedirectUri(), httpRequest);
+
+        String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", authResponse));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<LoginResponse>> refresh(@RequestBody Map<String, String> request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refreshToken");
-        LoginResponse response = JwtUtils.refreshAccessToken(refreshToken);
-        return ResponseEntity.ok(ApiResponse.success("Token refreshed", response));
+        LoginResponse lr = JwtUtils.refreshAccessToken(refreshToken);
+        // Extract email từ refresh token để load user info
+        String email = com.aiinterview.platform.security.jwt.JwtUtil
+                .validateRefreshToken(refreshToken).getSubject();
+        var user = userService.findByEmail(email);
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(lr.getAccessToken())
+                .refreshToken(lr.getRefreshToken())
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Token refreshed", authResponse));
     }
 
     @GetMapping("/verify")
@@ -80,5 +181,19 @@ public class AuthController {
                 request.get("token"), request.get("password")
         );
         return ResponseEntity.ok(ApiResponse.success(message));
+    }
+
+    /** GET /api/v1/auth/me — trả thông tin user hiện tại dựa vào JWT */
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<AuthResponse.UserInfo>> getMe(Authentication authentication) {
+        var user = userService.findByEmail(authentication.getName());
+        AuthResponse.UserInfo userInfo = AuthResponse.UserInfo.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .phone(user.getPhone())
+                .role(user.getRole().name())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success(userInfo));
     }
 }

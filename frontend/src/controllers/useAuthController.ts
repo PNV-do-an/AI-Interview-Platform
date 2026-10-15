@@ -77,14 +77,59 @@ export const useAuthController = () => {
 
         const role = user?.role;
         if (role === 'ROLE_ADMIN') {
-          navigate('/admin/dashboard');
-        } else if (role === 'ROLE_MENTOR') {
-          navigate('/mentor/dashboard');
+          navigate('/admin/users');
+        } else if (role === 'ROLE_STAFF' || role === 'ROLE_INTERVIEWER') {
+          navigate('/dashboard');
         } else {
           navigate('/dashboard');
         }
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Login failed. Please try again.');
+        const status = err.response?.status;
+        const msg = err.response?.data?.message || err.response?.data?.errorMessage || 'Đăng nhập thất bại. Vui lòng thử lại.';
+        if (status === 423 && err.response?.data?.extra?.lockedUntil) {
+          const until = err.response.data.extra.lockedUntil;
+          setError(msg + ` Mở khóa vào: ${new Date(until).toLocaleString('vi-VN')}`);
+        } else if (status === 423) {
+          setError(msg);
+        } else {
+          setError(msg);
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, persistSession]
+  );
+
+  const loginWithGoogle = useCallback(
+    async (idToken: string, rememberMe: boolean) => {
+      setError('');
+      setLoading(true);
+      try {
+        const res = await AuthService.googleLogin(idToken);
+        const { accessToken, refreshToken, user } = res.data.data!;
+        persistSession(accessToken, refreshToken, user as User, rememberMe);
+        navigate(user?.role === 'ROLE_ADMIN' ? '/admin/users' : '/dashboard');
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Đăng nhập Google thất bại. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, persistSession]
+  );
+
+  const loginWithGithub = useCallback(
+    async (code: string, redirectUri: string, rememberMe: boolean) => {
+      setError('');
+      setLoading(true);
+      try {
+        const res = await AuthService.githubLogin(code, redirectUri);
+        const { accessToken, refreshToken, user } = res.data.data!;
+        persistSession(accessToken, refreshToken, user as User, rememberMe);
+        navigate(user?.role === 'ROLE_ADMIN' ? '/admin/users' : '/dashboard', { replace: true });
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'GitHub sign-in failed. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -119,5 +164,5 @@ export const useAuthController = () => {
     navigate('/login');
   }, [navigate]);
 
-  return { ...state, error, loading, login, register, logout };
+  return { ...state, error, loading, login, loginWithGoogle, loginWithGithub, register, logout };
 };
