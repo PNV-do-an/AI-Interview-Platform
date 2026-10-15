@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_NAME:-ai_interview_db}
-      MYSQL_USER: ${DB_USERNAME:-aiuser}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-aipassword}
+      MYSQL_USER: ${DB_APP_USERNAME:-aiuser}
+      MYSQL_PASSWORD: ${DB_APP_PASSWORD:-aipassword}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
     command:
       - --character-set-server=utf8mb4
