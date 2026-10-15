@@ -6,8 +6,8 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_NAME:-ai_interview_db}
-      MYSQL_USER: ${DB_USERNAME:-aiuser}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-aipassword}
+      MYSQL_USER: ${DB_APP_USERNAME:-aiuser}
+      MYSQL_PASSWORD: ${DB_APP_PASSWORD:-aipassword}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
     command:
       - --character-set-server=utf8mb4
@@ -33,8 +33,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
       DB_NAME: ${DB_NAME:-ai_interview_db}
       DB_USERNAME: ${DB_USERNAME:-aiuser}
       DB_PASSWORD: ${DB_PASSWORD:-aipassword}
@@ -46,6 +46,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
       MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     ports:
       - "8080:8080"
     networks:
