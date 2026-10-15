@@ -18,6 +18,7 @@ spring:
     port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME:noreply@aiinterview.com}
     password: ${MAIL_PASSWORD:}
+    test-connection: ${MAIL_TEST_CONNECTION:true}
     properties:
       mail:
         smtp:
