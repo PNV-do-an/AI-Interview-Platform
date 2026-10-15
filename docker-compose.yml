@@ -7,8 +7,8 @@ services:
     container_name: ai_interview_backend
     restart: unless-stopped
     environment:
-      DB_HOST: host.docker.internal
-      DB_PORT: 3307
+      DB_HOST: ${DB_HOST:-192.168.65.254}
+      DB_PORT: ${DB_PORT:-3307}
       DB_NAME: ${DB_NAME:-ai_interview_db}
       DB_USERNAME: ${DB_USERNAME:-root}
       DB_PASSWORD: ${DB_PASSWORD:-admin123}
@@ -20,6 +20,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
       MAIL_STARTTLS: ${MAIL_STARTTLS:-true}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

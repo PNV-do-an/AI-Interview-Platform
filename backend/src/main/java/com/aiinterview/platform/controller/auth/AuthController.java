@@ -1,12 +1,16 @@
 package com.aiinterview.platform.controller.auth;
 
 import com.aiinterview.platform.common.response.ApiResponse;
+import com.aiinterview.platform.model.dto.request.GoogleLoginRequest;
 import com.aiinterview.platform.model.dto.request.LoginRequest;
 import com.aiinterview.platform.model.dto.request.RegisterRequest;
 import com.aiinterview.platform.model.dto.response.AuthResponse;
 import com.aiinterview.platform.model.dto.response.LoginResponse;
 import com.aiinterview.platform.model.dto.response.RegisterResponse;
+import com.aiinterview.platform.model.entity.User;
+import com.aiinterview.platform.security.jwt.JwtUtil;
 import com.aiinterview.platform.security.utils.JwtUtils;
+import com.aiinterview.platform.service.GoogleAuthInterface;
 import com.aiinterview.platform.service.LoginInterface;
 import com.aiinterview.platform.service.PasswordResetService;
 import com.aiinterview.platform.service.RegisterInterface;
@@ -30,6 +34,7 @@ public class AuthController {
     private final RegisterInterface registerInterface;
     private final PasswordResetService passwordResetService;
     private final UserService userService;
+    private final GoogleAuthInterface googleAuthInterface;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request,
@@ -54,6 +59,36 @@ public class AuthController {
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(response.getAccessToken())
                 .refreshToken(response.getRefreshToken())
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", authResponse));
+    }
+
+    /** GET /api/v1/auth/google/client-id — frontend hỏi OAuth client ID (rỗng = chưa bật) */
+    @GetMapping("/google/client-id")
+    public ResponseEntity<ApiResponse<String>> googleClientId() {
+        return ResponseEntity.ok(ApiResponse.success("ok", googleAuthInterface.getClientId()));
+    }
+
+    /** POST /api/v1/auth/google — nhận idToken từ Google Identity Services, cấp JWT nội bộ */
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody GoogleLoginRequest request,
+                                                                  HttpServletRequest httpRequest) {
+        User user = googleAuthInterface.loginWithGoogle(request.getIdToken(), httpRequest);
+
+        String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .user(AuthResponse.UserInfo.builder()
                         .id(user.getId())
