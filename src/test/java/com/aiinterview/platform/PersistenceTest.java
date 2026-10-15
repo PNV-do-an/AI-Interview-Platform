@@ -3,13 +3,14 @@ package com.aiinterview.platform;
 import com.aiinterview.platform.common.exception.InvalidAccountException;
 import com.aiinterview.platform.common.exception.InvalidAccountLockedException;
 import com.aiinterview.platform.common.exception.InvalidPasswordException;
+import com.aiinterview.platform.config.DataInitializer;
 import com.aiinterview.platform.model.entity.LoginAttempt;
 import com.aiinterview.platform.model.entity.RegisterAttempt;
 import com.aiinterview.platform.model.entity.User;
 import com.aiinterview.platform.model.enums.Role;
 import com.aiinterview.platform.model.repository.LoginAttemptRepository;
 import com.aiinterview.platform.model.repository.RegisterAttemptRepository;
-import com.aiinterview.platform.model.repository.UserRepository;
+import com.aiinterview.platform.model.repository.JpaUserRepository;
 import com.aiinterview.platform.service.EmailService;
 import com.aiinterview.platform.service.LoginInterface;
 import com.aiinterview.platform.service.PasswordResetService;
@@ -73,7 +74,7 @@ class PersistenceTest {
     private static final String PHONE = "2025550100";
 
     private ConfigurableApplicationContext context;
-    private UserRepository userRepository;
+    private JpaUserRepository userRepository;
     private LoginAttemptRepository loginAttemptRepository;
     private RegisterAttemptRepository registerAttemptRepository;
     private LoginInterface loginService;
@@ -108,7 +109,7 @@ class PersistenceTest {
         User registered = storedUser(email);
         Long userId = registered.getId();
         assertNotNull(userId);
-        assertFalse(registered.isEnabled());
+        assertTrue(registered.isEnabled());
         assertEquals(FULL_NAME, registered.getFullName());
         assertEquals(PHONE, registered.getPhone());
         assertEquals(Role.ROLE_USER, registered.getRole());
@@ -405,25 +406,24 @@ class PersistenceTest {
     }
 
     @Test
-    void verificationEmailFailureRollsBackRegistrationAndAttempts() {
+    void verificationEmailFailureStillPersistsRegistrationAndAttempts() {
         String email = "verification-mail-failure@example.test";
         String ip = "203.0.113.18";
         doThrow(new IllegalStateException("Simulated verification email failure"))
                 .when(emailService).sendVerificationEmail(eq(email), eq(FULL_NAME), anyString());
 
-        assertThrows(IllegalStateException.class,
-                () -> registerService.register(email, PASSWORD, FULL_NAME, PHONE, request(ip)));
+        assertNotNull(registerService.register(email, PASSWORD, FULL_NAME, PHONE, request(ip)));
         verify(emailService).sendVerificationEmail(eq(email), eq(FULL_NAME), anyString());
-        assertFalse(userRepository.existsByEmail(email));
-        assertEquals(0L, userRepository.count());
-        assertEquals(0L, registerAttemptRepository.count());
+        assertTrue(storedUser(email).isEnabled());
+        assertEquals(1L, userRepository.count());
+        assertRegistrationAttempt(email, ip, 0, false);
         assertEquals(0L, loginAttemptRepository.count());
 
         restartContext();
 
-        assertFalse(userRepository.existsByEmail(email));
-        assertEquals(0L, userRepository.count());
-        assertEquals(0L, registerAttemptRepository.count());
+        assertTrue(storedUser(email).isEnabled());
+        assertEquals(1L, userRepository.count());
+        assertRegistrationAttempt(email, ip, 0, false);
         assertEquals(0L, loginAttemptRepository.count());
     }
 
@@ -432,6 +432,7 @@ class PersistenceTest {
                 .web(WebApplicationType.SERVLET)
                 .run(
                         "--server.port=0",
+                        "--spring.main.allow-bean-definition-overriding=true",
                         "--spring.datasource.url=" + mysql.getJdbcUrl(),
                         "--spring.datasource.username=" + mysql.getUsername(),
                         "--spring.datasource.password=" + mysql.getPassword(),
@@ -450,7 +451,7 @@ class PersistenceTest {
                         "--logging.level.org.hibernate=WARN",
                         "--logging.level.org.hibernate.SQL=OFF",
                         "--logging.level.org.hibernate.orm.jdbc.bind=OFF");
-        userRepository = context.getBean(UserRepository.class);
+        userRepository = context.getBean(JpaUserRepository.class);
         loginAttemptRepository = context.getBean(LoginAttemptRepository.class);
         registerAttemptRepository = context.getBean(RegisterAttemptRepository.class);
         loginService = context.getBean(LoginInterface.class);
@@ -565,6 +566,11 @@ class PersistenceTest {
 
     @TestConfiguration(proxyBeanMethods = false)
     static class TestEmailConfiguration {
+
+        @Bean(name = "dataInitializer")
+        DataInitializer persistenceTestDataInitializer() {
+            return mock(DataInitializer.class);
+        }
 
         @Bean
         @Primary

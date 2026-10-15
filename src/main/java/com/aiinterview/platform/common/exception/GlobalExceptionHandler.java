@@ -3,6 +3,10 @@ package com.aiinterview.platform.common.exception;
 import com.aiinterview.platform.model.entity.ErrorModel;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,10 +56,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(error);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(400, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>());
+        return ResponseEntity.status(400).body(error);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(404, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>());
+        return ResponseEntity.status(404).body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorModel> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean anonymous = authentication == null || authentication instanceof AnonymousAuthenticationToken;
+        int status = anonymous ? 401 : 403;
+        ErrorModel error = new ErrorModel(status, anonymous ? "Authentication required" : "Access denied",
+                request.getRequestURL().toString(), LocalDateTime.now(), new HashMap<>());
+        return ResponseEntity.status(status).body(error);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleOther(RuntimeException ex, HttpServletRequest request) {
         ex.printStackTrace();
-        ErrorModel error = new ErrorModel(500, "Internal serve error: " + ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+        ErrorModel error = new ErrorModel(500, "Internal server error: " + ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
                 new HashMap<>());
         return ResponseEntity.status(500).body(error);
     }

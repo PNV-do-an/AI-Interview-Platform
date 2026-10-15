@@ -50,8 +50,20 @@ public class LoginInterfaceImpl implements LoginInterface {
                     return new InvalidAccountException("Email không tồn tại");
                 });
 
+        if (user.getDeletedAt() != null) {
+            throw new InvalidAccountException("Tài khoản không tồn tại hoặc đã bị xóa");
+        }
+
         if (!user.isEnabled()) {
             throw new InvalidAccountException("Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.");
+        }
+
+        // Kiểm tra admin lock (khóa bởi Admin, khác với lockUntil do nhập sai password)
+        if (user.isLocked()) {
+            throw new InvalidAccountLockedException(
+                    "Tài khoản của bạn đã bị khóa bởi quản trị viên. Vui lòng liên hệ hỗ trợ.",
+                    null
+            );
         }
 
         if (user.getLockUntil() != null && LocalDateTime.now().isBefore(user.getLockUntil())) {

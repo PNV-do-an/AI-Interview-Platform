@@ -1,0 +1,6 @@
+package com.aiinterview.platform.model.enums;
+
+public enum JobStatus {
+    OPEN,
+    CLOSED
+}

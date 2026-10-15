@@ -9,4 +9,18 @@ public interface EmailService {
     void sendResetPasswordEmail(String to, String fullName, String token);
 
     void sendPasswordResetConfirmation(String to, String fullName);
+
+    void sendAccountLockedEmail(String to, String fullName);
+
+    void sendAccountUnlockedEmail(String to, String fullName);
+
+    void sendAccountDeletedEmail(String to, String fullName);
+
+    void sendApplicationReceivedEmail(String to, String candidateName, String jobTitle);
+
+    void sendApplicationStatusEmail(String to, String candidateName, String jobTitle, String statusLabel);
+
+    void sendSlotBookedEmail(String to, String name, String jobTitle, String startTime, String role);
+
+    void sendOrderConfirmationEmail(String to, String fullName, String packageName, Long amount, String orderCode);
 }
