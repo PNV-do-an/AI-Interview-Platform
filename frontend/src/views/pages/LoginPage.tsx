@@ -31,102 +31,6 @@ const loadGsiScript = () => {
   return gsiScript;
 };
 
-const css = `
-.lgn-page { min-height: 100vh; background: #faf8ff; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; color: #131b2e; }
-.lgn-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(250,248,255,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 8px rgba(0,0,0,0.04); }
-.lgn-header-inner { height: 64px; max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-.lgn-brand { display: flex; align-items: center; gap: 16px; }
-.lgn-logo-link { display: flex; align-items: center; gap: 8px; text-decoration: none; }
-.lgn-logo-box { width: 32px; height: 32px; border-radius: 8px; background: #3525cd; display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.lgn-wordmark { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: #131b2e; }
-.lgn-wordmark em { font-style: normal; color: #3525cd; }
-.lgn-header-divider { width: 1px; height: 16px; background: #c7c4d8; }
-.lgn-back { display: none; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: #464555; text-decoration: none; transition: color 0.15s; }
-.lgn-back:hover { color: #131b2e; }
-.lgn-nav { display: flex; align-items: center; gap: 16px; }
-.lgn-nav-active { font-size: 13px; font-weight: 600; color: #3525cd; }
-.lgn-nav-link { font-size: 13px; font-weight: 500; color: #464555; text-decoration: none; transition: color 0.15s; }
-.lgn-nav-link:hover { color: #131b2e; }
-.lgn-main { flex: 1; padding-top: 64px; padding-left: 16px; padding-right: 16px; display: flex; align-items: center; }
-.lgn-main-inner { width: 100%; max-width: 1152px; margin: 24px auto; }
-.lgn-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center; }
-.lgn-card { background: #ffffff; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 16px; }
-.lgn-title { font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.02em; color: #131b2e; margin: 0; }
-.lgn-title em { font-style: normal; color: #3525cd; }
-.lgn-sso { display: grid; grid-template-columns: 1fr; gap: 8px; }
-.lgn-sso-btn { height: 40px; padding: 0 12px; border: none; border-radius: 8px; background: #f2f3ff; color: #131b2e; font-family: inherit; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: background 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.lgn-sso-btn:hover { background: #eaedff; }
-.lgn-divider { position: relative; display: flex; align-items: center; justify-content: center; margin: 2px 0; }
-.lgn-divider-line { width: 100%; height: 1px; background: #e2e7ff; }
-.lgn-divider-label { position: absolute; background: #ffffff; padding: 0 12px; font-size: 12px; font-weight: 500; color: #464555; text-transform: uppercase; letter-spacing: 0.06em; }
-.lgn-form { display: flex; flex-direction: column; gap: 12px; }
-.lgn-field { display: flex; flex-direction: column; gap: 4px; }
-.lgn-label-row { display: flex; align-items: center; justify-content: space-between; }
-.lgn-label { font-size: 13px; font-weight: 500; color: #131b2e; }
-.lgn-forgot { font-size: 12px; font-weight: 500; color: #3525cd; text-decoration: none; }
-.lgn-forgot:hover { color: #3323cc; text-decoration: underline; }
-.lgn-input-wrap { position: relative; display: flex; align-items: center; }
-.lgn-input-icon { position: absolute; left: 12px; font-size: 18px; color: #464555; pointer-events: none; }
-.lgn-input { width: 100%; height: 44px; padding: 0 16px 0 40px; background: #f2f3ff; border: none; border-radius: 8px; color: #131b2e; font-family: inherit; font-size: 14px; transition: box-shadow 0.15s, background 0.15s; box-sizing: border-box; }
-.lgn-input::placeholder { color: rgba(70,69,85,0.6); }
-.lgn-input:focus { outline: none; box-shadow: 0 0 0 2px #3525cd; background: #ffffff; }
-.lgn-eye { position: absolute; right: 12px; border: none; background: none; padding: 0; color: #464555; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.lgn-eye:hover { color: #131b2e; }
-.lgn-remember-row { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
-.lgn-remember { display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; font-size: 13px; color: #131b2e; }
-.lgn-checkbox { width: 16px; height: 16px; accent-color: #3525cd; cursor: pointer; }
-.lgn-actions { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
-.lgn-submit { width: 100%; height: 44px; border: none; background: #3525cd; color: #ffffff; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); transition: background 0.15s, transform 0.05s; }
-.lgn-submit:hover { background: #3323cc; }
-.lgn-submit:active { transform: scale(0.99); }
-.lgn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-.lgn-ghost { width: 100%; height: 40px; border: none; background: #f2f3ff; color: #131b2e; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: background 0.15s; }
-.lgn-ghost:hover { background: #eaedff; }
-.lgn-register-row { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 4px; font-size: 13px; color: #464555; }
-.lgn-register-link { font-size: 13px; font-weight: 600; color: #3525cd; text-decoration: none; }
-.lgn-register-link:hover { text-decoration: underline; }
-.lgn-alert { display: flex; align-items: flex-start; gap: 8px; border-radius: 8px; padding: 10px 12px; font-size: 13px; line-height: 18px; }
-.lgn-alert .material-symbols-outlined { font-size: 18px; flex-shrink: 0; }
-.lgn-alert-success { background: #ecfdf5; color: #065f46; }
-.lgn-alert-error { background: #ffdad6; color: #93000a; }
-.lgn-alert-info { background: #e2dfff; color: #3323cc; }
-.lgn-proof { background: #ffffff; border-radius: 12px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 16px; }
-.lgn-proof-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.lgn-proof-title-row { display: flex; align-items: center; gap: 8px; }
-.lgn-proof-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(53,37,205,0.1); color: #3525cd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.lgn-proof-title { font-size: 15px; font-weight: 600; color: #131b2e; margin: 0; }
-.lgn-chip { padding: 2px 8px; border-radius: 999px; background: #eaedff; color: #3525cd; font-size: 12px; font-weight: 600; white-space: nowrap; }
-.lgn-quote-box { background: #f2f3ff; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
-.lgn-quote-person { display: flex; align-items: center; gap: 8px; }
-.lgn-avatar { width: 40px; height: 40px; border-radius: 999px; background: #3525cd; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
-.lgn-quote-name { font-size: 13px; font-weight: 500; color: #131b2e; }
-.lgn-quote-role { font-size: 13px; color: #464555; }
-.lgn-quote-text { margin: 0; font-size: 13px; line-height: 18px; color: #131b2e; font-style: italic; }
-.lgn-stats { display: flex; align-items: center; gap: 12px; padding-top: 8px; border-top: 1px solid rgba(226,231,255,0.6); }
-.lgn-stat { display: flex; flex-direction: column; }
-.lgn-stat-value { font-size: 28px; line-height: 32px; font-weight: 600; color: #3525cd; letter-spacing: -0.02em; }
-.lgn-stat-label { font-size: 12px; color: #464555; }
-.lgn-stat-divider { height: 32px; width: 1px; background: #c7c4d8; }
-.lgn-sec-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 4px; flex-wrap: wrap; }
-.lgn-sec-left { display: flex; align-items: center; gap: 4px; color: #464555; font-size: 12px; font-weight: 500; }
-.lgn-sec-ssl { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(70,69,85,0.7); }
-.lgn-footer { background: rgba(255,255,255,0.6); box-shadow: 0 -1px 8px rgba(0,0,0,0.02); }
-.lgn-footer-inner { max-width: 1280px; margin: 0 auto; padding: 16px 24px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 12px; }
-.lgn-footer-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
-.lgn-soc-badge { display: flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: #eaedff; color: #131b2e; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-.lgn-copyright { font-size: 12px; color: #464555; }
-@media (min-width: 640px) {
-  .lgn-back { display: flex; }
-  .lgn-sso { grid-template-columns: repeat(3, 1fr); }
-  .lgn-footer-inner { flex-direction: row; }
-}
-@media (min-width: 1024px) {
-  .lgn-grid { grid-template-columns: repeat(12, 1fr); }
-  .lgn-col-left { grid-column: span 7; }
-  .lgn-col-right { grid-column: span 5; }
-}
-`;
-
 const GitHubIcon: React.FC = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path clipRule="evenodd" fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -171,7 +75,7 @@ const LoginPage: React.FC = () => {
   const handleGoogleLogin = async () => {
     setNotice('');
     if (!googleClientId) {
-      comingSoon('Đăng nhập bằng Google');
+      comingSoon('Sign in with Google');
       return;
     }
     try {
@@ -185,7 +89,7 @@ const LoginPage: React.FC = () => {
       });
       window.google.accounts.id.prompt(() => {});
     } catch {
-      comingSoon('Đăng nhập bằng Google');
+      comingSoon('Sign in with Google');
     }
   };
 
@@ -200,88 +104,118 @@ const LoginPage: React.FC = () => {
   };
 
   const comingSoon = (feature: string) => {
-    setNotice(`${feature} sắp ra mặt. Vui lòng dùng email và mật khẩu.`);
+    setNotice(`${feature} is coming soon. Please use email and password.`);
   };
 
   return (
-    <div className="lgn-page">
-      <style>{css}</style>
-
-      <header className="lgn-header">
-        <div className="lgn-header-inner">
-          <div className="lgn-brand">
-            <Link to="/" className="lgn-logo-link">
-              <span className="lgn-logo-box">
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>neurology</span>
+    <div className="flex min-h-screen flex-col bg-surface font-sans text-ink">
+      <header className="fixed inset-x-0 top-0 z-50 bg-surface/80 shadow-header backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center gap-2 no-underline">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-on-primary shadow-sm">
+                <span className="material-symbols-outlined text-[20px]">neurology</span>
               </span>
-              <span className="lgn-wordmark">Interview<em>AI</em></span>
+              <span className="text-[15px] font-semibold tracking-[-0.01em] text-ink">
+                Interview<em className="not-italic text-primary">AI</em>
+              </span>
             </Link>
-            <span className="lgn-header-divider" />
-            <Link to="/" className="lgn-back">
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span>
-              Và trang chủ
+            <span className="hidden h-4 w-px bg-outline sm:block" />
+            <Link to="/" className="hidden items-center gap-1 text-label-sm text-ink-variant no-underline transition-colors hover:text-ink sm:flex">
+              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+              Back to home
             </Link>
           </div>
-          <nav className="lgn-nav">
-            <span className="lgn-nav-active" aria-current="page">Đăng nhập</span>
-            <Link to="/register" className="lgn-nav-link">Đăng ký</Link>
+          <nav className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <button type="button" className="flex items-center gap-1 rounded-lg px-2 py-1 text-label-sm text-ink-variant transition-colors hover:text-ink">
+                <span className="material-symbols-outlined text-[18px]">language</span>
+                <span>EN</span>
+                <span className="material-symbols-outlined text-[14px]">expand_more</span>
+              </button>
+              <button type="button" aria-label="Theme indicator" className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-variant transition-colors hover:text-ink">
+                <span className="material-symbols-outlined text-[18px]">light_mode</span>
+              </button>
+            </div>
+            <span className="h-4 w-px bg-outline" />
+            <div className="flex items-center gap-3">
+              <span className="text-[13px] font-semibold text-primary" aria-current="page">Sign In</span>
+              <Link to="/register" className="text-label-md text-ink-variant no-underline transition-colors hover:text-ink">Sign Up</Link>
+            </div>
+            <Link to="/dashboard" className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary no-underline">
+              <span className="material-symbols-outlined text-[18px]">person</span>
+            </Link>
           </nav>
         </div>
       </header>
 
-      <main className="lgn-main">
-        <div className="lgn-main-inner">
-          <div className="lgn-grid">
-            <div className="lgn-col-left">
-              <div className="lgn-card">
-                <h1 className="lgn-title">Chào mừng trở lại Interview<em>AI</em></h1>
+      <main className="flex flex-1 items-center px-4 pt-16">
+        <div className="mx-auto my-6 w-full max-w-[1152px]">
+          <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <div className="flex flex-col gap-4 rounded-xl bg-card p-6 shadow-card">
+                <h1 className="m-0 text-headline-lg text-ink">
+                  Welcome back to Interview<em className="not-italic text-primary">AI</em>
+                </h1>
 
-                <div className="lgn-sso">
-                  <button type="button" className="lgn-sso-btn" onClick={() => comingSoon('Đăng nhập bằng GitHub')}>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  <button
+                    type="button"
+                    className="flex h-10 items-center justify-center gap-1 rounded-lg border-0 bg-surface-low px-3 text-label-md text-ink shadow-sm transition-colors hover:bg-surface-mid"
+                    onClick={() => comingSoon('Sign in with GitHub')}
+                  >
                     <GitHubIcon /> GitHub
                   </button>
-                  <button type="button" className="lgn-sso-btn" onClick={handleGoogleLogin}>
+                  <button
+                    type="button"
+                    className="flex h-10 items-center justify-center gap-1 rounded-lg border-0 bg-surface-low px-3 text-label-md text-ink shadow-sm transition-colors hover:bg-surface-mid"
+                    onClick={handleGoogleLogin}
+                  >
                     <GoogleIcon /> Google
                   </button>
-                  <button type="button" className="lgn-sso-btn" onClick={() => comingSoon('SSO doanh nghiệp')}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#3525cd' }}>domain</span>
-                    SSO Doanh nghiệp
+                  <button
+                    type="button"
+                    className="flex h-10 items-center justify-center gap-1 rounded-lg border-0 bg-surface-low px-3 text-label-md text-ink shadow-sm transition-colors hover:bg-surface-mid"
+                    onClick={() => comingSoon('Enterprise SSO')}
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-primary">domain</span>
+                    Enterprise SSO
                   </button>
                 </div>
 
-                <div className="lgn-divider">
-                  <div className="lgn-divider-line" />
-                  <span className="lgn-divider-label">Hoặc</span>
+                <div className="relative my-0.5 flex items-center justify-center">
+                  <div className="h-px w-full bg-surface-high" />
+                  <span className="absolute bg-card px-3 text-label-sm uppercase tracking-[0.06em] text-ink-variant">OR</span>
                 </div>
 
-                <form className="lgn-form" onSubmit={handleSubmit}>
+                <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
                   {registered === 'true' && (
-                    <div className="lgn-alert lgn-alert-success">
-                      <span className="material-symbols-outlined">check_circle</span>
-                      <span>Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.</span>
+                    <div className="flex items-start gap-2 rounded-lg bg-success-bg px-3 py-2.5 text-body-sm text-success-text">
+                      <span className="material-symbols-outlined shrink-0 text-[18px]">check_circle</span>
+                      <span>Registration successful! Please check your email to activate your account.</span>
                     </div>
                   )}
                   {error && (
-                    <div className="lgn-alert lgn-alert-error" role="alert">
-                      <span className="material-symbols-outlined">error</span>
+                    <div className="flex items-start gap-2 rounded-lg bg-danger-bg px-3 py-2.5 text-body-sm text-danger-text" role="alert">
+                      <span className="material-symbols-outlined shrink-0 text-[18px]">error</span>
                       <span>{error}</span>
                     </div>
                   )}
                   {notice && (
-                    <div className="lgn-alert lgn-alert-info">
-                      <span className="material-symbols-outlined">info</span>
+                    <div className="flex items-start gap-2 rounded-lg bg-info-bg px-3 py-2.5 text-body-sm text-info-text">
+                      <span className="material-symbols-outlined shrink-0 text-[18px]">info</span>
                       <span>{notice}</span>
                     </div>
                   )}
 
-                  <div className="lgn-field">
-                    <label className="lgn-label-row" htmlFor="email">
-                      <span className="lgn-label">Địa chỉ email</span>
+                  <div className="flex flex-col gap-1">
+                    <label className="flex items-center justify-between" htmlFor="email">
+                      <span className="text-label-md text-ink">Email Address</span>
                     </label>
-                    <div className="lgn-input-wrap">
-                      <span className="material-symbols-outlined lgn-input-icon">mail</span>
+                    <div className="relative flex items-center">
+                      <span className="material-symbols-outlined pointer-events-none absolute left-3 text-[18px] text-ink-variant">mail</span>
                       <input
-                        className="lgn-input"
+                        className="h-11 w-full box-border rounded-lg border-0 bg-surface-low pl-10 pr-4 text-body-md text-ink transition-all placeholder:text-ink-variant/60 focus:bg-card focus:outline-none focus:ring-2 focus:ring-primary"
                         id="email"
                         name="email"
                         type="email"
@@ -294,15 +228,15 @@ const LoginPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="lgn-field">
-                    <div className="lgn-label-row">
-                      <label className="lgn-label" htmlFor="password">Mật khẩu</label>
-                      <Link to="/forgot-password" className="lgn-forgot">Quên mật khẩu?</Link>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-label-md text-ink" htmlFor="password">Password</label>
+                      <Link to="/forgot-password" className="text-label-sm text-primary no-underline transition-colors hover:text-primary-hover hover:underline">Forgot password?</Link>
                     </div>
-                    <div className="lgn-input-wrap">
-                      <span className="material-symbols-outlined lgn-input-icon">lock</span>
+                    <div className="relative flex items-center">
+                      <span className="material-symbols-outlined pointer-events-none absolute left-3 text-[18px] text-ink-variant">lock</span>
                       <input
-                        className="lgn-input"
+                        className="h-11 w-full box-border rounded-lg border-0 bg-surface-low pl-10 pr-10 text-body-md text-ink transition-all placeholder:text-ink-variant/60 focus:bg-card focus:outline-none focus:ring-2 focus:ring-primary"
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
@@ -310,97 +244,93 @@ const LoginPage: React.FC = () => {
                         required
                         value={form.password}
                         onChange={handleChange}
-                        style={{ paddingRight: 40 }}
                         autoComplete="current-password"
                       />
                       <button
                         type="button"
-                        className="lgn-eye"
-                        aria-label="Hiện/ẩn mật khẩu"
+                        className="absolute right-3 flex items-center justify-center border-0 bg-transparent p-0 text-ink-variant transition-colors hover:text-ink"
+                        aria-label="Toggle password visibility"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                        <span className="material-symbols-outlined text-[18px]">
                           {showPassword ? 'visibility_off' : 'visibility'}
                         </span>
                       </button>
                     </div>
                   </div>
 
-                  <div className="lgn-remember-row">
-                    <label className="lgn-remember">
+                  <div className="flex items-center justify-between pt-1">
+                    <label className="flex cursor-pointer select-none items-center gap-1 text-body-sm text-ink">
                       <input
                         type="checkbox"
-                        className="lgn-checkbox"
+                        className="h-4 w-4 cursor-pointer accent-primary"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
                       />
-                      Ghi nhớ đăng nhập
+                      Remember me
                     </label>
                   </div>
 
-                  <div className="lgn-actions">
-                    <button type="submit" className="lgn-submit" disabled={loading}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 18 }}>lock_open</span>
-                      {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                  <div className="flex flex-col gap-2 pt-1">
+                    <button
+                      type="submit"
+                      className="flex h-11 w-full items-center justify-center gap-1 rounded-lg border-0 bg-primary text-label-md text-on-primary shadow-md transition-all hover:bg-primary-hover active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={loading}
+                    >
+                      <span className="material-symbols-outlined text-[18px]">lock_open</span>
+                      {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                     <button
                       type="button"
-                      className="lgn-ghost"
-                      onClick={() => comingSoon('Liên kết đăng nhập qua email')}
+                      className="flex h-10 w-full items-center justify-center gap-1 rounded-lg border-0 bg-surface-low text-label-md text-ink transition-colors hover:bg-surface-mid"
+                      onClick={() => comingSoon('Email magic link')}
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#3525cd' }}>mail</span>
-                      Gửi liên kết đăng nhập qua email
+                      <span className="material-symbols-outlined text-[18px] text-primary">mail</span>
+                      Email me a magic link
                     </button>
                   </div>
                 </form>
 
-                <div className="lgn-register-row">
-                  <span>Chưa có tài khoản InterviewAI?</span>
-                  <Link to="/register" className="lgn-register-link">Đăng ký miễn phí</Link>
+                <div className="flex items-center justify-center gap-1 pt-1 text-body-sm text-ink-variant">
+                  <span>Don't have an InterviewAI account?</span>
+                  <Link to="/register" className="text-[13px] font-semibold text-primary no-underline hover:underline">Sign up for free</Link>
                 </div>
               </div>
             </div>
 
-            <div className="lgn-col-right">
-              <div className="lgn-proof">
-                <div className="lgn-proof-head">
-                  <div className="lgn-proof-title-row">
-                    <span className="lgn-proof-icon">
-                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>verified</span>
+            <div className="lg:col-span-5">
+              <div className="flex flex-col gap-4 rounded-xl bg-card p-6 shadow-proof">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <span className="material-symbols-outlined text-[20px]">verified</span>
                     </span>
-                    <h2 className="lgn-proof-title">Đánh giá công bằng, khách quan</h2>
+                    <h2 className="m-0 text-headline-sm text-ink">Fair, Objective Evaluations</h2>
                   </div>
-                  <span className="lgn-chip">Chuẩn doanh nghiệp</span>
+                  <span className="whitespace-nowrap rounded-full bg-surface-mid px-2 py-0.5 text-label-sm font-semibold text-primary">Enterprise Ready</span>
                 </div>
-                <div className="lgn-quote-box">
-                  <div className="lgn-quote-person">
-                    <span className="lgn-avatar">ER</span>
+                <div className="flex flex-col gap-3 rounded-lg bg-surface-low p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-label-md font-semibold text-on-primary">ER</span>
                     <div>
-                      <div className="lgn-quote-name">Elena Rostova</div>
-                      <div className="lgn-quote-role">VP Kỹ thuật tại Synthetix</div>
+                      <div className="text-label-md text-ink">Elena Rostova</div>
+                      <div className="text-body-sm text-ink-variant">VP of Engineering at Synthetix</div>
                     </div>
                   </div>
-                  <p className="lgn-quote-text">
-                    “InterviewAI giúp quy trình tuyển kỹ sư của chúng tôi rút từ hai tuần xuống chưa tới 48 giờ, đồng thời mang lại trải nghiệm nhất quán và công bằng hơn nhiều cho ứng viên.”
+                  <p className="m-0 text-body-sm italic text-ink">
+                    “InterviewAI reduced our engineering loop from two weeks to under 48 hours while creating a far more consistent, fair experience for candidates.”
                   </p>
-                  <div className="lgn-stats">
-                    <div className="lgn-stat">
-                      <span className="lgn-stat-value">92%</span>
-                      <span className="lgn-stat-label">Nhanh hơn chu kỳ tuyển dụng</span>
+                  <div className="flex items-center gap-3 border-t border-surface-high/60 pt-2">
+                    <div className="flex flex-col">
+                      <span className="text-metric-stat text-primary">92%</span>
+                      <span className="text-label-sm text-ink-variant">Faster hiring cycles</span>
                     </div>
-                    <span className="lgn-stat-divider" />
-                    <div className="lgn-stat">
-                      <span className="lgn-stat-value">4.9/5</span>
-                      <span className="lgn-stat-label">Điểm đánh giá của ứng viên</span>
+                    <span className="h-8 w-px bg-outline" />
+                    <div className="flex flex-col">
+                      <span className="text-metric-stat text-primary">4.9/5</span>
+                      <span className="text-label-sm text-ink-variant">Candidate rating</span>
                     </div>
                   </div>
-                </div>
-                <div className="lgn-sec-row">
-                  <span className="lgn-sec-left">
-                    <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#3525cd' }}>security</span>
-                    Bảo mật cấp doanh nghiệp • SOC-2 Type II
-                  </span>
-                  <span className="lgn-sec-ssl">256-bit SSL</span>
                 </div>
               </div>
             </div>
@@ -408,14 +338,15 @@ const LoginPage: React.FC = () => {
         </div>
       </main>
 
-      <footer className="lgn-footer">
-        <div className="lgn-footer-inner">
-          <div className="lgn-footer-left">
-            <span className="lgn-soc-badge">
-              <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#3525cd' }}>verified_user</span>
-              SOC-2 TYPE II COMPLIANT
-            </span>
-            <span className="lgn-copyright">© 2025 InterviewAI Inc. Deterministic Intelligence.</span>
+      <footer className="bg-card/60 shadow-footer">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-3 px-6 py-4 sm:flex-row">
+          <span className="text-label-sm text-ink-variant">© 2025 InterviewAI Inc. All rights reserved.</span>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-label-sm text-ink-variant">
+            <a href="#" className="no-underline transition-colors hover:text-ink">Privacy Policy</a>
+            <a href="#" className="no-underline transition-colors hover:text-ink">Terms of Service</a>
+            <a href="#" className="no-underline transition-colors hover:text-ink">Security</a>
+            <a href="#" className="no-underline transition-colors hover:text-ink">Status</a>
+            <a href="#" className="no-underline transition-colors hover:text-ink">Contact Support</a>
           </div>
         </div>
       </footer>

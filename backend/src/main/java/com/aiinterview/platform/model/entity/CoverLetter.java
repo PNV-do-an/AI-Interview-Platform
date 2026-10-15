@@ -27,7 +27,7 @@ public class CoverLetter {
 
     private String title;
 
-    @Column(length = 20000)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(updatable = false)

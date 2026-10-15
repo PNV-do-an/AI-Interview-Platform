@@ -24,7 +24,7 @@ public class CvDocument {
     private String fileName;
 
     /** Raw extracted CV text (pasted or from upload) */
-    @Column(length = 20000)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     /** Comma-separated skills detected by AI analysis */
