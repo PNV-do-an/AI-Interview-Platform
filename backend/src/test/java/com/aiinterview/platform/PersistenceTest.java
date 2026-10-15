@@ -1,0 +1,575 @@
+package com.aiinterview.platform;
+
+import com.aiinterview.platform.common.exception.InvalidAccountException;
+import com.aiinterview.platform.common.exception.InvalidAccountLockedException;
+import com.aiinterview.platform.common.exception.InvalidPasswordException;
+import com.aiinterview.platform.model.entity.LoginAttempt;
+import com.aiinterview.platform.model.entity.RegisterAttempt;
+import com.aiinterview.platform.model.entity.User;
+import com.aiinterview.platform.model.enums.Role;
+import com.aiinterview.platform.model.repository.LoginAttemptRepository;
+import com.aiinterview.platform.model.repository.RegisterAttemptRepository;
+import com.aiinterview.platform.model.repository.UserRepository;
+import com.aiinterview.platform.service.EmailService;
+import com.aiinterview.platform.service.LoginInterface;
+import com.aiinterview.platform.service.PasswordResetService;
+import com.aiinterview.platform.service.RegisterInterface;
+import com.aiinterview.platform.service.UserService;
+import jakarta.persistence.EntityManagerFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+@Testcontainers
+@Execution(ExecutionMode.SAME_THREAD)
+class PersistenceTest {
+
+    @Container
+    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0");
+
+    private static final String PASSWORD = "PersistenceTest1!";
+    private static final String NEW_PASSWORD = "ChangedTest2!";
+    private static final String FULL_NAME = "Persistence Test User";
+    private static final String PHONE = "2025550100";
+
+    private ConfigurableApplicationContext context;
+    private UserRepository userRepository;
+    private LoginAttemptRepository loginAttemptRepository;
+    private RegisterAttemptRepository registerAttemptRepository;
+    private LoginInterface loginService;
+    private RegisterInterface registerService;
+    private PasswordResetService passwordResetService;
+    private UserService userService;
+    private PasswordEncoder passwordEncoder;
+    private EmailService emailService;
+
+    @BeforeEach
+    void openApplicationAndCleanContainer() {
+        openContext();
+        loginAttemptRepository.deleteAll();
+        registerAttemptRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @AfterEach
+    void closeApplication() {
+        closeContext();
+    }
+
+    @Test
+    void registrationAndVerificationKeepEnabledProfileAfterRestart() {
+        String email = "registration@example.test";
+        String ip = "203.0.113.11";
+
+        assertNotNull(registerService.register(email, PASSWORD, FULL_NAME, PHONE, request(ip)));
+
+        assertEquals(1L, userRepository.count());
+        assertTrue(userRepository.existsByEmail(email));
+        User registered = storedUser(email);
+        Long userId = registered.getId();
+        assertNotNull(userId);
+        assertFalse(registered.isEnabled());
+        assertEquals(FULL_NAME, registered.getFullName());
+        assertEquals(PHONE, registered.getPhone());
+        assertEquals(Role.ROLE_USER, registered.getRole());
+        assertNotEquals(PASSWORD, registered.getPassword());
+        assertTrue(passwordEncoder.matches(PASSWORD, registered.getPassword()));
+        assertNotNull(registered.getCreatedAt());
+        assertNotNull(registered.getUpdatedAt());
+        String token = registered.getVerificationToken();
+        assertNotNull(token);
+        assertFalse(token.isBlank());
+        assertTrue(registered.getVerificationTokenExpiry().isAfter(LocalDateTime.now()));
+        assertEquals(userId, userRepository.findByVerificationToken(token).orElseThrow().getId());
+        Object attemptId = identifier(assertRegistrationAttempt(email, ip, 0, false));
+        verify(emailService).sendVerificationEmail(email, FULL_NAME, token);
+
+        registerService.verifyEmail(token);
+        assertTrue(storedUser(email).isEnabled());
+        assertTrue(userRepository.findByVerificationToken(token).isEmpty());
+
+        restartContext();
+
+        User profile = userService.findByEmail(email);
+        assertEquals(userId, profile.getId());
+        assertEquals(email, profile.getEmail());
+        assertEquals(FULL_NAME, profile.getFullName());
+        assertEquals(PHONE, profile.getPhone());
+        assertEquals(Role.ROLE_USER, profile.getRole());
+        assertTrue(profile.isEnabled());
+        assertEquals(registered.getPassword(), profile.getPassword());
+        assertTrue(passwordEncoder.matches(PASSWORD, profile.getPassword()));
+        assertNull(profile.getVerificationToken());
+        assertNull(profile.getVerificationTokenExpiry());
+        assertEquals(registered.getCreatedAt(), profile.getCreatedAt());
+        assertNotNull(profile.getUpdatedAt());
+        assertEquals(attemptId, identifier(assertRegistrationAttempt(email, ip, 0, false)));
+        assertEquals(0L, loginAttemptRepository.count());
+    }
+
+    @Test
+    void failedLoginsCommitCountersHistoryAndFifthAttemptLockAcrossRestart() {
+        String email = "login-lock@example.test";
+        String ip = "203.0.113.12";
+        Long userId = seedEnabledUser(email).getId();
+        MockHttpServletRequest request = request(ip);
+
+        for (int call = 1; call <= 4; call++) {
+            assertThrows(InvalidPasswordException.class,
+                    () -> loginService.login(email, "WrongPassword1!", request));
+            User persisted = storedUser(email);
+            assertEquals(call, persisted.getLoginAttempts());
+            assertNull(persisted.getLockUntil());
+            assertFailedHistory(email, ip, call);
+        }
+
+        assertThrows(InvalidAccountLockedException.class,
+                () -> loginService.login(email, "WrongPassword1!", request));
+        User locked = storedUser(email);
+        assertEquals(5, locked.getLoginAttempts());
+        LocalDateTime lockUntil = locked.getLockUntil();
+        assertNotNull(lockUntil);
+        assertTrue(lockUntil.isAfter(LocalDateTime.now()));
+        Set<Object> historyIds = assertFailedHistory(email, ip, 5).stream()
+                .map(this::identifier).collect(Collectors.toSet());
+        assertEquals(5, historyIds.size());
+
+        restartContext();
+
+        User persisted = storedUser(email);
+        assertEquals(userId, persisted.getId());
+        assertEquals(5, persisted.getLoginAttempts());
+        assertEquals(lockUntil, persisted.getLockUntil());
+        assertEquals(historyIds, assertFailedHistory(email, ip, 5).stream()
+                .map(this::identifier).collect(Collectors.toSet()));
+        assertThrows(InvalidAccountLockedException.class,
+                () -> loginService.login(email, "WrongPassword1!", request));
+        assertEquals(5, storedUser(email).getLoginAttempts());
+        assertEquals(lockUntil, storedUser(email).getLockUntil());
+        assertFailedHistory(email, ip, 5);
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void unknownEmailLoginCommitsFailureDespiteInvalidAccountException() {
+        String email = "unknown@example.test";
+        String ip = "203.0.113.13";
+
+        assertThrows(InvalidAccountException.class,
+                () -> loginService.login(email, PASSWORD, request(ip)));
+        assertEquals(0L, userRepository.count());
+        Object attemptId = identifier(assertFailedHistory(email, ip, 1).get(0));
+
+        restartContext();
+
+        assertEquals(0L, userRepository.count());
+        assertEquals(attemptId, identifier(assertFailedHistory(email, ip, 1).get(0)));
+        assertEquals(0L, registerAttemptRepository.count());
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void invalidRegistrationDoublesSharedAttemptCounterAndPersistsThirdCallLock() {
+        String email = "registration-lock@example.test";
+        String ip = "203.0.113.14";
+        MockHttpServletRequest request = request(ip);
+        int failingCalls = 3;
+        Object attemptId = null;
+
+        for (int call = 1; call <= failingCalls; call++) {
+            assertThrows(InvalidPasswordException.class,
+                    () -> registerService.register(email, "weak", FULL_NAME, PHONE, request));
+            int expectedFailures = call * 2;
+            boolean expectedLocked = expectedFailures >= 5;
+            RegisterAttempt persisted = assertRegistrationAttempt(email, ip, expectedFailures, expectedLocked);
+            if (attemptId == null) {
+                attemptId = identifier(persisted);
+            }
+            assertEquals(attemptId, identifier(persisted));
+            if (expectedLocked) {
+                assertTrue(persisted.getLockUntil().isAfter(LocalDateTime.now()));
+            }
+            assertEquals(0L, userRepository.count());
+        }
+
+        int expectedFailures = failingCalls * 2;
+        LocalDateTime lockUntil = assertRegistrationAttempt(email, ip, expectedFailures, true).getLockUntil();
+        assertEquals(1L, registerAttemptRepository.countByAddressAndTimestampAfter(
+                ip, LocalDateTime.now().minusMinutes(5)));
+        verifyNoInteractions(emailService);
+
+        restartContext();
+
+        RegisterAttempt persisted = assertRegistrationAttempt(email, ip, expectedFailures, true);
+        assertEquals(attemptId, identifier(persisted));
+        assertEquals(lockUntil, persisted.getLockUntil());
+        assertThrows(InvalidPasswordException.class,
+                () -> registerService.register(email, "weak", FULL_NAME, PHONE, request));
+        RegisterAttempt stillLocked = assertRegistrationAttempt(email, ip, expectedFailures, true);
+        assertEquals(lockUntil, stillLocked.getLockUntil());
+        assertEquals(0L, userRepository.count());
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void recentAttemptQueriesRespectSuccessEmailIpAndStrictTimestampCutoffs() {
+        String email = "queries@example.test";
+        String otherEmail = "other-queries@example.test";
+        String ip = "203.0.113.15";
+        String otherIp = "203.0.113.115";
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(15).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime recent = cutoff.plusMinutes(1);
+
+        loginAttemptRepository.saveAllAndFlush(List.of(
+                loginAttempt(email, ip, false, recent),
+                loginAttempt(email, ip, false, cutoff),
+                loginAttempt(email, ip, false, cutoff.minusSeconds(1)),
+                loginAttempt(email, ip, true, recent),
+                loginAttempt(otherEmail, ip, false, recent),
+                loginAttempt(email, otherIp, false, recent),
+                loginAttempt(otherEmail, otherIp, false, recent)));
+
+        List<LoginAttempt> emailFailures = loginAttemptRepository
+                .findByEmailAndSuccessFalseAndTimestampAfter(email, cutoff);
+        assertEquals(2, emailFailures.size());
+        assertEquals(Set.of(ip, otherIp), emailFailures.stream()
+                .map(LoginAttempt::getIpAddress).collect(Collectors.toSet()));
+        emailFailures.forEach(attempt -> {
+            assertEquals(email, attempt.getEmail());
+            assertFalse(attempt.isSuccess());
+            assertTrue(attempt.getTimestamp().isAfter(cutoff));
+            assertNotNull(identifier(attempt));
+        });
+        assertEquals(2L, loginAttemptRepository.countByIpAddressAndSuccessFalseAndTimestampAfter(ip, cutoff));
+        assertEquals(2L, loginAttemptRepository.countByIpAddressAndSuccessFalseAndTimestampAfter(otherIp, cutoff));
+        assertEquals(0L, loginAttemptRepository.countByIpAddressAndSuccessFalseAndTimestampAfter(
+                "203.0.113.215", cutoff));
+        assertTrue(loginAttemptRepository.findByEmailAndSuccessFalseAndTimestampAfter(
+                "absent@example.test", cutoff).isEmpty());
+
+        RegisterAttempt oldest = registerAttempt(ip, email, cutoff.minusSeconds(1));
+        registerAttemptRepository.saveAllAndFlush(List.of(
+                oldest,
+                registerAttempt(ip, email, cutoff),
+                registerAttempt(ip, email, recent),
+                registerAttempt(ip, otherEmail, recent.plusMinutes(1)),
+                registerAttempt(otherIp, email, recent)));
+
+        assertEquals(2L, registerAttemptRepository.countByAddressAndTimestampAfter(ip, cutoff));
+        assertEquals(1L, registerAttemptRepository.countByAddressAndTimestampAfter(otherIp, cutoff));
+        assertEquals(0L, registerAttemptRepository.countByAddressAndTimestampAfter("203.0.113.215", cutoff));
+        RegisterAttempt firstByIp = registerAttemptRepository.findFirstByAddressOrderByIdAsc(ip);
+        RegisterAttempt firstByEmail = registerAttemptRepository.findFirstByAccountOrderByIdAsc(email);
+        assertNotNull(firstByIp);
+        assertNotNull(firstByEmail);
+        assertNotNull(identifier(oldest));
+        assertEquals(identifier(oldest), identifier(firstByIp));
+        assertEquals(identifier(oldest), identifier(firstByEmail));
+        assertNull(registerAttemptRepository.findFirstByAddressOrderByIdAsc("203.0.113.215"));
+        assertNull(registerAttemptRepository.findFirstByAccountOrderByIdAsc("absent@example.test"));
+    }
+
+    @Test
+    void passwordResetPersistsTokenAndLockThenPersistsNewPasswordAndClearedState() {
+        String email = "reset@example.test";
+        User seeded = seedEnabledUser(email);
+        seeded.setLoginAttempts(5);
+        seeded.setLockUntil(LocalDateTime.now().plusMinutes(15));
+        userRepository.saveAndFlush(seeded);
+
+        assertNotNull(passwordResetService.forgotPassword(email));
+        User pending = storedUser(email);
+        Long userId = pending.getId();
+        String token = pending.getResetToken();
+        LocalDateTime expiry = pending.getResetTokenExpiry();
+        LocalDateTime lockUntil = pending.getLockUntil();
+        String oldHash = pending.getPassword();
+        assertNotNull(token);
+        assertFalse(token.isBlank());
+        assertNotNull(expiry);
+        assertTrue(expiry.isAfter(LocalDateTime.now()));
+        assertEquals(5, pending.getLoginAttempts());
+        assertNotNull(lockUntil);
+        assertTrue(lockUntil.isAfter(LocalDateTime.now()));
+        assertTrue(passwordEncoder.matches(PASSWORD, oldHash));
+        assertEquals(userId, userRepository.findByResetToken(token).orElseThrow().getId());
+        verify(emailService).sendResetPasswordEmail(email, FULL_NAME, token);
+
+        restartContext();
+
+        User persisted = userRepository.findByResetToken(token).orElseThrow();
+        assertEquals(userId, persisted.getId());
+        assertEquals(token, persisted.getResetToken());
+        assertEquals(expiry, persisted.getResetTokenExpiry());
+        assertEquals(oldHash, persisted.getPassword());
+        assertEquals(5, persisted.getLoginAttempts());
+        assertEquals(lockUntil, persisted.getLockUntil());
+        assertNotNull(passwordResetService.resetPassword(token, NEW_PASSWORD));
+        verify(emailService).sendPasswordResetConfirmation(email, FULL_NAME);
+        User reset = storedUser(email);
+        String newHash = reset.getPassword();
+        assertNotEquals(oldHash, newHash);
+        assertNotEquals(NEW_PASSWORD, newHash);
+        assertTrue(passwordEncoder.matches(NEW_PASSWORD, newHash));
+        assertFalse(passwordEncoder.matches(PASSWORD, newHash));
+        assertNull(reset.getResetToken());
+        assertNull(reset.getResetTokenExpiry());
+        assertNull(reset.getLockUntil());
+        assertEquals(0, reset.getLoginAttempts());
+        assertTrue(userRepository.findByResetToken(token).isEmpty());
+
+        restartContext();
+
+        User profile = userService.findByEmail(email);
+        assertEquals(userId, profile.getId());
+        assertEquals(FULL_NAME, profile.getFullName());
+        assertEquals(PHONE, profile.getPhone());
+        assertEquals(Role.ROLE_USER, profile.getRole());
+        assertTrue(profile.isEnabled());
+        assertEquals(newHash, profile.getPassword());
+        assertTrue(passwordEncoder.matches(NEW_PASSWORD, profile.getPassword()));
+        assertNull(profile.getResetToken());
+        assertNull(profile.getResetTokenExpiry());
+        assertNull(profile.getLockUntil());
+        assertEquals(0, profile.getLoginAttempts());
+        assertThrows(InvalidAccountException.class,
+                () -> passwordResetService.resetPassword(token, PASSWORD));
+        assertEquals(newHash, storedUser(email).getPassword());
+    }
+
+    @Test
+    void duplicateEmailIsRejectedByMySqlUniqueConstraintOnFlush() {
+        String email = "duplicate@example.test";
+        User original = seedEnabledUser(email);
+        User duplicate = User.builder()
+                .email(email)
+                .password(passwordEncoder.encode(NEW_PASSWORD))
+                .fullName("Duplicate Test User")
+                .phone("2025550101")
+                .role(Role.ROLE_USER)
+                .enabled(true)
+                .build();
+
+        assertThrows(DataIntegrityViolationException.class, () -> userRepository.saveAndFlush(duplicate));
+        assertEquals(1L, userRepository.count());
+        assertEquals(original.getId(), storedUser(email).getId());
+        assertEquals(FULL_NAME, storedUser(email).getFullName());
+        assertEquals(original.getPassword(), storedUser(email).getPassword());
+
+        restartContext();
+
+        assertEquals(1L, userRepository.count());
+        assertEquals(original.getId(), storedUser(email).getId());
+        assertEquals(FULL_NAME, storedUser(email).getFullName());
+        assertTrue(passwordEncoder.matches(PASSWORD, storedUser(email).getPassword()));
+    }
+
+    @Test
+    void verificationEmailFailureRollsBackRegistrationAndAttempts() {
+        String email = "verification-mail-failure@example.test";
+        String ip = "203.0.113.18";
+        doThrow(new IllegalStateException("Simulated verification email failure"))
+                .when(emailService).sendVerificationEmail(eq(email), eq(FULL_NAME), anyString());
+
+        assertThrows(IllegalStateException.class,
+                () -> registerService.register(email, PASSWORD, FULL_NAME, PHONE, request(ip)));
+        verify(emailService).sendVerificationEmail(eq(email), eq(FULL_NAME), anyString());
+        assertFalse(userRepository.existsByEmail(email));
+        assertEquals(0L, userRepository.count());
+        assertEquals(0L, registerAttemptRepository.count());
+        assertEquals(0L, loginAttemptRepository.count());
+
+        restartContext();
+
+        assertFalse(userRepository.existsByEmail(email));
+        assertEquals(0L, userRepository.count());
+        assertEquals(0L, registerAttemptRepository.count());
+        assertEquals(0L, loginAttemptRepository.count());
+    }
+
+    private void openContext() {
+        context = new SpringApplicationBuilder(AiInterviewPlatformApplication.class, TestEmailConfiguration.class)
+                .web(WebApplicationType.SERVLET)
+                .run(
+                        "--server.port=0",
+                        "--spring.datasource.url=" + mysql.getJdbcUrl(),
+                        "--spring.datasource.username=" + mysql.getUsername(),
+                        "--spring.datasource.password=" + mysql.getPassword(),
+                        "--spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver",
+                        "--spring.jpa.hibernate.ddl-auto=update",
+                        "--spring.jpa.show-sql=false",
+                        "--spring.jpa.open-in-view=false",
+                        "--spring.mail.host=localhost",
+                        "--spring.mail.port=2525",
+                        "--spring.mail.username=persistence-test@example.test",
+                        "--spring.mail.password=test-mail-password",
+                        "--spring.mail.test-connection=false",
+                        "--logging.level.root=WARN",
+                        "--logging.level.com.aiinterview.platform=WARN",
+                        "--logging.level.org.springframework.security=WARN",
+                        "--logging.level.org.hibernate=WARN",
+                        "--logging.level.org.hibernate.SQL=OFF",
+                        "--logging.level.org.hibernate.orm.jdbc.bind=OFF");
+        userRepository = context.getBean(UserRepository.class);
+        loginAttemptRepository = context.getBean(LoginAttemptRepository.class);
+        registerAttemptRepository = context.getBean(RegisterAttemptRepository.class);
+        loginService = context.getBean(LoginInterface.class);
+        registerService = context.getBean(RegisterInterface.class);
+        passwordResetService = context.getBean(PasswordResetService.class);
+        userService = context.getBean(UserService.class);
+        passwordEncoder = context.getBean(PasswordEncoder.class);
+        emailService = context.getBean(EmailService.class);
+        ServletWebServerApplicationContext servletContext =
+                assertInstanceOf(ServletWebServerApplicationContext.class, context);
+        assertTrue(servletContext.getWebServer().getPort() > 0);
+        assertInstanceOf(BCryptPasswordEncoder.class, passwordEncoder);
+        assertFalse(mockingDetails(passwordEncoder).isMock());
+        Object securityFilterChain = context.getBean("springSecurityFilterChain");
+        assertInstanceOf(FilterChainProxy.class, securityFilterChain);
+        assertFalse(mockingDetails(securityFilterChain).isMock());
+        assertTrue(mockingDetails(emailService).isMock());
+    }
+
+    private void restartContext() {
+        closeContext();
+        openContext();
+    }
+
+    private void closeContext() {
+        if (context != null) {
+            context.close();
+            context = null;
+        }
+    }
+
+    private User seedEnabledUser(String email) {
+        return userRepository.saveAndFlush(User.builder()
+                .email(email)
+                .password(passwordEncoder.encode(PASSWORD))
+                .fullName(FULL_NAME)
+                .phone(PHONE)
+                .role(Role.ROLE_USER)
+                .enabled(true)
+                .build());
+    }
+
+    private User storedUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow();
+    }
+
+    private MockHttpServletRequest request(String ip) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr(ip);
+        return request;
+    }
+
+    private Object identifier(Object entity) {
+        return context.getBean(EntityManagerFactory.class).getPersistenceUnitUtil().getIdentifier(entity);
+    }
+
+    private List<LoginAttempt> assertFailedHistory(String email, String ip, int expected) {
+        LocalDateTime since = LocalDateTime.now().minusMinutes(15);
+        List<LoginAttempt> attempts = loginAttemptRepository
+                .findByEmailAndSuccessFalseAndTimestampAfter(email, since);
+        assertEquals(expected, attempts.size());
+        assertEquals((long) expected, loginAttemptRepository.count());
+        assertEquals((long) expected,
+                loginAttemptRepository.countByIpAddressAndSuccessFalseAndTimestampAfter(ip, since));
+        attempts.forEach(attempt -> {
+            assertNotNull(identifier(attempt));
+            assertEquals(email, attempt.getEmail());
+            assertEquals(ip, attempt.getIpAddress());
+            assertFalse(attempt.isSuccess());
+            assertTrue(attempt.getTimestamp().isAfter(since));
+        });
+        return attempts;
+    }
+
+    private RegisterAttempt assertRegistrationAttempt(String email, String ip, int expectedFailures, boolean locked) {
+        assertEquals(1L, registerAttemptRepository.count());
+        RegisterAttempt byEmail = registerAttemptRepository.findFirstByAccountOrderByIdAsc(email);
+        RegisterAttempt byIp = registerAttemptRepository.findFirstByAddressOrderByIdAsc(ip);
+        assertNotNull(byEmail);
+        assertNotNull(byIp);
+        assertNotNull(identifier(byEmail));
+        assertEquals(identifier(byEmail), identifier(byIp));
+        assertEquals(email, byEmail.getAccount());
+        assertEquals(ip, byEmail.getAddress());
+        assertNull(byEmail.getIdUser());
+        assertEquals(expectedFailures, byEmail.getCounterFail());
+        assertEquals(expectedFailures, byIp.getCounterFail());
+        assertEquals(locked, Boolean.TRUE.equals(byEmail.getLocked()));
+        assertEquals(locked, Boolean.TRUE.equals(byIp.getLocked()));
+        assertNotNull(byEmail.getTimestamp());
+        if (locked) {
+            assertNotNull(byEmail.getLockUntil());
+            assertEquals(byEmail.getLockUntil(), byIp.getLockUntil());
+        } else {
+            assertNull(byEmail.getLockUntil());
+            assertNull(byIp.getLockUntil());
+        }
+        return byEmail;
+    }
+
+    private LoginAttempt loginAttempt(String email, String ip, boolean success, LocalDateTime timestamp) {
+        LoginAttempt attempt = new LoginAttempt(email, ip, success);
+        ReflectionTestUtils.setField(attempt, "timestamp", timestamp);
+        return attempt;
+    }
+
+    private RegisterAttempt registerAttempt(String ip, String email, LocalDateTime timestamp) {
+        RegisterAttempt attempt = new RegisterAttempt(ip, email);
+        attempt.setTimestamp(timestamp);
+        return attempt;
+    }
+
+    @TestConfiguration(proxyBeanMethods = false)
+    static class TestEmailConfiguration {
+
+        @Bean
+        @Primary
+        EmailService persistenceTestEmailService() {
+            return mock(EmailService.class);
+        }
+    }
+}

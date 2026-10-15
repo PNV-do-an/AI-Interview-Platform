@@ -1,8 +1,27 @@
 package com.aiinterview.platform.model.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "login_attempts", indexes = {
+        @Index(name = "idx_login_email_timestamp", columnList = "email,timestamp"),
+        @Index(name = "idx_login_ip_timestamp", columnList = "ip_address,timestamp")
+})
 public class LoginAttempt {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    protected LoginAttempt() {
+    }
+
     private String email;
     private String ipAddress;
     private boolean success;
