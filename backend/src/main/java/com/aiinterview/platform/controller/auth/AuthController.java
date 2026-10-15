@@ -1,6 +1,7 @@
 package com.aiinterview.platform.controller.auth;
 
 import com.aiinterview.platform.common.response.ApiResponse;
+import com.aiinterview.platform.model.dto.request.GithubLoginRequest;
 import com.aiinterview.platform.model.dto.request.GoogleLoginRequest;
 import com.aiinterview.platform.model.dto.request.LoginRequest;
 import com.aiinterview.platform.model.dto.request.RegisterRequest;
@@ -10,6 +11,7 @@ import com.aiinterview.platform.model.dto.response.RegisterResponse;
 import com.aiinterview.platform.model.entity.User;
 import com.aiinterview.platform.security.jwt.JwtUtil;
 import com.aiinterview.platform.security.utils.JwtUtils;
+import com.aiinterview.platform.service.GithubAuthInterface;
 import com.aiinterview.platform.service.GoogleAuthInterface;
 import com.aiinterview.platform.service.LoginInterface;
 import com.aiinterview.platform.service.PasswordResetService;
@@ -35,6 +37,7 @@ public class AuthController {
     private final PasswordResetService passwordResetService;
     private final UserService userService;
     private final GoogleAuthInterface googleAuthInterface;
+    private final GithubAuthInterface githubAuthInterface;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request,
@@ -82,6 +85,36 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody GoogleLoginRequest request,
                                                                   HttpServletRequest httpRequest) {
         User user = googleAuthInterface.loginWithGoogle(request.getIdToken(), httpRequest);
+
+        String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", authResponse));
+    }
+
+    /** GET /api/v1/auth/github/client-id — frontend hỏi OAuth client ID (rỗng = chưa bật) */
+    @GetMapping("/github/client-id")
+    public ResponseEntity<ApiResponse<String>> githubClientId() {
+        return ResponseEntity.ok(ApiResponse.success("ok", githubAuthInterface.getClientId()));
+    }
+
+    /** POST /api/v1/auth/github — nhận OAuth code từ callback, đổi lấy token GitHub, cấp JWT nội bộ */
+    @PostMapping("/github")
+    public ResponseEntity<ApiResponse<AuthResponse>> githubLogin(@Valid @RequestBody GithubLoginRequest request,
+                                                                  HttpServletRequest httpRequest) {
+        User user = githubAuthInterface.loginWithGithub(request.getCode(), request.getRedirectUri(), httpRequest);
 
         String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
         String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
