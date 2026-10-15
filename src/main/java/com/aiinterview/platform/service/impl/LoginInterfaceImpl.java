@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -27,11 +28,16 @@ public class LoginInterfaceImpl implements LoginInterface {
     private final LoginAttemptRepository loginAttemptRepository;
 
     @Override
+    @Transactional(noRollbackFor = {
+            InvalidAccountException.class,
+            InvalidPasswordException.class,
+            InvalidAccountLockedException.class
+    })
     public LoginResponse login(String email, String password, HttpServletRequest request) {
         String ipClient = SecurityUtils.getClientIP(request);
 
         // Bước 1: Check IP rate-limit — 20 lần thất bại từ IP này trong 15 phút (bất kể email nào)
-        long ipFailures = loginAttemptRepository.countFailedByIp(ipClient, LocalDateTime.now().minusMinutes(15));
+        long ipFailures = loginAttemptRepository.countByIpAddressAndSuccessFalseAndTimestampAfter(ipClient, LocalDateTime.now().minusMinutes(15));
         if (ipFailures >= 20) {
             throw new InvalidAccountException(
                     "Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau."
@@ -40,7 +46,7 @@ public class LoginInterfaceImpl implements LoginInterface {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, false));
+                    loginAttemptRepository.save(new LoginAttempt(email, ipClient, false));
                     return new InvalidAccountException("Email không tồn tại");
                 });
 
@@ -55,7 +61,7 @@ public class LoginInterfaceImpl implements LoginInterface {
             );
         }
 
-        long recentFailures = loginAttemptRepository.getFailedAttempts(
+        long recentFailures = loginAttemptRepository.findByEmailAndSuccessFalseAndTimestampAfter(
                 email, LocalDateTime.now().minusMinutes(15)
         ).size();
         if (recentFailures >= 5) {
@@ -69,7 +75,7 @@ public class LoginInterfaceImpl implements LoginInterface {
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             user.setLoginAttempts(user.getLoginAttempts() + 1);
-            loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, false));
+            loginAttemptRepository.save(new LoginAttempt(email, ipClient, false));
 
             if (user.getLoginAttempts() >= 5) {
                 user.setLockUntil(LocalDateTime.now().plusMinutes(15));
@@ -83,7 +89,7 @@ public class LoginInterfaceImpl implements LoginInterface {
             throw new InvalidPasswordException("Mật khẩu sai");
         }
 
-        loginAttemptRepository.addAttempt(new LoginAttempt(email, ipClient, true));
+        loginAttemptRepository.save(new LoginAttempt(email, ipClient, true));
         user.setLoginAttempts(0);
         user.setLockUntil(null);
         userRepository.save(user);

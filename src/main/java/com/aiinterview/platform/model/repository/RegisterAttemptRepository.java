@@ -1,17 +1,12 @@
 package com.aiinterview.platform.model.repository;
 
 import com.aiinterview.platform.model.entity.RegisterAttempt;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RegisterAttemptRepository {
+import java.time.LocalDateTime;
 
-    RegisterAttempt findRegisterAttempt(String ipClient);
-
-    RegisterAttempt findRegisterAttemptByEmail(String email);
-
-    Boolean checkRegisterAttempt(String ipClient);
-
-    Boolean addRegisterAttempt(RegisterAttempt registerAttempt);
-
-    long countFailedByIp(String ip, java.time.LocalDateTime since);
-
+public interface RegisterAttemptRepository extends JpaRepository<RegisterAttempt, Long> {
+    RegisterAttempt findFirstByAddressOrderByIdAsc(String ipClient);
+    RegisterAttempt findFirstByAccountOrderByIdAsc(String email);
+    long countByAddressAndTimestampAfter(String ip, LocalDateTime since);
 }

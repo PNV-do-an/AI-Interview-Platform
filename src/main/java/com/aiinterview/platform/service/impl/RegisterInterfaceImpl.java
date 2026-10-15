@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,12 +34,13 @@ public class RegisterInterfaceImpl implements RegisterInterface {
             Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$");
 
     @Override
+    @Transactional(noRollbackFor = {InvalidAccountException.class, InvalidPasswordException.class})
     public RegisterResponse register(String email, String password, String fullName, String phone,
                                      HttpServletRequest request) {
         String ipClient = SecurityUtils.getClientIP(request);
 
         // Bước 1: Check IP rate-limit — 10 lần thất bại từ IP này trong 5 phút
-        long ipFailures = registerAttemptRepository.countFailedByIp(ipClient, LocalDateTime.now().minusMinutes(5));
+        long ipFailures = registerAttemptRepository.countByAddressAndTimestampAfter(ipClient, LocalDateTime.now().minusMinutes(5));
         if (ipFailures >= 10) {
             throw new InvalidPasswordException(
                     "Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau."
@@ -46,11 +48,11 @@ public class RegisterInterfaceImpl implements RegisterInterface {
         }
 
         // Bước 2: Check email rate-limit — 5 lần thất bại từ email này
-        RegisterAttempt emailAttempt = registerAttemptRepository.findRegisterAttemptByEmail(email);
+        RegisterAttempt emailAttempt = registerAttemptRepository.findFirstByAccountOrderByIdAsc(email);
         if (emailAttempt == null) {
             emailAttempt = new RegisterAttempt(ipClient, email);
             emailAttempt.setTimestamp(LocalDateTime.now());
-            registerAttemptRepository.addRegisterAttempt(emailAttempt);
+            registerAttemptRepository.save(emailAttempt);
         }
         if (emailAttempt.getLocked() != null && emailAttempt.getLocked()) {
             if (LocalDateTime.now().isBefore(emailAttempt.getLockUntil())) {
@@ -64,11 +66,11 @@ public class RegisterInterfaceImpl implements RegisterInterface {
         }
 
         // Bước 3: Check IP-based lock (giữ từ code cũ)
-        RegisterAttempt ipAttempt = registerAttemptRepository.findRegisterAttempt(ipClient);
+        RegisterAttempt ipAttempt = registerAttemptRepository.findFirstByAddressOrderByIdAsc(ipClient);
         if (ipAttempt == null) {
             ipAttempt = new RegisterAttempt(ipClient, email);
             ipAttempt.setTimestamp(LocalDateTime.now());
-            registerAttemptRepository.addRegisterAttempt(ipAttempt);
+            registerAttemptRepository.save(ipAttempt);
         }
         if (ipAttempt.getLocked() != null && ipAttempt.getLocked()) {
             if (LocalDateTime.now().isBefore(ipAttempt.getLockUntil())) {
