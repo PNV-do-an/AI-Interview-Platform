@@ -7,6 +7,7 @@ import com.aiinterview.platform.model.repository.ServicePackageRepository;
 import com.aiinterview.platform.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,8 +30,10 @@ public class DataInitializer implements ApplicationRunner {
     private final ServicePackageRepository servicePackageRepository;
 
     private static final String DEFAULT_ADMIN_EMAIL    = "admin@aiinterview.com";
-    private static final String DEFAULT_ADMIN_PASSWORD = "Admin@12345";
     private static final String DEFAULT_ADMIN_NAME     = "Super Admin";
+
+    @Value("${app.admin.default-password:Admin@12345}")
+    private String defaultAdminPassword;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -46,7 +49,7 @@ public class DataInitializer implements ApplicationRunner {
 
         User admin = User.builder()
                 .email(DEFAULT_ADMIN_EMAIL)
-                .password(passwordEncoder.encode(DEFAULT_ADMIN_PASSWORD))
+                .password(passwordEncoder.encode(defaultAdminPassword))
                 .fullName(DEFAULT_ADMIN_NAME)
                 .role(Role.ROLE_ADMIN)
                 .enabled(true)
@@ -54,7 +57,7 @@ public class DataInitializer implements ApplicationRunner {
                 .build();
 
         userRepository.save(admin);
-        log.info("=== Default admin created: {} / {} ===", DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD);
+        log.info("=== Default admin created: {} ===", DEFAULT_ADMIN_EMAIL);
     }
 
     private void seedServicePackages() {

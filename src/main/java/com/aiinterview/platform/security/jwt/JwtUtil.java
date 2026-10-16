@@ -8,8 +8,10 @@ import java.util.Date;
 
 public class JwtUtil {
 
-    private static final String ACCESS_SECRET = "access-secret-access-secret-access-secret";
-    private static final String REFRESH_SECRET = "refresh-secret-refresh-secret-refresh-secret";
+    private static final String ACCESS_SECRET =
+            secretFromEnv("JWT_ACCESS_SECRET", "access-secret-access-secret-access-secret");
+    private static final String REFRESH_SECRET =
+            secretFromEnv("JWT_REFRESH_SECRET", "refresh-secret-refresh-secret-refresh-secret");
     private static final Key accessKey = Keys.hmacShaKeyFor(ACCESS_SECRET.getBytes());
     private static final Key refreshKey = Keys.hmacShaKeyFor(REFRESH_SECRET.getBytes());
     private static final long EXPIRATION_TIME_ACCESS_TOKEN = 1000 * 60 * 60 * 24;
@@ -64,6 +66,11 @@ public class JwtUtil {
 
     public static String getRole(String token) {
         return validateAccessToken(token).get("role", String.class);
+    }
+
+    private static String secretFromEnv(String name, String fallback) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? fallback : value;
     }
 }
 
