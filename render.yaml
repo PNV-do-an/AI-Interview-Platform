@@ -30,3 +30,9 @@ services:
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        value: "699111427837-pk58qfj8g5dgjr703r21ki79o2d9lqdd.apps.googleusercontent.com"
+      - key: GITHUB_CLIENT_ID
+        value: "Ov23liAxCHIj9EZrkmMk"
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
