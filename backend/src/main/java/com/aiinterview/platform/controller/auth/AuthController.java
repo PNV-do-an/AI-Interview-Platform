@@ -5,9 +5,11 @@ import com.aiinterview.platform.model.dto.request.GithubLoginRequest;
 import com.aiinterview.platform.model.dto.request.GoogleLoginRequest;
 import com.aiinterview.platform.model.dto.request.LoginRequest;
 import com.aiinterview.platform.model.dto.request.RegisterRequest;
+import com.aiinterview.platform.model.dto.request.SsoLoginRequest;
 import com.aiinterview.platform.model.dto.response.AuthResponse;
 import com.aiinterview.platform.model.dto.response.LoginResponse;
 import com.aiinterview.platform.model.dto.response.RegisterResponse;
+import com.aiinterview.platform.model.dto.response.SsoConfigResponse;
 import com.aiinterview.platform.model.entity.User;
 import com.aiinterview.platform.security.jwt.JwtUtil;
 import com.aiinterview.platform.security.utils.JwtUtils;
@@ -16,6 +18,7 @@ import com.aiinterview.platform.service.GoogleAuthInterface;
 import com.aiinterview.platform.service.LoginInterface;
 import com.aiinterview.platform.service.PasswordResetService;
 import com.aiinterview.platform.service.RegisterInterface;
+import com.aiinterview.platform.service.SsoAuthInterface;
 import com.aiinterview.platform.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,6 +41,7 @@ public class AuthController {
     private final UserService userService;
     private final GoogleAuthInterface googleAuthInterface;
     private final GithubAuthInterface githubAuthInterface;
+    private final SsoAuthInterface ssoAuthInterface;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request,
@@ -115,6 +119,35 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> githubLogin(@Valid @RequestBody GithubLoginRequest request,
                                                                   HttpServletRequest httpRequest) {
         User user = githubAuthInterface.loginWithGithub(request.getCode(), request.getRedirectUri(), httpRequest);
+
+        String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+
+        AuthResponse authResponse = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .user(AuthResponse.UserInfo.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .fullName(user.getFullName())
+                        .phone(user.getPhone())
+                        .role(user.getRole().name())
+                        .build())
+                .build();
+        return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", authResponse));
+    }
+
+    /** GET /api/v1/auth/sso/config — frontend hỏi config OIDC (enabled=false khi chưa bật SSO) */
+    @GetMapping("/sso/config")
+    public ResponseEntity<ApiResponse<SsoConfigResponse>> ssoConfig() {
+        return ResponseEntity.ok(ApiResponse.success("ok", ssoAuthInterface.getPublicConfig()));
+    }
+
+    /** POST /api/v1/auth/sso — nhận OAuth code từ IdP, verify id_token, cấp JWT nội bộ */
+    @PostMapping("/sso")
+    public ResponseEntity<ApiResponse<AuthResponse>> ssoLogin(@Valid @RequestBody SsoLoginRequest request) {
+        User user = ssoAuthInterface.loginWithSso(request.getCode(), request.getRedirectUri(), request.getNonce());
 
         String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
         String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());

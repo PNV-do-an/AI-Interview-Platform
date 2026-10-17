@@ -1,5 +1,6 @@
 package com.aiinterview.platform.service.impl;
 
+import com.aiinterview.platform.common.exception.EmailAlreadyRegisteredException;
 import com.aiinterview.platform.common.exception.InvalidAccountException;
 import com.aiinterview.platform.common.exception.InvalidPasswordException;
 import com.aiinterview.platform.model.dto.response.RegisterResponse;
@@ -36,73 +37,36 @@ public class RegisterInterfaceImpl implements RegisterInterface {
             Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$");
 
     @Override
-    @Transactional(noRollbackFor = {InvalidAccountException.class, InvalidPasswordException.class})
+    @Transactional(noRollbackFor = {InvalidPasswordException.class, EmailAlreadyRegisteredException.class})
     public RegisterResponse register(String email, String password, String fullName, String phone,
                                      HttpServletRequest request) {
         String ipClient = SecurityUtils.getClientIP(request);
+        LocalDateTime windowStart = LocalDateTime.now().minusMinutes(5);
 
-        // Bước 1: Check IP rate-limit — 10 lần thất bại từ IP này trong 5 phút
-        long ipFailures = registerAttemptRepository.countByAddressAndTimestampAfter(ipClient, LocalDateTime.now().minusMinutes(5));
+        // Bước 1: IP rate-limit — >= 10 lần đăng ký thất bại từ IP này trong 5 phút gần nhất
+        long ipFailures = registerAttemptRepository.countByAddressAndTimestampAfter(ipClient, windowStart);
         if (ipFailures >= 10) {
             throw new InvalidPasswordException(
                     "Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau."
             );
         }
 
-        // Bước 2: Check email rate-limit — 5 lần thất bại từ email này
-        RegisterAttempt emailAttempt = registerAttemptRepository.findFirstByAccountOrderByIdAsc(email);
-        if (emailAttempt == null) {
-            emailAttempt = new RegisterAttempt(ipClient, email);
-            emailAttempt.setTimestamp(LocalDateTime.now());
-            registerAttemptRepository.save(emailAttempt);
-        }
-        if (emailAttempt.getLocked() != null && emailAttempt.getLocked()) {
-            if (LocalDateTime.now().isBefore(emailAttempt.getLockUntil())) {
-                throw new InvalidPasswordException(
-                        "Email này đã thực hiện quá nhiều lần đăng ký thất bại. Vui lòng thử lại sau 5 phút."
-                );
-            }
-            emailAttempt.setLocked(false);
-            emailAttempt.setCounterFail(0);
-            emailAttempt.setLockUntil(null);
-        }
-
-        // Bước 3: Check IP-based lock (giữ từ code cũ)
-        RegisterAttempt ipAttempt = registerAttemptRepository.findFirstByAddressOrderByIdAsc(ipClient);
-        if (ipAttempt == null) {
-            ipAttempt = new RegisterAttempt(ipClient, email);
-            ipAttempt.setTimestamp(LocalDateTime.now());
-            registerAttemptRepository.save(ipAttempt);
-        }
-        if (ipAttempt.getLocked() != null && ipAttempt.getLocked()) {
-            if (LocalDateTime.now().isBefore(ipAttempt.getLockUntil())) {
-                throw new InvalidPasswordException(
-                        "Hệ thống phát hiện hoạt động bất thường từ thiết bị của bạn. Vui lòng thử lại sau."
-                );
-            }
-            ipAttempt.setLocked(false);
-            ipAttempt.setCounterFail(0);
-            ipAttempt.setLockUntil(null);
+        // Bước 2: email rate-limit — >= 5 lần đăng ký thất bại cho email này trong 5 phút gần nhất
+        long emailFailures = registerAttemptRepository.countByAccountAndTimestampAfter(email, windowStart);
+        if (emailFailures >= 5) {
+            throw new InvalidPasswordException(
+                    "Email này đã thực hiện quá nhiều lần đăng ký thất bại. Vui lòng thử lại sau 5 phút."
+            );
         }
 
         if (userRepository.existsByEmail(email)) {
-            throw new InvalidAccountException("Email đã tồn tại trong hệ thống");
+            throw new EmailAlreadyRegisteredException("Email đã tồn tại trong hệ thống");
         }
 
         if (password == null || !PASSWORD_PATTERN.matcher(password).matches()) {
-            // Tăng counter cho cả email và IP
-            emailAttempt.setCounterFail(emailAttempt.getCounterFail() + 1);
-            ipAttempt.setCounterFail(ipAttempt.getCounterFail() + 1);
-
-            if (emailAttempt.getCounterFail() >= 5) {
-                emailAttempt.setLocked(true);
-                emailAttempt.setLockUntil(LocalDateTime.now().plusMinutes(5));
-            }
-            if (ipAttempt.getCounterFail() >= 10) {
-                ipAttempt.setLocked(true);
-                ipAttempt.setLockUntil(LocalDateTime.now().plusMinutes(5));
-            }
-
+            RegisterAttempt failed = new RegisterAttempt(ipClient, email);
+            failed.setTimestamp(LocalDateTime.now());
+            registerAttemptRepository.save(failed);
             throw new InvalidPasswordException(
                     "Mật khẩu phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt (@#$%^&+=!)"
             );
@@ -123,21 +87,13 @@ public class RegisterInterfaceImpl implements RegisterInterface {
 
         userRepository.save(newUser);
 
-        // Reset counters sau khi đăng ký thành công
-        emailAttempt.setCounterFail(0);
-        emailAttempt.setLocked(false);
-        emailAttempt.setLockUntil(null);
-        ipAttempt.setCounterFail(0);
-        ipAttempt.setLocked(false);
-        ipAttempt.setLockUntil(null);
-
         try {
             emailService.sendVerificationEmail(email, fullName, verificationToken);
         } catch (Exception e) {
             log.warn("Không thể gửi email xác thực tới {}: {}", email, e.getMessage());
         }
 
-        return new RegisterResponse("Đăng ký thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.");
+        return new RegisterResponse("Đăng ký thành công! Bạn có thể đăng nhập ngay.");
     }
 
     @Override

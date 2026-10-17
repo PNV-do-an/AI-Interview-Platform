@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService {
         message.setSubject("Xác thực tài khoản AI Interview Platform");
         message.setText("Xin chào " + fullName + ",\n\n"
                 + "Vui lòng xác thực tài khoản bằng cách nhấn vào link sau:\n"
-                + "http://localhost:8080/api/v1/auth/verify?token=" + token + "\n\n"
+                + frontendUrl + "/verify?token=" + token + "\n\n"
                 + "Link có hiệu lực trong 24 giờ.");
         mailSender.send(message);
     }
@@ -35,7 +35,7 @@ public class EmailServiceImpl implements EmailService {
         message.setSubject("Gửi lại xác thực tài khoản AI Interview Platform");
         message.setText("Xin chào " + fullName + ",\n\n"
                 + "Đây là link xác thực mới của bạn:\n"
-                + "http://localhost:8080/api/v1/auth/verify?token=" + token + "\n\n"
+                + frontendUrl + "/verify?token=" + token + "\n\n"
                 + "Link có hiệu lực trong 24 giờ.");
         mailSender.send(message);
     }

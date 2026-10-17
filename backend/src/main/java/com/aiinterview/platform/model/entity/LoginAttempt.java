@@ -1,5 +1,6 @@
 package com.aiinterview.platform.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,8 +12,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "login_attempts", indexes = {
-        @Index(name = "idx_login_email_timestamp", columnList = "email,timestamp"),
-        @Index(name = "idx_login_ip_timestamp", columnList = "ip_address,timestamp")
+        @Index(name = "idx_login_email_timestamp", columnList = "email,created_at"),
+        @Index(name = "idx_login_ip_timestamp", columnList = "ip_address,created_at")
 })
 public class LoginAttempt {
     @Id
@@ -25,6 +26,9 @@ public class LoginAttempt {
     private String email;
     private String ipAddress;
     private boolean success;
+    // Bảng thật do Hibernate tạo từ bản entity cũ tên cột là created_at; entity đang dùng tên
+    // timestamp nên insert thiếu cột NOT NULL này và fail.
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime timestamp;
 
     public LoginAttempt(String email, String ipAddress, boolean success) {
