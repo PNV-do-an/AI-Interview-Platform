@@ -4,6 +4,8 @@ import com.aiinterview.platform.common.exception.InvalidAccountException;
 import com.aiinterview.platform.common.exception.InvalidAccountLockedException;
 import com.aiinterview.platform.common.exception.InvalidPasswordException;
 import com.aiinterview.platform.config.DataInitializer;
+import com.aiinterview.platform.model.dto.response.PasswordResetResponse;
+import com.aiinterview.platform.model.dto.response.ResetTokenInfoResponse;
 import com.aiinterview.platform.model.entity.LoginAttempt;
 import com.aiinterview.platform.model.entity.RegisterAttempt;
 import com.aiinterview.platform.model.entity.User;
@@ -39,6 +41,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -58,6 +61,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -328,12 +332,21 @@ class PersistenceTest {
         assertFalse(token.isBlank());
         assertNotNull(expiry);
         assertTrue(expiry.isAfter(LocalDateTime.now()));
+        long grantedMinutes = Duration.between(LocalDateTime.now(), expiry).toMinutes();
+        assertTrue(grantedMinutes > 0 && grantedMinutes <= 30,
+                "Token phải có hạn sử dụng 30 phút, đo được " + grantedMinutes);
         assertEquals(5, pending.getLoginAttempts());
         assertNotNull(lockUntil);
         assertTrue(lockUntil.isAfter(LocalDateTime.now()));
         assertTrue(passwordEncoder.matches(PASSWORD, oldHash));
         assertEquals(userId, userRepository.findByResetToken(token).orElseThrow().getId());
         verify(emailService).sendResetPasswordEmail(email, FULL_NAME, token);
+
+        ResetTokenInfoResponse tokenInfo = passwordResetService.getResetTokenInfo(token);
+        assertEquals(email, tokenInfo.getEmail());
+        assertEquals(FULL_NAME, tokenInfo.getFullName());
+        assertEquals(Role.ROLE_USER.name(), tokenInfo.getRole());
+        assertTrue(tokenInfo.getRemainingSeconds() > 0 && tokenInfo.getRemainingSeconds() <= 1800);
 
         restartContext();
 
@@ -344,7 +357,11 @@ class PersistenceTest {
         assertEquals(oldHash, persisted.getPassword());
         assertEquals(5, persisted.getLoginAttempts());
         assertEquals(lockUntil, persisted.getLockUntil());
-        assertNotNull(passwordResetService.resetPassword(token, NEW_PASSWORD));
+        int tokenVersionBeforeReset = persisted.getTokenVersion();
+        PasswordResetResponse resetResult =
+                passwordResetService.resetPassword(token, NEW_PASSWORD, NEW_PASSWORD, true);
+        assertNotNull(resetResult.getEventId());
+        assertTrue(resetResult.isSignedOutEverywhere());
         verify(emailService).sendPasswordResetConfirmation(email, FULL_NAME);
         User reset = storedUser(email);
         String newHash = reset.getPassword();
@@ -356,6 +373,7 @@ class PersistenceTest {
         assertNull(reset.getResetTokenExpiry());
         assertNull(reset.getLockUntil());
         assertEquals(0, reset.getLoginAttempts());
+        assertEquals(tokenVersionBeforeReset + 1, reset.getTokenVersion());
         assertTrue(userRepository.findByResetToken(token).isEmpty());
 
         restartContext();
@@ -373,8 +391,49 @@ class PersistenceTest {
         assertNull(profile.getLockUntil());
         assertEquals(0, profile.getLoginAttempts());
         assertThrows(InvalidAccountException.class,
-                () -> passwordResetService.resetPassword(token, PASSWORD));
+                () -> passwordResetService.resetPassword(token, PASSWORD, PASSWORD, true));
         assertEquals(newHash, storedUser(email).getPassword());
+    }
+
+    @Test
+    void resetPasswordRejectsMismatchWeakPasswordAndExpiredTokenAndHonoursSignOutFlag() {
+        String email = "reset-rules@example.test";
+        int tokenVersionBefore = seedEnabledUser(email).getTokenVersion();
+
+        passwordResetService.forgotPassword(email);
+        String token = storedUser(email).getResetToken();
+        assertNotNull(token);
+
+        assertThrows(InvalidPasswordException.class,
+                () -> passwordResetService.resetPassword(token, NEW_PASSWORD, PASSWORD, true));
+        verify(emailService, never()).sendPasswordResetConfirmation(anyString(), anyString());
+        assertEquals(tokenVersionBefore, storedUser(email).getTokenVersion());
+        assertTrue(passwordEncoder.matches(PASSWORD, storedUser(email).getPassword()));
+
+        assertThrows(InvalidPasswordException.class,
+                () -> passwordResetService.resetPassword(token, "weak", "weak", true));
+
+        User expired = storedUser(email);
+        expired.setResetTokenExpiry(LocalDateTime.now().minusMinutes(1));
+        userRepository.saveAndFlush(expired);
+        assertThrows(InvalidAccountException.class, () -> passwordResetService.getResetTokenInfo(token));
+        assertThrows(InvalidAccountException.class,
+                () -> passwordResetService.resetPassword(token, NEW_PASSWORD, NEW_PASSWORD, true));
+        assertThrows(InvalidAccountException.class, () -> passwordResetService.getResetTokenInfo("  "));
+        assertThrows(InvalidAccountException.class,
+                () -> passwordResetService.resetPassword("absent-token", NEW_PASSWORD, NEW_PASSWORD, true));
+
+        passwordResetService.forgotPassword(email);
+        String freshToken = storedUser(email).getResetToken();
+        assertFalse(freshToken.equals(token));
+        PasswordResetResponse kept =
+                passwordResetService.resetPassword(freshToken, NEW_PASSWORD, NEW_PASSWORD, false);
+        assertFalse(kept.isSignedOutEverywhere());
+        User afterReset = storedUser(email);
+        assertTrue(passwordEncoder.matches(NEW_PASSWORD, afterReset.getPassword()));
+        assertEquals(tokenVersionBefore, afterReset.getTokenVersion());
+        assertNull(afterReset.getResetToken());
+        assertNull(afterReset.getResetTokenExpiry());
     }
 
     @Test
