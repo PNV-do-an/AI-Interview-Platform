@@ -44,6 +44,9 @@ const AuthService = {
 
   ssoLogin: (code: string, redirectUri: string, nonce: string) =>
     publicHttp.post<ApiResponse<AuthResponse>>('/api/v1/auth/sso', { code, redirectUri, nonce }),
+
+  verifyEmail: (token: string) =>
+    publicHttp.get<ApiResponse<string>>('/api/v1/auth/verify', { params: { token } }),
 };
 
 export default AuthService;

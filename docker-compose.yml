@@ -49,6 +49,12 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      SSO_OIDC_ISSUER: ${SSO_OIDC_ISSUER:-}
+      SSO_OIDC_BASE_URL: ${SSO_OIDC_BASE_URL:-}
+      SSO_CLIENT_ID: ${SSO_CLIENT_ID:-}
+      SSO_CLIENT_SECRET: ${SSO_CLIENT_SECRET:-}
+      SSO_ALLOWED_EMAIL_DOMAINS: ${SSO_ALLOWED_EMAIL_DOMAINS:-}
+      SSO_REDIRECT_URI: ${SSO_REDIRECT_URI:-http://localhost:3000/login}
     ports:
       - "8080:8080"
     networks:
@@ -65,6 +71,28 @@ services:
       - backend
     ports:
       - "3000:80"
+    networks:
+      - ai_interview_network
+
+  # ── Keycloak (Identity Provider giả lập cho Enterprise SSO) ────────────────
+  # Không chạy mặc định: docker compose --profile sso up -d
+  keycloak:
+    image: keycloak/keycloak:25.0
+    container_name: ai_interview_keycloak
+    profiles: ["sso"]
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${SSO_KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_HOSTNAME: http://localhost:${SSO_KEYCLOAK_PORT:-8180}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+    volumes:
+      - ./keycloak/realm-ai-interview-dev.json:/opt/keycloak/data/import/realm.json:ro
+    ports:
+      - "8180:8080"
     networks:
       - ai_interview_network
 

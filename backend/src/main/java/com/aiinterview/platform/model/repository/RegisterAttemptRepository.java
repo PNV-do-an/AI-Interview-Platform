@@ -9,4 +9,5 @@ public interface RegisterAttemptRepository extends JpaRepository<RegisterAttempt
     RegisterAttempt findFirstByAddressOrderByIdAsc(String ipClient);
     RegisterAttempt findFirstByAccountOrderByIdAsc(String email);
     long countByAddressAndTimestampAfter(String ip, LocalDateTime since);
+    long countByAccountAndTimestampAfter(String account, LocalDateTime since);
 }
