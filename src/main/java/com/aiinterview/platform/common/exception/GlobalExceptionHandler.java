@@ -45,6 +45,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(423).body(error);
     }
 
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ResponseEntity<?> handleEmailAlreadyRegistered(EmailAlreadyRegisteredException ex, HttpServletRequest request) {
+        ErrorModel error = new ErrorModel(409, ex.getMessage(), request.getRequestURL().toString(), LocalDateTime.now(),
+                new HashMap<>());
+        return ResponseEntity.status(409).body(error);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, Object> fieldErrors = new HashMap<>();
