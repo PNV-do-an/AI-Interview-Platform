@@ -122,7 +122,8 @@ class PersistenceTest {
         assertFalse(token.isBlank());
         assertTrue(registered.getVerificationTokenExpiry().isAfter(LocalDateTime.now()));
         assertEquals(userId, userRepository.findByVerificationToken(token).orElseThrow().getId());
-        Object attemptId = identifier(assertRegistrationAttempt(email, ip, 0, false));
+        // Đăng ký thành công không còn ghi register_attempts (rate-limit đếm theo cửa sổ 5 phút)
+        assertEquals(0L, registerAttemptRepository.count());
         verify(emailService).sendVerificationEmail(email, FULL_NAME, token);
 
         registerService.verifyEmail(token);
@@ -144,7 +145,7 @@ class PersistenceTest {
         assertNull(profile.getVerificationTokenExpiry());
         assertEquals(registered.getCreatedAt(), profile.getCreatedAt());
         assertNotNull(profile.getUpdatedAt());
-        assertEquals(attemptId, identifier(assertRegistrationAttempt(email, ip, 0, false)));
+        assertEquals(0L, registerAttemptRepository.count());
         assertEquals(0L, loginAttemptRepository.count());
     }
 
@@ -210,44 +211,42 @@ class PersistenceTest {
     }
 
     @Test
-    void invalidRegistrationDoublesSharedAttemptCounterAndPersistsThirdCallLock() {
+    void invalidRegistrationsRecordOneAttemptPerFailureAndWindowLimitBlocksEmailThenIp() {
         String email = "registration-lock@example.test";
         String ip = "203.0.113.14";
         MockHttpServletRequest request = request(ip);
-        int failingCalls = 3;
-        Object attemptId = null;
 
-        for (int call = 1; call <= failingCalls; call++) {
+        for (int call = 1; call <= 5; call++) {
             assertThrows(InvalidPasswordException.class,
                     () -> registerService.register(email, "weak", FULL_NAME, PHONE, request));
-            int expectedFailures = call * 2;
-            boolean expectedLocked = expectedFailures >= 5;
-            RegisterAttempt persisted = assertRegistrationAttempt(email, ip, expectedFailures, expectedLocked);
-            if (attemptId == null) {
-                attemptId = identifier(persisted);
-            }
-            assertEquals(attemptId, identifier(persisted));
-            if (expectedLocked) {
-                assertTrue(persisted.getLockUntil().isAfter(LocalDateTime.now()));
-            }
+            assertEquals((long) call, registerAttemptRepository.count());
+            assertEquals(call, registerAttemptRepository.countByAddressAndTimestampAfter(
+                    ip, LocalDateTime.now().minusMinutes(5)));
+            assertEquals(call, registerAttemptRepository.countByAccountAndTimestampAfter(
+                    email, LocalDateTime.now().minusMinutes(5)));
             assertEquals(0L, userRepository.count());
         }
 
-        int expectedFailures = failingCalls * 2;
-        LocalDateTime lockUntil = assertRegistrationAttempt(email, ip, expectedFailures, true).getLockUntil();
-        assertEquals(1L, registerAttemptRepository.countByAddressAndTimestampAfter(
-                ip, LocalDateTime.now().minusMinutes(5)));
-        verifyNoInteractions(emailService);
+        // Đủ 5 lần thất bại cho email trong 5 phút: chặn trước cả khi kiểm tra độ mạnh mật khẩu
+        InvalidPasswordException emailBlocked = assertThrows(InvalidPasswordException.class,
+                () -> registerService.register(email, PASSWORD, FULL_NAME, PHONE, request));
+        assertTrue(emailBlocked.getMessage().contains("Vui lòng thử lại sau 5 phút"));
+        assertEquals(5L, registerAttemptRepository.count());
 
-        restartContext();
+        // 5 email khác nhau cùng IP: chưa tới ngưỡng 10 nên vẫn ghi được thất bại thứ 6
+        for (int extra = 6; extra <= 10; extra++) {
+            String otherEmail = "registration-lock-" + extra + "@example.test";
+            assertThrows(InvalidPasswordException.class,
+                    () -> registerService.register(otherEmail, "weak", FULL_NAME, PHONE, request));
+            assertEquals((long) extra, registerAttemptRepository.count());
+        }
 
-        RegisterAttempt persisted = assertRegistrationAttempt(email, ip, expectedFailures, true);
-        assertEquals(attemptId, identifier(persisted));
-        assertEquals(lockUntil, persisted.getLockUntil());
-        assertThrows(InvalidPasswordException.class,
-                () -> registerService.register(email, "weak", FULL_NAME, PHONE, request));
-        RegisterAttempt stillLocked = assertRegistrationAttempt(email, ip, expectedFailures, true);
-        assertEquals(lockUntil, stillLocked.getLockUntil());
+        // Ngưỡng IP >= 10 trong 5 phút: phong tỏa cả email mới
+        String freshEmail = "brand-new@example.test";
+        InvalidPasswordException ipBlocked = assertThrows(InvalidPasswordException.class,
+                () -> registerService.register(freshEmail, PASSWORD, FULL_NAME, PHONE, request));
+        assertTrue(ipBlocked.getMessage().contains("bất thường"));
+        assertEquals(10L, registerAttemptRepository.count());
         assertEquals(0L, userRepository.count());
         verifyNoInteractions(emailService);
     }
@@ -406,7 +405,7 @@ class PersistenceTest {
     }
 
     @Test
-    void verificationEmailFailureStillPersistsRegistrationAndAttempts() {
+    void verificationEmailFailureStillPersistsRegistration() {
         String email = "verification-mail-failure@example.test";
         String ip = "203.0.113.18";
         doThrow(new IllegalStateException("Simulated verification email failure"))
@@ -416,14 +415,14 @@ class PersistenceTest {
         verify(emailService).sendVerificationEmail(eq(email), eq(FULL_NAME), anyString());
         assertTrue(storedUser(email).isEnabled());
         assertEquals(1L, userRepository.count());
-        assertRegistrationAttempt(email, ip, 0, false);
+        assertEquals(0L, registerAttemptRepository.count());
         assertEquals(0L, loginAttemptRepository.count());
 
         restartContext();
 
         assertTrue(storedUser(email).isEnabled());
         assertEquals(1L, userRepository.count());
-        assertRegistrationAttempt(email, ip, 0, false);
+        assertEquals(0L, registerAttemptRepository.count());
         assertEquals(0L, loginAttemptRepository.count());
     }
 
