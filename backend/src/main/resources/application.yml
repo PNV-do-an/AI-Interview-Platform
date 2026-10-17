@@ -23,6 +23,10 @@ spring:
       mail:
         smtp:
           auth: ${MAIL_SMTP_AUTH:true}
+          # SMTP không reachable thì mặc định JavaMail connect vô hạn -> treo request đăng ký hàng phút
+          connectiontimeout: 3000
+          timeout: 5000
+          writetimeout: 5000
           starttls:
             enable: ${MAIL_STARTTLS:true}
 
