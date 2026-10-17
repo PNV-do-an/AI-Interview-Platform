@@ -1,14 +1,18 @@
 package com.aiinterview.platform.controller.auth;
 
+import com.aiinterview.platform.common.exception.InvalidAccountException;
 import com.aiinterview.platform.common.response.ApiResponse;
 import com.aiinterview.platform.model.dto.request.GithubLoginRequest;
 import com.aiinterview.platform.model.dto.request.GoogleLoginRequest;
 import com.aiinterview.platform.model.dto.request.LoginRequest;
 import com.aiinterview.platform.model.dto.request.RegisterRequest;
+import com.aiinterview.platform.model.dto.request.ResetPasswordRequest;
 import com.aiinterview.platform.model.dto.request.SsoLoginRequest;
 import com.aiinterview.platform.model.dto.response.AuthResponse;
 import com.aiinterview.platform.model.dto.response.LoginResponse;
+import com.aiinterview.platform.model.dto.response.PasswordResetResponse;
 import com.aiinterview.platform.model.dto.response.RegisterResponse;
+import com.aiinterview.platform.model.dto.response.ResetTokenInfoResponse;
 import com.aiinterview.platform.model.dto.response.SsoConfigResponse;
 import com.aiinterview.platform.model.entity.User;
 import com.aiinterview.platform.security.jwt.JwtUtil;
@@ -20,6 +24,7 @@ import com.aiinterview.platform.service.PasswordResetService;
 import com.aiinterview.platform.service.RegisterInterface;
 import com.aiinterview.platform.service.SsoAuthInterface;
 import com.aiinterview.platform.service.UserService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -91,7 +96,7 @@ public class AuthController {
         User user = googleAuthInterface.loginWithGoogle(request.getIdToken(), httpRequest);
 
         String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
-        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name(), user.getTokenVersion());
 
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(accessToken)
@@ -121,7 +126,7 @@ public class AuthController {
         User user = githubAuthInterface.loginWithGithub(request.getCode(), request.getRedirectUri(), httpRequest);
 
         String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
-        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name(), user.getTokenVersion());
 
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(accessToken)
@@ -150,7 +155,7 @@ public class AuthController {
         User user = ssoAuthInterface.loginWithSso(request.getCode(), request.getRedirectUri(), request.getNonce());
 
         String accessToken = JwtUtil.generateAccessToken(user.getEmail(), user.getRole().name());
-        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name());
+        String refreshToken = JwtUtil.generateRefreshToken(user.getEmail(), user.getRole().name(), user.getTokenVersion());
 
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(accessToken)
@@ -170,11 +175,18 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refreshToken");
-        LoginResponse lr = JwtUtils.refreshAccessToken(refreshToken);
-        // Extract email từ refresh token để load user info
-        String email = com.aiinterview.platform.security.jwt.JwtUtil
-                .validateRefreshToken(refreshToken).getSubject();
+        Claims claims = JwtUtil.validateRefreshToken(refreshToken);
+        String email = claims.getSubject();
         var user = userService.findByEmail(email);
+
+        // Refresh token phát hành trước khi mật khẩu đổi mang tv cũ -> buộc đăng nhập lại (đăng xuất mọi phiên)
+        Integer presentedVersion = claims.get("tv", Integer.class);
+        int currentVersion = user.getTokenVersion();
+        if (presentedVersion == null || presentedVersion != currentVersion) {
+            throw new InvalidAccountException("Phiên đăng nhập không còn hiệu lực. Vui lòng đăng nhập lại.");
+        }
+
+        LoginResponse lr = JwtUtils.refreshAccessToken(refreshToken);
         AuthResponse authResponse = AuthResponse.builder()
                 .accessToken(lr.getAccessToken())
                 .refreshToken(lr.getRefreshToken())
@@ -208,12 +220,22 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(message));
     }
 
+    /** GET /api/v1/auth/reset-password?token= — kiểm tra link còn hiệu lực và trả danh tính tài khoản */
+    @GetMapping("/reset-password")
+    public ResponseEntity<ApiResponse<ResetTokenInfoResponse>> resetTokenInfo(@RequestParam("token") String token) {
+        return ResponseEntity.ok(ApiResponse.success("Link đặt lại mật khẩu còn hiệu lực",
+                passwordResetService.getResetTokenInfo(token)));
+    }
+
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody Map<String, String> request) {
-        String message = passwordResetService.resetPassword(
-                request.get("token"), request.get("password")
+    public ResponseEntity<ApiResponse<PasswordResetResponse>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        boolean signOutEverywhere = !Boolean.FALSE.equals(request.getSignOutEverywhere());
+        PasswordResetResponse response = passwordResetService.resetPassword(
+                request.getToken(), request.getPassword(), request.getConfirmPassword(), signOutEverywhere
         );
-        return ResponseEntity.ok(ApiResponse.success(message));
+        return ResponseEntity.ok(ApiResponse.success(
+                "Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại.", response));
     }
 
     /** GET /api/v1/auth/me — trả thông tin user hiện tại dựa vào JWT */

@@ -31,11 +31,12 @@ public class JwtUtil {
         return accessToken;
     }
 
-    public static String generateRefreshToken(String account, String role) {
+    public static String generateRefreshToken(String account, String role, int tokenVersion) {
 
         String refreshToken = Jwts.builder()
                 .setSubject(account)
                 .claim("role", role)
+                .claim("tv", tokenVersion)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_REFRESH_TOKEN))
                 .signWith(refreshKey)
