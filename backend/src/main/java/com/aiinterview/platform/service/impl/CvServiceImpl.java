@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -194,8 +195,8 @@ public class CvServiceImpl implements CvService {
         }
         return null;
     }
-
-    private String extractText(String contentType, MultipartFile file) {
+    @Transactional
+    protected String extractText(String contentType, MultipartFile file) {
         try {
             if ("application/pdf".equals(contentType)) {
                 try (PDDocument document = Loader.loadPDF(file.getBytes())) {

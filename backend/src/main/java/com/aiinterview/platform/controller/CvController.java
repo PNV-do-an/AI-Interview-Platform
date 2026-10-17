@@ -10,6 +10,7 @@ import com.aiinterview.platform.service.CvService;
 import com.aiinterview.platform.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,11 +22,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/cv")
 @PreAuthorize("isAuthenticated()")
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class CvController {
+
 
     private final CvService cvService;
     private final UserService userService;
+
+    public CvController(CvService cvService, UserService userService) {
+        this.cvService = cvService;
+        this.userService = userService;
+    }
 
     /** POST /api/v1/cv/upload — upload PDF/text, AI phân tích */
     @PostMapping("/upload")
