@@ -8,7 +8,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /api/v1/packages
-    autoDeployTrigger: commit
+    autoDeployTrigger: checksPass
     envVars:
       - key: PORT
         value: "8080"
