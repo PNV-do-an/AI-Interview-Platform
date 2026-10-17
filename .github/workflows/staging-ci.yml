@@ -9,15 +9,14 @@ on:
 
 permissions:
   contents: read
-  statuses: write
 
 concurrency:
   group: backend-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  # Render gate backend bằng `autoDeployTrigger: checksPass`, nên tên job phải giữ
-  # đúng "Backend tests" như check đã đăng ký trên repo cũ.
+  # Render gate bản deploy backend bằng `autoDeployTrigger: checksPass`: nó chờ
+  # mọi status check trên commit dev, nên job này phải chạy xong mới deploy.
   backend-test:
     name: Backend tests
     runs-on: ubuntu-latest
@@ -40,26 +39,3 @@ jobs:
         with:
           name: surefire-reports
           path: target/surefire-reports
-
-  deploy-repo-status:
-    name: Report to deploy repo
-    needs: backend-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Publish backend result on deploy-staging
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = { owner: 'PNV-do-an', repo: 'AI-Interview-Platform-deploy-staging' };
-            const { data: branch } = await github.rest.repos.getBranch({ owner, repo, branch: 'dev' });
-            await github.rest.repos.createCommitStatus({
-              owner,
-              repo,
-              sha: branch.sha,
-              state: '${{ needs.backend-test.result }}' === 'success' ? 'success' : 'failure',
-              context: 'backend / staging',
-              description: `${{ github.repository }}@${{ github.sha }}`,
-              target_url: `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
-            });

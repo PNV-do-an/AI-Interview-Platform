@@ -25,8 +25,9 @@ Testcontainers chỉ chạy được ở môi trường có Docker (CI), trên W
 ## CI/CD
 
 Push vào `dev` → GitHub Actions chạy `Backend tests` → Render chỉ deploy khi
-check đó xanh (`autoDeployTrigger: checksPass` trong `render.yaml`). Kết quả
-được báo về repo `AI-Interview-Platform-deploy-staging` để theo dõi.
+check đó xanh (`autoDeployTrigger: checksPass` trong `render.yaml`). Cùng lúc,
+repo `AI-Interview-Platform-deploy-staging` nghe xong `Staging CI` để ghi lại
+kết quả backend lên bảng theo dõi chung.
 
 Tài liệu đặc tả và quy ước (`spec/`) nằm ở repo
 `AI-Interview-Platform-deploy-staging`.
